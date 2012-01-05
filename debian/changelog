@@ -1,0 +1,5 @@
+libskk (0.0.7-1) unstable; urgency=low
+
+  * Initial release (Closes: #652917)
+
+ -- Daiki Ueno <ueno@unixuser.org>  Thu, 05 Jan 2012 17:06:03 +0900

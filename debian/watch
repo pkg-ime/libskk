@@ -1,0 +1,3 @@
+version=3
+https://github.com/ueno/libskk/downloads \
+/downloads/ueno/libskk/libskk-(.*)\.tar\.gz
