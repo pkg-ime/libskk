@@ -84,6 +84,7 @@ SkkEncodingConverter* skk_encoding_converter_new (const gchar* encoding, GError*
 SkkEncodingConverter* skk_encoding_converter_construct (GType object_type, const gchar* encoding, GError** error);
 static void skk_encoding_converter_set_encoding (SkkEncodingConverter* self, const gchar* value);
 static gchar* skk_encoding_converter_convert (SkkEncodingConverter* self, GCharsetConverter* converter, const gchar* str, GError** error);
+static guint8* _vala_array_dup1 (guint8* self, int length);
 gchar* skk_encoding_converter_encode (SkkEncodingConverter* self, const gchar* internal_str, GError** error);
 gchar* skk_encoding_converter_decode (SkkEncodingConverter* self, const gchar* external_str, GError** error);
 const gchar* skk_encoding_converter_get_encoding (SkkEncodingConverter* self);
@@ -165,83 +166,142 @@ static guint8* string_get_data (const gchar* self, int* result_length1) {
 }
 
 
+static guint8* _vala_array_dup1 (guint8* self, int length) {
+	return g_memdup (self, length * sizeof (guint8));
+}
+
+
 static gchar* skk_encoding_converter_convert (SkkEncodingConverter* self, GCharsetConverter* converter, const gchar* str, GError** error) {
 	gchar* result = NULL;
-	guint8* _tmp0_ = NULL;
-	guint8* buf;
-	gint buf_length1;
-	gint _buf_size_;
-	GString* _tmp1_;
+	const gchar* _tmp0_;
+	guint8* _tmp1_;
+	gint _tmp1__length1;
+	guint8* _tmp2_;
+	gint _tmp2__length1;
+	guint8* _tmp3_;
+	gint _tmp3__length1;
+	guint8* inbuf;
+	gint inbuf_length1;
+	gint _inbuf_size_;
+	guint8* _tmp4_ = NULL;
+	guint8* outbuf;
+	gint outbuf_length1;
+	gint _outbuf_size_;
+	GString* _tmp5_;
 	GString* builder;
-	gsize bytes_read = 0UL;
-	gsize bytes_written = 0UL;
-	GCharsetConverter* _tmp2_;
-	const gchar* _tmp3_;
-	guint8* _tmp4_;
-	gint _tmp4__length1;
-	guint8* _tmp5_;
-	gint _tmp5__length1;
-	gsize _tmp6_ = 0UL;
-	gsize _tmp7_ = 0UL;
-	const gchar* _tmp14_;
-	gchar* _tmp15_;
+	gsize total_bytes_read;
+	GString* _tmp26_;
+	const gchar* _tmp27_;
+	gchar* _tmp28_;
 	GError * _inner_error_ = NULL;
 	g_return_val_if_fail (self != NULL, NULL);
 	g_return_val_if_fail (converter != NULL, NULL);
 	g_return_val_if_fail (str != NULL, NULL);
-	_tmp0_ = g_new0 (guint8, SKK_ENCODING_CONVERTER_BUFSIZ);
-	buf = _tmp0_;
-	buf_length1 = SKK_ENCODING_CONVERTER_BUFSIZ;
-	_buf_size_ = buf_length1;
-	_tmp1_ = g_string_new ("");
-	builder = _tmp1_;
-	_tmp2_ = converter;
-	_tmp3_ = str;
-	_tmp4_ = string_get_data (_tmp3_, &_tmp4__length1);
-	_tmp5_ = _tmp4_;
-	_tmp5__length1 = _tmp4__length1;
-	g_converter_convert ((GConverter*) _tmp2_, _tmp5_, (gsize) _tmp5__length1, buf, (gsize) buf_length1, G_CONVERTER_NO_FLAGS, &_tmp6_, &_tmp7_, &_inner_error_);
-	bytes_read = _tmp6_;
-	bytes_written = _tmp7_;
-	if (_inner_error_ != NULL) {
-		g_propagate_error (error, _inner_error_);
-		_g_string_free0 (builder);
-		buf = (g_free (buf), NULL);
-		return NULL;
-	}
-	{
-		gint i;
-		i = 0;
+	_tmp0_ = str;
+	_tmp1_ = string_get_data (_tmp0_, &_tmp1__length1);
+	_tmp2_ = _tmp1_;
+	_tmp2__length1 = _tmp1__length1;
+	_tmp3_ = (_tmp2_ != NULL) ? _vala_array_dup1 (_tmp2_, _tmp2__length1) : ((gpointer) _tmp2_);
+	_tmp3__length1 = _tmp2__length1;
+	inbuf = _tmp3_;
+	inbuf_length1 = _tmp3__length1;
+	_inbuf_size_ = inbuf_length1;
+	_tmp4_ = g_new0 (guint8, SKK_ENCODING_CONVERTER_BUFSIZ);
+	outbuf = _tmp4_;
+	outbuf_length1 = SKK_ENCODING_CONVERTER_BUFSIZ;
+	_outbuf_size_ = outbuf_length1;
+	_tmp5_ = g_string_new ("");
+	builder = _tmp5_;
+	total_bytes_read = (gsize) 0;
+	while (TRUE) {
+		gsize _tmp6_;
+		guint8* _tmp7_;
+		gint _tmp7__length1;
+		gsize bytes_read = 0UL;
+		gsize bytes_written = 0UL;
+		GCharsetConverter* _tmp8_;
+		guint8* _tmp9_;
+		gint _tmp9__length1;
+		gsize _tmp10_;
+		guint8* _tmp11_;
+		gint _tmp11__length1;
+		guint8* _tmp12_;
+		gint _tmp12__length1;
+		gsize _tmp13_ = 0UL;
+		gsize _tmp14_ = 0UL;
+		gsize _tmp24_;
+		gsize _tmp25_;
+		_tmp6_ = total_bytes_read;
+		_tmp7_ = inbuf;
+		_tmp7__length1 = inbuf_length1;
+		if (!(_tmp6_ < ((gsize) _tmp7__length1))) {
+			break;
+		}
+		_tmp8_ = converter;
+		_tmp9_ = inbuf;
+		_tmp9__length1 = inbuf_length1;
+		_tmp10_ = total_bytes_read;
+		_tmp11_ = inbuf;
+		_tmp11__length1 = inbuf_length1;
+		_tmp12_ = outbuf;
+		_tmp12__length1 = outbuf_length1;
+		g_converter_convert ((GConverter*) _tmp8_, _tmp9_ + _tmp10_, (gsize) (_tmp11__length1 - _tmp10_), _tmp12_, (gsize) _tmp12__length1, G_CONVERTER_INPUT_AT_END, &_tmp13_, &_tmp14_, &_inner_error_);
+		bytes_read = _tmp13_;
+		bytes_written = _tmp14_;
+		if (_inner_error_ != NULL) {
+			g_propagate_error (error, _inner_error_);
+			_g_string_free0 (builder);
+			outbuf = (g_free (outbuf), NULL);
+			inbuf = (g_free (inbuf), NULL);
+			return NULL;
+		}
 		{
-			gboolean _tmp8_;
-			_tmp8_ = TRUE;
-			while (TRUE) {
-				gboolean _tmp9_;
-				gint _tmp11_;
-				gint _tmp12_;
-				guint8 _tmp13_;
-				_tmp9_ = _tmp8_;
-				if (!_tmp9_) {
-					gint _tmp10_;
-					_tmp10_ = i;
-					i = _tmp10_ + 1;
+			gint i;
+			i = 0;
+			{
+				gboolean _tmp15_;
+				_tmp15_ = TRUE;
+				while (TRUE) {
+					gboolean _tmp16_;
+					gint _tmp18_;
+					gsize _tmp19_;
+					GString* _tmp20_;
+					guint8* _tmp21_;
+					gint _tmp21__length1;
+					gint _tmp22_;
+					guint8 _tmp23_;
+					_tmp16_ = _tmp15_;
+					if (!_tmp16_) {
+						gint _tmp17_;
+						_tmp17_ = i;
+						i = _tmp17_ + 1;
+					}
+					_tmp15_ = FALSE;
+					_tmp18_ = i;
+					_tmp19_ = bytes_written;
+					if (!(((gsize) _tmp18_) < _tmp19_)) {
+						break;
+					}
+					_tmp20_ = builder;
+					_tmp21_ = outbuf;
+					_tmp21__length1 = outbuf_length1;
+					_tmp22_ = i;
+					_tmp23_ = _tmp21_[_tmp22_];
+					g_string_append_c (_tmp20_, (gchar) _tmp23_);
 				}
-				_tmp8_ = FALSE;
-				_tmp11_ = i;
-				if (!(((gsize) _tmp11_) < bytes_written)) {
-					break;
-				}
-				_tmp12_ = i;
-				_tmp13_ = buf[_tmp12_];
-				g_string_append_c (builder, (gchar) _tmp13_);
 			}
 		}
+		_tmp24_ = total_bytes_read;
+		_tmp25_ = bytes_read;
+		total_bytes_read = _tmp24_ + _tmp25_;
 	}
-	_tmp14_ = builder->str;
-	_tmp15_ = g_strdup (_tmp14_);
-	result = _tmp15_;
+	_tmp26_ = builder;
+	_tmp27_ = _tmp26_->str;
+	_tmp28_ = g_strdup (_tmp27_);
+	result = _tmp28_;
 	_g_string_free0 (builder);
-	buf = (g_free (buf), NULL);
+	outbuf = (g_free (outbuf), NULL);
+	inbuf = (g_free (inbuf), NULL);
 	return result;
 }
 

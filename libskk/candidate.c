@@ -48,7 +48,29 @@ typedef struct _SkkCandidatePrivate SkkCandidatePrivate;
 typedef struct _SkkCandidateList SkkCandidateList;
 typedef struct _SkkCandidateListClass SkkCandidateListClass;
 typedef struct _SkkCandidateListPrivate SkkCandidateListPrivate;
+
+#define SKK_TYPE_SIMPLE_CANDIDATE_LIST (skk_simple_candidate_list_get_type ())
+#define SKK_SIMPLE_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateList))
+#define SKK_SIMPLE_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateListClass))
+#define SKK_IS_SIMPLE_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST))
+#define SKK_IS_SIMPLE_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_SIMPLE_CANDIDATE_LIST))
+#define SKK_SIMPLE_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateListClass))
+
+typedef struct _SkkSimpleCandidateList SkkSimpleCandidateList;
+typedef struct _SkkSimpleCandidateListClass SkkSimpleCandidateListClass;
+typedef struct _SkkSimpleCandidateListPrivate SkkSimpleCandidateListPrivate;
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
+
+#define SKK_TYPE_PROXY_CANDIDATE_LIST (skk_proxy_candidate_list_get_type ())
+#define SKK_PROXY_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateList))
+#define SKK_PROXY_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateListClass))
+#define SKK_IS_PROXY_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST))
+#define SKK_IS_PROXY_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_PROXY_CANDIDATE_LIST))
+#define SKK_PROXY_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateListClass))
+
+typedef struct _SkkProxyCandidateList SkkProxyCandidateList;
+typedef struct _SkkProxyCandidateListClass SkkProxyCandidateListClass;
+typedef struct _SkkProxyCandidateListPrivate SkkProxyCandidateListPrivate;
 
 struct _SkkCandidate {
 	GObject parent_instance;
@@ -74,9 +96,37 @@ struct _SkkCandidateList {
 
 struct _SkkCandidateListClass {
 	GObjectClass parent_class;
+	SkkCandidate* (*get) (SkkCandidateList* self, gint index);
+	void (*clear) (SkkCandidateList* self);
+	void (*add_candidates) (SkkCandidateList* self, SkkCandidate** array, int array_length1);
+	void (*add_candidates_end) (SkkCandidateList* self);
+	gboolean (*cursor_up) (SkkCandidateList* self);
+	gboolean (*cursor_down) (SkkCandidateList* self);
+	gboolean (*page_up) (SkkCandidateList* self);
+	gboolean (*page_down) (SkkCandidateList* self);
+	gboolean (*next) (SkkCandidateList* self);
+	gboolean (*previous) (SkkCandidateList* self);
+	gboolean (*select_at) (SkkCandidateList* self, guint index_in_page);
+	void (*select) (SkkCandidateList* self);
+	gint (*get_cursor_pos) (SkkCandidateList* self);
+	gint (*get_size) (SkkCandidateList* self);
+	guint (*get_page_start) (SkkCandidateList* self);
+	void (*set_page_start) (SkkCandidateList* self, guint value);
+	guint (*get_page_size) (SkkCandidateList* self);
+	void (*set_page_size) (SkkCandidateList* self, guint value);
+	gboolean (*get_page_visible) (SkkCandidateList* self);
 };
 
-struct _SkkCandidateListPrivate {
+struct _SkkSimpleCandidateList {
+	SkkCandidateList parent_instance;
+	SkkSimpleCandidateListPrivate * priv;
+};
+
+struct _SkkSimpleCandidateListClass {
+	SkkCandidateListClass parent_class;
+};
+
+struct _SkkSimpleCandidateListPrivate {
 	GeeArrayList* _candidates;
 	gint _cursor_pos;
 	GeeSet* seen;
@@ -84,9 +134,24 @@ struct _SkkCandidateListPrivate {
 	gint _page_size;
 };
 
+struct _SkkProxyCandidateList {
+	SkkCandidateList parent_instance;
+	SkkProxyCandidateListPrivate * priv;
+};
+
+struct _SkkProxyCandidateListClass {
+	SkkCandidateListClass parent_class;
+};
+
+struct _SkkProxyCandidateListPrivate {
+	SkkCandidateList* _candidates;
+};
+
 
 static gpointer skk_candidate_parent_class = NULL;
 static gpointer skk_candidate_list_parent_class = NULL;
+static gpointer skk_simple_candidate_list_parent_class = NULL;
+static gpointer skk_proxy_candidate_list_parent_class = NULL;
 
 GType skk_candidate_get_type (void) G_GNUC_CONST;
 #define SKK_CANDIDATE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_CANDIDATE, SkkCandidatePrivate))
@@ -115,7 +180,6 @@ static void skk_candidate_finalize (GObject* obj);
 static void _vala_skk_candidate_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
 static void _vala_skk_candidate_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
 GType skk_candidate_list_get_type (void) G_GNUC_CONST;
-#define SKK_CANDIDATE_LIST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_CANDIDATE_LIST, SkkCandidateListPrivate))
 enum  {
 	SKK_CANDIDATE_LIST_DUMMY_PROPERTY,
 	SKK_CANDIDATE_LIST_CURSOR_POS,
@@ -125,31 +189,99 @@ enum  {
 	SKK_CANDIDATE_LIST_PAGE_VISIBLE
 };
 SkkCandidate* skk_candidate_list_get (SkkCandidateList* self, gint index);
-gint skk_candidate_list_get_size (SkkCandidateList* self);
+static SkkCandidate* skk_candidate_list_real_get (SkkCandidateList* self, gint index);
 void skk_candidate_list_clear (SkkCandidateList* self);
-void skk_candidate_list_add_candidates_start (SkkCandidateList* self);
+static void skk_candidate_list_real_clear (SkkCandidateList* self);
 void skk_candidate_list_add_candidates (SkkCandidateList* self, SkkCandidate** array, int array_length1);
+static void skk_candidate_list_real_add_candidates (SkkCandidateList* self, SkkCandidate** array, int array_length1);
 void skk_candidate_list_add_candidates_end (SkkCandidateList* self);
-SkkCandidateList* skk_candidate_list_new (guint page_start, guint page_size);
-SkkCandidateList* skk_candidate_list_construct (GType object_type, guint page_start, guint page_size);
+static void skk_candidate_list_real_add_candidates_end (SkkCandidateList* self);
 gboolean skk_candidate_list_cursor_up (SkkCandidateList* self);
+static gboolean skk_candidate_list_real_cursor_up (SkkCandidateList* self);
 gboolean skk_candidate_list_cursor_down (SkkCandidateList* self);
+static gboolean skk_candidate_list_real_cursor_down (SkkCandidateList* self);
 gboolean skk_candidate_list_page_up (SkkCandidateList* self);
-guint skk_candidate_list_get_page_start_cursor_pos (SkkCandidateList* self);
+static gboolean skk_candidate_list_real_page_up (SkkCandidateList* self);
 gboolean skk_candidate_list_page_down (SkkCandidateList* self);
+static gboolean skk_candidate_list_real_page_down (SkkCandidateList* self);
 gboolean skk_candidate_list_next (SkkCandidateList* self);
-gboolean skk_candidate_list_previous (SkkCandidateList* self);
-void skk_candidate_list_select (SkkCandidateList* self, gint index);
+static gboolean skk_candidate_list_real_next (SkkCandidateList* self);
 gint skk_candidate_list_get_cursor_pos (SkkCandidateList* self);
-void skk_candidate_list_set_cursor_pos (SkkCandidateList* self, gint value);
 guint skk_candidate_list_get_page_start (SkkCandidateList* self);
-void skk_candidate_list_set_page_start (SkkCandidateList* self, guint value);
+gboolean skk_candidate_list_previous (SkkCandidateList* self);
+static gboolean skk_candidate_list_real_previous (SkkCandidateList* self);
+guint skk_candidate_list_get_page_start_cursor_pos (SkkCandidateList* self);
 guint skk_candidate_list_get_page_size (SkkCandidateList* self);
+gboolean skk_candidate_list_select_at (SkkCandidateList* self, guint index_in_page);
+static gboolean skk_candidate_list_real_select_at (SkkCandidateList* self, guint index_in_page);
+void skk_candidate_list_select (SkkCandidateList* self);
+static void skk_candidate_list_real_select (SkkCandidateList* self);
+SkkCandidateList* skk_candidate_list_construct (GType object_type);
+gint skk_candidate_list_get_size (SkkCandidateList* self);
+void skk_candidate_list_set_page_start (SkkCandidateList* self, guint value);
 void skk_candidate_list_set_page_size (SkkCandidateList* self, guint value);
 gboolean skk_candidate_list_get_page_visible (SkkCandidateList* self);
-static void skk_candidate_list_finalize (GObject* obj);
 static void _vala_skk_candidate_list_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
 static void _vala_skk_candidate_list_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
+GType skk_simple_candidate_list_get_type (void) G_GNUC_CONST;
+#define SKK_SIMPLE_CANDIDATE_LIST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateListPrivate))
+enum  {
+	SKK_SIMPLE_CANDIDATE_LIST_DUMMY_PROPERTY,
+	SKK_SIMPLE_CANDIDATE_LIST_CURSOR_POS,
+	SKK_SIMPLE_CANDIDATE_LIST_SIZE,
+	SKK_SIMPLE_CANDIDATE_LIST_PAGE_START,
+	SKK_SIMPLE_CANDIDATE_LIST_PAGE_SIZE,
+	SKK_SIMPLE_CANDIDATE_LIST_PAGE_VISIBLE
+};
+static SkkCandidate* skk_simple_candidate_list_real_get (SkkCandidateList* base, gint index);
+static void skk_simple_candidate_list_real_clear (SkkCandidateList* base);
+static void skk_simple_candidate_list_real_add_candidates (SkkCandidateList* base, SkkCandidate** array, int array_length1);
+static void skk_simple_candidate_list_real_add_candidates_end (SkkCandidateList* base);
+static gboolean skk_simple_candidate_list_real_select_at (SkkCandidateList* base, guint index_in_page);
+static void skk_simple_candidate_list_real_select (SkkCandidateList* base);
+SkkSimpleCandidateList* skk_simple_candidate_list_new (guint page_start, guint page_size);
+SkkSimpleCandidateList* skk_simple_candidate_list_construct (GType object_type, guint page_start, guint page_size);
+static gboolean skk_simple_candidate_list_real_cursor_up (SkkCandidateList* base);
+static gboolean skk_simple_candidate_list_real_cursor_down (SkkCandidateList* base);
+static gboolean skk_simple_candidate_list_real_page_up (SkkCandidateList* base);
+static gboolean skk_simple_candidate_list_real_page_down (SkkCandidateList* base);
+static void skk_simple_candidate_list_finalize (GObject* obj);
+static void _vala_skk_simple_candidate_list_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+static void _vala_skk_simple_candidate_list_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
+GType skk_proxy_candidate_list_get_type (void) G_GNUC_CONST;
+#define SKK_PROXY_CANDIDATE_LIST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateListPrivate))
+enum  {
+	SKK_PROXY_CANDIDATE_LIST_DUMMY_PROPERTY,
+	SKK_PROXY_CANDIDATE_LIST_CANDIDATES,
+	SKK_PROXY_CANDIDATE_LIST_CURSOR_POS,
+	SKK_PROXY_CANDIDATE_LIST_SIZE,
+	SKK_PROXY_CANDIDATE_LIST_PAGE_START,
+	SKK_PROXY_CANDIDATE_LIST_PAGE_SIZE,
+	SKK_PROXY_CANDIDATE_LIST_PAGE_VISIBLE
+};
+static void skk_proxy_candidate_list_notify_cursor_pos_cb (SkkProxyCandidateList* self, GObject* s, GParamSpec* p);
+static void skk_proxy_candidate_list_populated_cb (SkkProxyCandidateList* self);
+static void skk_proxy_candidate_list_selected_cb (SkkProxyCandidateList* self, SkkCandidate* c);
+static SkkCandidate* skk_proxy_candidate_list_real_get (SkkCandidateList* base, gint index);
+SkkCandidateList* skk_proxy_candidate_list_get_candidates (SkkProxyCandidateList* self);
+static void skk_proxy_candidate_list_real_clear (SkkCandidateList* base);
+static void skk_proxy_candidate_list_real_add_candidates (SkkCandidateList* base, SkkCandidate** array, int array_length1);
+static void skk_proxy_candidate_list_real_add_candidates_end (SkkCandidateList* base);
+static gboolean skk_proxy_candidate_list_real_select_at (SkkCandidateList* base, guint index_in_page);
+static void skk_proxy_candidate_list_real_select (SkkCandidateList* base);
+SkkProxyCandidateList* skk_proxy_candidate_list_new (SkkCandidateList* candidates);
+SkkProxyCandidateList* skk_proxy_candidate_list_construct (GType object_type, SkkCandidateList* candidates);
+void skk_proxy_candidate_list_set_candidates (SkkProxyCandidateList* self, SkkCandidateList* value);
+static gboolean skk_proxy_candidate_list_real_cursor_up (SkkCandidateList* base);
+static gboolean skk_proxy_candidate_list_real_cursor_down (SkkCandidateList* base);
+static gboolean skk_proxy_candidate_list_real_page_up (SkkCandidateList* base);
+static gboolean skk_proxy_candidate_list_real_page_down (SkkCandidateList* base);
+static void _skk_proxy_candidate_list_notify_cursor_pos_cb_g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self);
+static void _skk_proxy_candidate_list_populated_cb_skk_candidate_list_populated (SkkCandidateList* _sender, gpointer self);
+static void _skk_proxy_candidate_list_selected_cb_skk_candidate_list_selected (SkkCandidateList* _sender, SkkCandidate* candidate, gpointer self);
+static void skk_proxy_candidate_list_finalize (GObject* obj);
+static void _vala_skk_proxy_candidate_list_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+static void _vala_skk_proxy_candidate_list_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
 
 
 /**
@@ -470,7 +602,402 @@ static void _vala_skk_candidate_set_property (GObject * object, guint property_i
          *
          * @return a Candidate
          */
+static SkkCandidate* skk_candidate_list_real_get (SkkCandidateList* self, gint index) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_get'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return NULL;
+}
+
+
 SkkCandidate* skk_candidate_list_get (SkkCandidateList* self, gint index) {
+	g_return_val_if_fail (self != NULL, NULL);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->get (self, index);
+}
+
+
+static void skk_candidate_list_real_clear (SkkCandidateList* self) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_clear'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return;
+}
+
+
+void skk_candidate_list_clear (SkkCandidateList* self) {
+	g_return_if_fail (self != NULL);
+	SKK_CANDIDATE_LIST_GET_CLASS (self)->clear (self);
+}
+
+
+static void skk_candidate_list_real_add_candidates (SkkCandidateList* self, SkkCandidate** array, int array_length1) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_add_candidates'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return;
+}
+
+
+void skk_candidate_list_add_candidates (SkkCandidateList* self, SkkCandidate** array, int array_length1) {
+	g_return_if_fail (self != NULL);
+	SKK_CANDIDATE_LIST_GET_CLASS (self)->add_candidates (self, array, array_length1);
+}
+
+
+static void skk_candidate_list_real_add_candidates_end (SkkCandidateList* self) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_add_candidates_end'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return;
+}
+
+
+void skk_candidate_list_add_candidates_end (SkkCandidateList* self) {
+	g_return_if_fail (self != NULL);
+	SKK_CANDIDATE_LIST_GET_CLASS (self)->add_candidates_end (self);
+}
+
+
+/**
+         * Move cursor to the previous candidate.
+         *
+         * @return `true` if cursor position has changed, `false` otherwise.
+         */
+static gboolean skk_candidate_list_real_cursor_up (SkkCandidateList* self) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_cursor_up'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return FALSE;
+}
+
+
+gboolean skk_candidate_list_cursor_up (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->cursor_up (self);
+}
+
+
+/**
+         * Move cursor to the next candidate.
+         *
+         * @return `true` if cursor position has changed, `false` otherwise
+         */
+static gboolean skk_candidate_list_real_cursor_down (SkkCandidateList* self) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_cursor_down'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return FALSE;
+}
+
+
+gboolean skk_candidate_list_cursor_down (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->cursor_down (self);
+}
+
+
+/**
+         * Move cursor to the previous page.
+         *
+         * @return `true` if cursor position has changed, `false` otherwise
+         */
+static gboolean skk_candidate_list_real_page_up (SkkCandidateList* self) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_page_up'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return FALSE;
+}
+
+
+gboolean skk_candidate_list_page_up (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->page_up (self);
+}
+
+
+/**
+         * Move cursor to the next page.
+         *
+         * @return `true` if cursor position has changed, `false` otherwise
+         */
+static gboolean skk_candidate_list_real_page_down (SkkCandidateList* self) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_page_down'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return FALSE;
+}
+
+
+gboolean skk_candidate_list_page_down (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->page_down (self);
+}
+
+
+/**
+         * Move cursor forward.
+         *
+         * @return `true` if cursor position has changed, `false` otherwise
+         */
+static gboolean skk_candidate_list_real_next (SkkCandidateList* self) {
+	gboolean result = FALSE;
+	gint _tmp0_;
+	gint _tmp1_;
+	guint _tmp2_;
+	guint _tmp3_;
+	_tmp0_ = skk_candidate_list_get_cursor_pos (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_page_start (self);
+	_tmp3_ = _tmp2_;
+	if (((guint) _tmp1_) < _tmp3_) {
+		gboolean _tmp4_ = FALSE;
+		_tmp4_ = skk_candidate_list_cursor_down (self);
+		result = _tmp4_;
+		return result;
+	} else {
+		gboolean _tmp5_ = FALSE;
+		_tmp5_ = skk_candidate_list_page_down (self);
+		result = _tmp5_;
+		return result;
+	}
+}
+
+
+gboolean skk_candidate_list_next (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->next (self);
+}
+
+
+/**
+         * Move cursor backward.
+         *
+         * @return `true` if cursor position has changed, `false` otherwise
+         */
+static gboolean skk_candidate_list_real_previous (SkkCandidateList* self) {
+	gboolean result = FALSE;
+	gint _tmp0_;
+	gint _tmp1_;
+	guint _tmp2_;
+	guint _tmp3_;
+	_tmp0_ = skk_candidate_list_get_cursor_pos (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_page_start (self);
+	_tmp3_ = _tmp2_;
+	if (((guint) _tmp1_) <= _tmp3_) {
+		gboolean _tmp4_ = FALSE;
+		_tmp4_ = skk_candidate_list_cursor_up (self);
+		result = _tmp4_;
+		return result;
+	} else {
+		gboolean _tmp5_ = FALSE;
+		_tmp5_ = skk_candidate_list_page_up (self);
+		result = _tmp5_;
+		return result;
+	}
+}
+
+
+gboolean skk_candidate_list_previous (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->previous (self);
+}
+
+
+/**
+         * Return cursor position of the beginning of the current page.
+         *
+         * @return cursor position
+         */
+guint skk_candidate_list_get_page_start_cursor_pos (SkkCandidateList* self) {
+	guint result = 0U;
+	gint _tmp0_;
+	gint _tmp1_;
+	guint _tmp2_;
+	guint _tmp3_;
+	guint _tmp4_;
+	guint _tmp5_;
+	guint pages;
+	guint _tmp6_;
+	guint _tmp7_;
+	guint _tmp8_;
+	guint _tmp9_;
+	g_return_val_if_fail (self != NULL, 0U);
+	_tmp0_ = skk_candidate_list_get_cursor_pos (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_page_start (self);
+	_tmp3_ = _tmp2_;
+	_tmp4_ = skk_candidate_list_get_page_size (self);
+	_tmp5_ = _tmp4_;
+	pages = (_tmp1_ - _tmp3_) / _tmp5_;
+	_tmp6_ = skk_candidate_list_get_page_size (self);
+	_tmp7_ = _tmp6_;
+	_tmp8_ = skk_candidate_list_get_page_start (self);
+	_tmp9_ = _tmp8_;
+	result = (pages * _tmp7_) + _tmp9_;
+	return result;
+}
+
+
+/**
+         * Select a candidate in the current page.
+         *
+         * @param index cursor position in the page to select
+         *
+         * @return `true` if a candidate is selected, `false` otherwise
+         */
+static gboolean skk_candidate_list_real_select_at (SkkCandidateList* self, guint index_in_page) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_select_at'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return FALSE;
+}
+
+
+gboolean skk_candidate_list_select_at (SkkCandidateList* self, guint index_in_page) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->select_at (self, index_in_page);
+}
+
+
+/**
+         * Select the current candidate.
+         */
+static void skk_candidate_list_real_select (SkkCandidateList* self) {
+	g_critical ("Type `%s' does not implement abstract method `skk_candidate_list_select'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
+	return;
+}
+
+
+void skk_candidate_list_select (SkkCandidateList* self) {
+	g_return_if_fail (self != NULL);
+	SKK_CANDIDATE_LIST_GET_CLASS (self)->select (self);
+}
+
+
+SkkCandidateList* skk_candidate_list_construct (GType object_type) {
+	SkkCandidateList * self = NULL;
+	self = (SkkCandidateList*) g_object_new (object_type, NULL);
+	return self;
+}
+
+
+gint skk_candidate_list_get_cursor_pos (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, 0);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->get_cursor_pos (self);
+}
+
+
+gint skk_candidate_list_get_size (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, 0);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->get_size (self);
+}
+
+
+guint skk_candidate_list_get_page_start (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, 0U);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->get_page_start (self);
+}
+
+
+void skk_candidate_list_set_page_start (SkkCandidateList* self, guint value) {
+	g_return_if_fail (self != NULL);
+	SKK_CANDIDATE_LIST_GET_CLASS (self)->set_page_start (self, value);
+}
+
+
+guint skk_candidate_list_get_page_size (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, 0U);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->get_page_size (self);
+}
+
+
+void skk_candidate_list_set_page_size (SkkCandidateList* self, guint value) {
+	g_return_if_fail (self != NULL);
+	SKK_CANDIDATE_LIST_GET_CLASS (self)->set_page_size (self, value);
+}
+
+
+gboolean skk_candidate_list_get_page_visible (SkkCandidateList* self) {
+	g_return_val_if_fail (self != NULL, FALSE);
+	return SKK_CANDIDATE_LIST_GET_CLASS (self)->get_page_visible (self);
+}
+
+
+static void skk_candidate_list_class_init (SkkCandidateListClass * klass) {
+	skk_candidate_list_parent_class = g_type_class_peek_parent (klass);
+	SKK_CANDIDATE_LIST_CLASS (klass)->get = skk_candidate_list_real_get;
+	SKK_CANDIDATE_LIST_CLASS (klass)->clear = skk_candidate_list_real_clear;
+	SKK_CANDIDATE_LIST_CLASS (klass)->add_candidates = skk_candidate_list_real_add_candidates;
+	SKK_CANDIDATE_LIST_CLASS (klass)->add_candidates_end = skk_candidate_list_real_add_candidates_end;
+	SKK_CANDIDATE_LIST_CLASS (klass)->cursor_up = skk_candidate_list_real_cursor_up;
+	SKK_CANDIDATE_LIST_CLASS (klass)->cursor_down = skk_candidate_list_real_cursor_down;
+	SKK_CANDIDATE_LIST_CLASS (klass)->page_up = skk_candidate_list_real_page_up;
+	SKK_CANDIDATE_LIST_CLASS (klass)->page_down = skk_candidate_list_real_page_down;
+	SKK_CANDIDATE_LIST_CLASS (klass)->next = skk_candidate_list_real_next;
+	SKK_CANDIDATE_LIST_CLASS (klass)->previous = skk_candidate_list_real_previous;
+	SKK_CANDIDATE_LIST_CLASS (klass)->select_at = skk_candidate_list_real_select_at;
+	SKK_CANDIDATE_LIST_CLASS (klass)->select = skk_candidate_list_real_select;
+	G_OBJECT_CLASS (klass)->get_property = _vala_skk_candidate_list_get_property;
+	G_OBJECT_CLASS (klass)->set_property = _vala_skk_candidate_list_set_property;
+	/**
+	         * Current cursor position.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_CURSOR_POS, g_param_spec_int ("cursor-pos", "cursor-pos", "cursor-pos", G_MININT, G_MAXINT, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+	/**
+	         * The number of candidate in the candidate list.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_SIZE, g_param_spec_int ("size", "size", "size", G_MININT, G_MAXINT, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+	/**
+	         * Starting index of paging.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_PAGE_START, g_param_spec_uint ("page-start", "page-start", "page-start", 0, G_MAXUINT, 0U, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+	/**
+	         * Page size.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_PAGE_SIZE, g_param_spec_uint ("page-size", "page-size", "page-size", 0, G_MAXUINT, 0U, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+	/**
+	         * Flag to indicate whether page (lookup table) is visible.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_PAGE_VISIBLE, g_param_spec_boolean ("page-visible", "page-visible", "page-visible", FALSE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+	/**
+	         * Signal emitted when candidates are filled and ready for traversal.
+	         */
+	g_signal_new ("populated", SKK_TYPE_CANDIDATE_LIST, G_SIGNAL_RUN_LAST, 0, NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+	/**
+	         * Signal emitted when a candidate is selected.
+	         *
+	         * @param candidate selected candidate
+	         */
+	g_signal_new ("selected", SKK_TYPE_CANDIDATE_LIST, G_SIGNAL_RUN_LAST, 0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT, G_TYPE_NONE, 1, SKK_TYPE_CANDIDATE);
+}
+
+
+static void skk_candidate_list_instance_init (SkkCandidateList * self) {
+}
+
+
+/**
+     * Base abstract class of candidate list.
+     */
+GType skk_candidate_list_get_type (void) {
+	static volatile gsize skk_candidate_list_type_id__volatile = 0;
+	if (g_once_init_enter (&skk_candidate_list_type_id__volatile)) {
+		static const GTypeInfo g_define_type_info = { sizeof (SkkCandidateListClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_candidate_list_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkCandidateList), 0, (GInstanceInitFunc) skk_candidate_list_instance_init, NULL };
+		GType skk_candidate_list_type_id;
+		skk_candidate_list_type_id = g_type_register_static (G_TYPE_OBJECT, "SkkCandidateList", &g_define_type_info, G_TYPE_FLAG_ABSTRACT);
+		g_once_init_leave (&skk_candidate_list_type_id__volatile, skk_candidate_list_type_id);
+	}
+	return skk_candidate_list_type_id__volatile;
+}
+
+
+static void _vala_skk_candidate_list_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
+	SkkCandidateList * self;
+	self = SKK_CANDIDATE_LIST (object);
+	switch (property_id) {
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+
+static void _vala_skk_candidate_list_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
+	SkkCandidateList * self;
+	self = SKK_CANDIDATE_LIST (object);
+	switch (property_id) {
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+
+static SkkCandidate* skk_simple_candidate_list_real_get (SkkCandidateList* base, gint index) {
+	SkkSimpleCandidateList * self;
 	SkkCandidate* result = NULL;
 	gint _tmp0_;
 	gboolean _tmp2_ = FALSE;
@@ -479,7 +1006,7 @@ SkkCandidate* skk_candidate_list_get (SkkCandidateList* self, gint index) {
 	GeeArrayList* _tmp8_;
 	gint _tmp9_;
 	gpointer _tmp10_ = NULL;
-	g_return_val_if_fail (self != NULL, NULL);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = index;
 	if (_tmp0_ < 0) {
 		gint _tmp1_;
@@ -492,7 +1019,7 @@ SkkCandidate* skk_candidate_list_get (SkkCandidateList* self, gint index) {
 		gint _tmp5_;
 		gint _tmp6_;
 		_tmp4_ = index;
-		_tmp5_ = skk_candidate_list_get_size (self);
+		_tmp5_ = skk_candidate_list_get_size ((SkkCandidateList*) self);
 		_tmp6_ = _tmp5_;
 		_tmp2_ = _tmp4_ < _tmp6_;
 	} else {
@@ -508,10 +1035,11 @@ SkkCandidate* skk_candidate_list_get (SkkCandidateList* self, gint index) {
 }
 
 
-void skk_candidate_list_clear (SkkCandidateList* self) {
+static void skk_simple_candidate_list_real_clear (SkkCandidateList* base) {
+	SkkSimpleCandidateList * self;
 	GeeArrayList* _tmp0_;
 	GeeSet* _tmp1_;
-	g_return_if_fail (self != NULL);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_candidates;
 	gee_abstract_collection_clear ((GeeAbstractCollection*) _tmp0_);
 	self->priv->_cursor_pos = -1;
@@ -520,21 +1048,16 @@ void skk_candidate_list_clear (SkkCandidateList* self) {
 }
 
 
-void skk_candidate_list_add_candidates_start (SkkCandidateList* self) {
-	g_return_if_fail (self != NULL);
-	skk_candidate_list_clear (self);
-}
-
-
 static gpointer _g_object_ref0 (gpointer self) {
 	return self ? g_object_ref (self) : NULL;
 }
 
 
-void skk_candidate_list_add_candidates (SkkCandidateList* self, SkkCandidate** array, int array_length1) {
+static void skk_simple_candidate_list_real_add_candidates (SkkCandidateList* base, SkkCandidate** array, int array_length1) {
+	SkkSimpleCandidateList * self;
 	SkkCandidate** _tmp0_;
 	gint _tmp0__length1;
-	g_return_if_fail (self != NULL);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = array;
 	_tmp0__length1 = array_length1;
 	{
@@ -583,11 +1106,12 @@ void skk_candidate_list_add_candidates (SkkCandidateList* self, SkkCandidate** a
 }
 
 
-void skk_candidate_list_add_candidates_end (SkkCandidateList* self) {
+static void skk_simple_candidate_list_real_add_candidates_end (SkkCandidateList* base) {
+	SkkSimpleCandidateList * self;
 	GeeArrayList* _tmp0_;
 	gint _tmp1_;
 	gint _tmp2_;
-	g_return_if_fail (self != NULL);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_candidates;
 	_tmp1_ = gee_collection_get_size ((GeeCollection*) _tmp0_);
 	_tmp2_ = _tmp1_;
@@ -595,23 +1119,66 @@ void skk_candidate_list_add_candidates_end (SkkCandidateList* self) {
 		self->priv->_cursor_pos = 0;
 	}
 	g_object_notify ((GObject*) self, "cursor-pos");
-	g_signal_emit_by_name (self, "populated");
+	g_signal_emit_by_name ((SkkCandidateList*) self, "populated");
 }
 
 
-/**
-         * Create a new CandidateList.
-         *
-         * @param page_start page starting index of the candidate list
-         * @param page_size page size of the candidate list
-         *
-         * @return a new CandidateList.
-         */
-SkkCandidateList* skk_candidate_list_construct (GType object_type, guint page_start, guint page_size) {
-	SkkCandidateList * self = NULL;
+static gboolean skk_simple_candidate_list_real_select_at (SkkCandidateList* base, guint index_in_page) {
+	SkkSimpleCandidateList * self;
+	gboolean result = FALSE;
 	guint _tmp0_;
 	guint _tmp1_;
-	self = (SkkCandidateList*) g_object_new (object_type, NULL);
+	guint _tmp2_;
+	guint _tmp3_ = 0U;
+	guint page_offset;
+	guint _tmp4_;
+	guint _tmp5_;
+	gint _tmp6_;
+	gint _tmp7_;
+	self = (SkkSimpleCandidateList*) base;
+	_tmp0_ = index_in_page;
+	_tmp1_ = skk_candidate_list_get_page_size ((SkkCandidateList*) self);
+	_tmp2_ = _tmp1_;
+	g_assert (_tmp0_ < _tmp2_);
+	_tmp3_ = skk_candidate_list_get_page_start_cursor_pos ((SkkCandidateList*) self);
+	page_offset = _tmp3_;
+	_tmp4_ = page_offset;
+	_tmp5_ = index_in_page;
+	_tmp6_ = skk_candidate_list_get_size ((SkkCandidateList*) self);
+	_tmp7_ = _tmp6_;
+	if ((_tmp4_ + _tmp5_) < ((guint) _tmp7_)) {
+		guint _tmp8_;
+		guint _tmp9_;
+		_tmp8_ = page_offset;
+		_tmp9_ = index_in_page;
+		self->priv->_cursor_pos = (gint) (_tmp8_ + _tmp9_);
+		g_object_notify ((GObject*) self, "cursor-pos");
+		skk_candidate_list_select ((SkkCandidateList*) self);
+		result = TRUE;
+		return result;
+	}
+	result = FALSE;
+	return result;
+}
+
+
+static void skk_simple_candidate_list_real_select (SkkCandidateList* base) {
+	SkkSimpleCandidateList * self;
+	SkkCandidate* _tmp0_ = NULL;
+	SkkCandidate* candidate;
+	self = (SkkSimpleCandidateList*) base;
+	_tmp0_ = skk_candidate_list_get ((SkkCandidateList*) self, -1);
+	candidate = _tmp0_;
+	g_signal_emit_by_name ((SkkCandidateList*) self, "selected", candidate);
+	_g_object_unref0 (candidate);
+}
+
+
+SkkSimpleCandidateList* skk_simple_candidate_list_construct (GType object_type, guint page_start, guint page_size) {
+	SkkSimpleCandidateList * self = NULL;
+	guint _tmp0_;
+	guint _tmp1_;
+	self = (SkkSimpleCandidateList*) skk_candidate_list_construct (object_type);
 	_tmp0_ = page_start;
 	self->priv->_page_start = (gint) _tmp0_;
 	_tmp1_ = page_size;
@@ -620,21 +1187,17 @@ SkkCandidateList* skk_candidate_list_construct (GType object_type, guint page_st
 }
 
 
-SkkCandidateList* skk_candidate_list_new (guint page_start, guint page_size) {
-	return skk_candidate_list_construct (SKK_TYPE_CANDIDATE_LIST, page_start, page_size);
+SkkSimpleCandidateList* skk_simple_candidate_list_new (guint page_start, guint page_size) {
+	return skk_simple_candidate_list_construct (SKK_TYPE_SIMPLE_CANDIDATE_LIST, page_start, page_size);
 }
 
 
-/**
-         * Move cursor to the previous candidate.
-         *
-         * @return `true` if cursor position has changed, `false` otherwise.
-         */
-gboolean skk_candidate_list_cursor_up (SkkCandidateList* self) {
+static gboolean skk_simple_candidate_list_real_cursor_up (SkkCandidateList* base) {
+	SkkSimpleCandidateList * self;
 	gboolean result = FALSE;
 	gint _tmp0_;
 	gint _tmp1_;
-	g_return_val_if_fail (self != NULL, FALSE);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_cursor_pos;
 	g_assert (_tmp0_ >= 0);
 	_tmp1_ = self->priv->_cursor_pos;
@@ -651,19 +1214,15 @@ gboolean skk_candidate_list_cursor_up (SkkCandidateList* self) {
 }
 
 
-/**
-         * Move cursor to the next candidate.
-         *
-         * @return `true` if cursor position has changed, `false` otherwise
-         */
-gboolean skk_candidate_list_cursor_down (SkkCandidateList* self) {
+static gboolean skk_simple_candidate_list_real_cursor_down (SkkCandidateList* base) {
+	SkkSimpleCandidateList * self;
 	gboolean result = FALSE;
 	gint _tmp0_;
 	gint _tmp1_;
 	GeeArrayList* _tmp2_;
 	gint _tmp3_;
 	gint _tmp4_;
-	g_return_val_if_fail (self != NULL, FALSE);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_cursor_pos;
 	g_assert (_tmp0_ >= 0);
 	_tmp1_ = self->priv->_cursor_pos;
@@ -683,18 +1242,14 @@ gboolean skk_candidate_list_cursor_down (SkkCandidateList* self) {
 }
 
 
-/**
-         * Move cursor to the previous page.
-         *
-         * @return `true` if cursor position has changed, `false` otherwise
-         */
-gboolean skk_candidate_list_page_up (SkkCandidateList* self) {
+static gboolean skk_simple_candidate_list_real_page_up (SkkCandidateList* base) {
+	SkkSimpleCandidateList * self;
 	gboolean result = FALSE;
 	gint _tmp0_;
 	gint _tmp1_;
 	gint _tmp2_;
 	gint _tmp3_;
-	g_return_val_if_fail (self != NULL, FALSE);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_cursor_pos;
 	g_assert (_tmp0_ >= 0);
 	_tmp1_ = self->priv->_cursor_pos;
@@ -707,7 +1262,7 @@ gboolean skk_candidate_list_page_up (SkkCandidateList* self) {
 		_tmp4_ = self->priv->_cursor_pos;
 		_tmp5_ = self->priv->_page_size;
 		self->priv->_cursor_pos = _tmp4_ - _tmp5_;
-		_tmp6_ = skk_candidate_list_get_page_start_cursor_pos (self);
+		_tmp6_ = skk_candidate_list_get_page_start_cursor_pos ((SkkCandidateList*) self);
 		self->priv->_cursor_pos = (gint) _tmp6_;
 		g_object_notify ((GObject*) self, "cursor-pos");
 		result = TRUE;
@@ -718,12 +1273,8 @@ gboolean skk_candidate_list_page_up (SkkCandidateList* self) {
 }
 
 
-/**
-         * Move cursor to the next page.
-         *
-         * @return `true` if cursor position has changed, `false` otherwise
-         */
-gboolean skk_candidate_list_page_down (SkkCandidateList* self) {
+static gboolean skk_simple_candidate_list_real_page_down (SkkCandidateList* base) {
+	SkkSimpleCandidateList * self;
 	gboolean result = FALSE;
 	gint _tmp0_;
 	gint _tmp1_;
@@ -731,7 +1282,7 @@ gboolean skk_candidate_list_page_down (SkkCandidateList* self) {
 	gint _tmp3_;
 	gint _tmp4_;
 	gint _tmp5_;
-	g_return_val_if_fail (self != NULL, FALSE);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_cursor_pos;
 	g_assert (_tmp0_ >= 0);
 	_tmp1_ = self->priv->_cursor_pos;
@@ -746,7 +1297,7 @@ gboolean skk_candidate_list_page_down (SkkCandidateList* self) {
 		_tmp6_ = self->priv->_cursor_pos;
 		_tmp7_ = self->priv->_page_size;
 		self->priv->_cursor_pos = _tmp6_ + _tmp7_;
-		_tmp8_ = skk_candidate_list_get_page_start_cursor_pos (self);
+		_tmp8_ = skk_candidate_list_get_page_start_cursor_pos ((SkkCandidateList*) self);
 		self->priv->_cursor_pos = (gint) _tmp8_;
 		g_object_notify ((GObject*) self, "cursor-pos");
 		result = TRUE;
@@ -757,151 +1308,24 @@ gboolean skk_candidate_list_page_down (SkkCandidateList* self) {
 }
 
 
-/**
-         * Move cursor forward.
-         *
-         * @return `true` if cursor position has changed, `false` otherwise
-         */
-gboolean skk_candidate_list_next (SkkCandidateList* self) {
-	gboolean result = FALSE;
-	gint _tmp0_;
-	gint _tmp1_;
-	g_return_val_if_fail (self != NULL, FALSE);
-	_tmp0_ = self->priv->_cursor_pos;
-	_tmp1_ = self->priv->_page_start;
-	if (_tmp0_ < _tmp1_) {
-		gboolean _tmp2_ = FALSE;
-		_tmp2_ = skk_candidate_list_cursor_down (self);
-		result = _tmp2_;
-		return result;
-	} else {
-		gboolean _tmp3_ = FALSE;
-		_tmp3_ = skk_candidate_list_page_down (self);
-		result = _tmp3_;
-		return result;
-	}
-}
-
-
-/**
-         * Move cursor backward.
-         *
-         * @return `true` if cursor position has changed, `false` otherwise
-         */
-gboolean skk_candidate_list_previous (SkkCandidateList* self) {
-	gboolean result = FALSE;
-	gint _tmp0_;
-	gint _tmp1_;
-	g_return_val_if_fail (self != NULL, FALSE);
-	_tmp0_ = self->priv->_cursor_pos;
-	_tmp1_ = self->priv->_page_start;
-	if (_tmp0_ <= _tmp1_) {
-		gboolean _tmp2_ = FALSE;
-		_tmp2_ = skk_candidate_list_cursor_up (self);
-		result = _tmp2_;
-		return result;
-	} else {
-		gboolean _tmp3_ = FALSE;
-		_tmp3_ = skk_candidate_list_page_up (self);
-		result = _tmp3_;
-		return result;
-	}
-}
-
-
-/**
-         * Return cursor position of the beginning of the current page.
-         *
-         * @return cursor position
-         */
-guint skk_candidate_list_get_page_start_cursor_pos (SkkCandidateList* self) {
-	guint result = 0U;
-	gint _tmp0_;
-	gint _tmp1_;
-	gint _tmp2_;
-	gint pages;
-	gint _tmp3_;
-	gint _tmp4_;
-	g_return_val_if_fail (self != NULL, 0U);
-	_tmp0_ = self->priv->_cursor_pos;
-	_tmp1_ = self->priv->_page_start;
-	_tmp2_ = self->priv->_page_size;
-	pages = (_tmp0_ - _tmp1_) / _tmp2_;
-	_tmp3_ = self->priv->_page_size;
-	_tmp4_ = self->priv->_page_start;
-	result = (guint) ((pages * _tmp3_) + _tmp4_);
-	return result;
-}
-
-
-/**
-         * Select the current candidate.
-         *
-         * @param index cursor position of the candidate to select
-         */
-void skk_candidate_list_select (SkkCandidateList* self, gint index) {
-	gint _tmp0_;
-	SkkCandidate* _tmp2_ = NULL;
-	SkkCandidate* candidate;
-	g_return_if_fail (self != NULL);
-	_tmp0_ = index;
-	if (_tmp0_ >= 0) {
-		gint _tmp1_;
-		_tmp1_ = index;
-		self->priv->_cursor_pos = _tmp1_;
-		g_object_notify ((GObject*) self, "cursor-pos");
-	}
-	_tmp2_ = skk_candidate_list_get (self, -1);
-	candidate = _tmp2_;
-	g_signal_emit_by_name (self, "selected", candidate);
-	_g_object_unref0 (candidate);
-}
-
-
-gint skk_candidate_list_get_cursor_pos (SkkCandidateList* self) {
+static gint skk_simple_candidate_list_real_get_cursor_pos (SkkCandidateList* base) {
 	gint result;
+	SkkSimpleCandidateList* self;
 	gint _tmp0_;
-	g_return_val_if_fail (self != NULL, 0);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_cursor_pos;
 	result = _tmp0_;
 	return result;
 }
 
 
-void skk_candidate_list_set_cursor_pos (SkkCandidateList* self, gint value) {
-	gboolean _tmp0_ = FALSE;
-	gint _tmp1_;
-	gboolean _tmp6_;
-	gint _tmp7_;
-	g_return_if_fail (self != NULL);
-	_tmp1_ = value;
-	if (_tmp1_ >= 0) {
-		gint _tmp2_;
-		GeeArrayList* _tmp3_;
-		gint _tmp4_;
-		gint _tmp5_;
-		_tmp2_ = value;
-		_tmp3_ = self->priv->_candidates;
-		_tmp4_ = gee_collection_get_size ((GeeCollection*) _tmp3_);
-		_tmp5_ = _tmp4_;
-		_tmp0_ = _tmp2_ < _tmp5_;
-	} else {
-		_tmp0_ = FALSE;
-	}
-	_tmp6_ = _tmp0_;
-	g_assert (_tmp6_);
-	_tmp7_ = value;
-	self->priv->_cursor_pos = _tmp7_;
-	g_object_notify ((GObject *) self, "cursor-pos");
-}
-
-
-gint skk_candidate_list_get_size (SkkCandidateList* self) {
+static gint skk_simple_candidate_list_real_get_size (SkkCandidateList* base) {
 	gint result;
+	SkkSimpleCandidateList* self;
 	GeeArrayList* _tmp0_;
 	gint _tmp1_;
 	gint _tmp2_;
-	g_return_val_if_fail (self != NULL, 0);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_candidates;
 	_tmp1_ = gee_collection_get_size ((GeeCollection*) _tmp0_);
 	_tmp2_ = _tmp1_;
@@ -910,49 +1334,54 @@ gint skk_candidate_list_get_size (SkkCandidateList* self) {
 }
 
 
-guint skk_candidate_list_get_page_start (SkkCandidateList* self) {
+static guint skk_simple_candidate_list_real_get_page_start (SkkCandidateList* base) {
 	guint result;
+	SkkSimpleCandidateList* self;
 	gint _tmp0_;
-	g_return_val_if_fail (self != NULL, 0U);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_page_start;
 	result = (guint) _tmp0_;
 	return result;
 }
 
 
-void skk_candidate_list_set_page_start (SkkCandidateList* self, guint value) {
+static void skk_simple_candidate_list_real_set_page_start (SkkCandidateList* base, guint value) {
+	SkkSimpleCandidateList* self;
 	guint _tmp0_;
-	g_return_if_fail (self != NULL);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = value;
 	self->priv->_page_start = (gint) _tmp0_;
 	g_object_notify ((GObject *) self, "page-start");
 }
 
 
-guint skk_candidate_list_get_page_size (SkkCandidateList* self) {
+static guint skk_simple_candidate_list_real_get_page_size (SkkCandidateList* base) {
 	guint result;
+	SkkSimpleCandidateList* self;
 	gint _tmp0_;
-	g_return_val_if_fail (self != NULL, 0U);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_page_size;
 	result = (guint) _tmp0_;
 	return result;
 }
 
 
-void skk_candidate_list_set_page_size (SkkCandidateList* self, guint value) {
+static void skk_simple_candidate_list_real_set_page_size (SkkCandidateList* base, guint value) {
+	SkkSimpleCandidateList* self;
 	guint _tmp0_;
-	g_return_if_fail (self != NULL);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = value;
 	self->priv->_page_size = (gint) _tmp0_;
 	g_object_notify ((GObject *) self, "page-size");
 }
 
 
-gboolean skk_candidate_list_get_page_visible (SkkCandidateList* self) {
+static gboolean skk_simple_candidate_list_real_get_page_visible (SkkCandidateList* base) {
 	gboolean result;
+	SkkSimpleCandidateList* self;
 	gint _tmp0_;
 	gint _tmp1_;
-	g_return_val_if_fail (self != NULL, FALSE);
+	self = (SkkSimpleCandidateList*) base;
 	_tmp0_ = self->priv->_cursor_pos;
 	_tmp1_ = self->priv->_page_start;
 	result = _tmp0_ >= _tmp1_;
@@ -960,49 +1389,41 @@ gboolean skk_candidate_list_get_page_visible (SkkCandidateList* self) {
 }
 
 
-static void skk_candidate_list_class_init (SkkCandidateListClass * klass) {
-	skk_candidate_list_parent_class = g_type_class_peek_parent (klass);
-	g_type_class_add_private (klass, sizeof (SkkCandidateListPrivate));
-	G_OBJECT_CLASS (klass)->get_property = _vala_skk_candidate_list_get_property;
-	G_OBJECT_CLASS (klass)->set_property = _vala_skk_candidate_list_set_property;
-	G_OBJECT_CLASS (klass)->finalize = skk_candidate_list_finalize;
-	/**
-	         * Current cursor position.
-	         */
-	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_CURSOR_POS, g_param_spec_int ("cursor-pos", "cursor-pos", "cursor-pos", G_MININT, G_MAXINT, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
-	/**
-	         * The number of candidate in the candidate list.
-	         */
-	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_SIZE, g_param_spec_int ("size", "size", "size", G_MININT, G_MAXINT, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
-	/**
-	         * Starting index of paging.
-	         */
-	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_PAGE_START, g_param_spec_uint ("page-start", "page-start", "page-start", 0, G_MAXUINT, 0U, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
-	/**
-	         * Page size.
-	         */
-	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_PAGE_SIZE, g_param_spec_uint ("page-size", "page-size", "page-size", 0, G_MAXUINT, 0U, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
-	/**
-	         * Flag to indicate whether page (lookup table) is visible.
-	         */
-	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_CANDIDATE_LIST_PAGE_VISIBLE, g_param_spec_boolean ("page-visible", "page-visible", "page-visible", FALSE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
-	/**
-	         * Signal emitted when candidates are filled and ready for traversal.
-	         */
-	g_signal_new ("populated", SKK_TYPE_CANDIDATE_LIST, G_SIGNAL_RUN_LAST, 0, NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-	/**
-	         * Signal emitted when a candidate is selected.
-	         *
-	         * @param candidate selected candidate
-	         */
-	g_signal_new ("selected", SKK_TYPE_CANDIDATE_LIST, G_SIGNAL_RUN_LAST, 0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT, G_TYPE_NONE, 1, SKK_TYPE_CANDIDATE);
+static void skk_simple_candidate_list_class_init (SkkSimpleCandidateListClass * klass) {
+	skk_simple_candidate_list_parent_class = g_type_class_peek_parent (klass);
+	g_type_class_add_private (klass, sizeof (SkkSimpleCandidateListPrivate));
+	SKK_CANDIDATE_LIST_CLASS (klass)->get = skk_simple_candidate_list_real_get;
+	SKK_CANDIDATE_LIST_CLASS (klass)->clear = skk_simple_candidate_list_real_clear;
+	SKK_CANDIDATE_LIST_CLASS (klass)->add_candidates = skk_simple_candidate_list_real_add_candidates;
+	SKK_CANDIDATE_LIST_CLASS (klass)->add_candidates_end = skk_simple_candidate_list_real_add_candidates_end;
+	SKK_CANDIDATE_LIST_CLASS (klass)->select_at = skk_simple_candidate_list_real_select_at;
+	SKK_CANDIDATE_LIST_CLASS (klass)->select = skk_simple_candidate_list_real_select;
+	SKK_CANDIDATE_LIST_CLASS (klass)->cursor_up = skk_simple_candidate_list_real_cursor_up;
+	SKK_CANDIDATE_LIST_CLASS (klass)->cursor_down = skk_simple_candidate_list_real_cursor_down;
+	SKK_CANDIDATE_LIST_CLASS (klass)->page_up = skk_simple_candidate_list_real_page_up;
+	SKK_CANDIDATE_LIST_CLASS (klass)->page_down = skk_simple_candidate_list_real_page_down;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_cursor_pos = skk_simple_candidate_list_real_get_cursor_pos;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_size = skk_simple_candidate_list_real_get_size;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_page_start = skk_simple_candidate_list_real_get_page_start;
+	SKK_CANDIDATE_LIST_CLASS (klass)->set_page_start = skk_simple_candidate_list_real_set_page_start;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_page_size = skk_simple_candidate_list_real_get_page_size;
+	SKK_CANDIDATE_LIST_CLASS (klass)->set_page_size = skk_simple_candidate_list_real_set_page_size;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_page_visible = skk_simple_candidate_list_real_get_page_visible;
+	G_OBJECT_CLASS (klass)->get_property = _vala_skk_simple_candidate_list_get_property;
+	G_OBJECT_CLASS (klass)->set_property = _vala_skk_simple_candidate_list_set_property;
+	G_OBJECT_CLASS (klass)->finalize = skk_simple_candidate_list_finalize;
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_SIMPLE_CANDIDATE_LIST_CURSOR_POS, "cursor-pos");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_SIMPLE_CANDIDATE_LIST_SIZE, "size");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_SIMPLE_CANDIDATE_LIST_PAGE_START, "page-start");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_SIMPLE_CANDIDATE_LIST_PAGE_SIZE, "page-size");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_SIMPLE_CANDIDATE_LIST_PAGE_VISIBLE, "page-visible");
 }
 
 
-static void skk_candidate_list_instance_init (SkkCandidateList * self) {
+static void skk_simple_candidate_list_instance_init (SkkSimpleCandidateList * self) {
 	GeeArrayList* _tmp0_;
 	GeeHashSet* _tmp1_;
-	self->priv = SKK_CANDIDATE_LIST_GET_PRIVATE (self);
+	self->priv = SKK_SIMPLE_CANDIDATE_LIST_GET_PRIVATE (self);
 	_tmp0_ = gee_array_list_new (SKK_TYPE_CANDIDATE, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL);
 	self->priv->_candidates = _tmp0_;
 	_tmp1_ = gee_hash_set_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, NULL, NULL);
@@ -1010,48 +1431,45 @@ static void skk_candidate_list_instance_init (SkkCandidateList * self) {
 }
 
 
-static void skk_candidate_list_finalize (GObject* obj) {
-	SkkCandidateList * self;
-	self = SKK_CANDIDATE_LIST (obj);
+static void skk_simple_candidate_list_finalize (GObject* obj) {
+	SkkSimpleCandidateList * self;
+	self = SKK_SIMPLE_CANDIDATE_LIST (obj);
 	_g_object_unref0 (self->priv->_candidates);
 	_g_object_unref0 (self->priv->seen);
-	G_OBJECT_CLASS (skk_candidate_list_parent_class)->finalize (obj);
+	G_OBJECT_CLASS (skk_simple_candidate_list_parent_class)->finalize (obj);
 }
 
 
-/**
-     * Object maintaining the current candidates.
-     */
-GType skk_candidate_list_get_type (void) {
-	static volatile gsize skk_candidate_list_type_id__volatile = 0;
-	if (g_once_init_enter (&skk_candidate_list_type_id__volatile)) {
-		static const GTypeInfo g_define_type_info = { sizeof (SkkCandidateListClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_candidate_list_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkCandidateList), 0, (GInstanceInitFunc) skk_candidate_list_instance_init, NULL };
-		GType skk_candidate_list_type_id;
-		skk_candidate_list_type_id = g_type_register_static (G_TYPE_OBJECT, "SkkCandidateList", &g_define_type_info, 0);
-		g_once_init_leave (&skk_candidate_list_type_id__volatile, skk_candidate_list_type_id);
+GType skk_simple_candidate_list_get_type (void) {
+	static volatile gsize skk_simple_candidate_list_type_id__volatile = 0;
+	if (g_once_init_enter (&skk_simple_candidate_list_type_id__volatile)) {
+		static const GTypeInfo g_define_type_info = { sizeof (SkkSimpleCandidateListClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_simple_candidate_list_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkSimpleCandidateList), 0, (GInstanceInitFunc) skk_simple_candidate_list_instance_init, NULL };
+		GType skk_simple_candidate_list_type_id;
+		skk_simple_candidate_list_type_id = g_type_register_static (SKK_TYPE_CANDIDATE_LIST, "SkkSimpleCandidateList", &g_define_type_info, 0);
+		g_once_init_leave (&skk_simple_candidate_list_type_id__volatile, skk_simple_candidate_list_type_id);
 	}
-	return skk_candidate_list_type_id__volatile;
+	return skk_simple_candidate_list_type_id__volatile;
 }
 
 
-static void _vala_skk_candidate_list_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
-	SkkCandidateList * self;
-	self = SKK_CANDIDATE_LIST (object);
+static void _vala_skk_simple_candidate_list_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
+	SkkSimpleCandidateList * self;
+	self = SKK_SIMPLE_CANDIDATE_LIST (object);
 	switch (property_id) {
-		case SKK_CANDIDATE_LIST_CURSOR_POS:
-		g_value_set_int (value, skk_candidate_list_get_cursor_pos (self));
+		case SKK_SIMPLE_CANDIDATE_LIST_CURSOR_POS:
+		g_value_set_int (value, skk_candidate_list_get_cursor_pos ((SkkCandidateList*) self));
 		break;
-		case SKK_CANDIDATE_LIST_SIZE:
-		g_value_set_int (value, skk_candidate_list_get_size (self));
+		case SKK_SIMPLE_CANDIDATE_LIST_SIZE:
+		g_value_set_int (value, skk_candidate_list_get_size ((SkkCandidateList*) self));
 		break;
-		case SKK_CANDIDATE_LIST_PAGE_START:
-		g_value_set_uint (value, skk_candidate_list_get_page_start (self));
+		case SKK_SIMPLE_CANDIDATE_LIST_PAGE_START:
+		g_value_set_uint (value, skk_candidate_list_get_page_start ((SkkCandidateList*) self));
 		break;
-		case SKK_CANDIDATE_LIST_PAGE_SIZE:
-		g_value_set_uint (value, skk_candidate_list_get_page_size (self));
+		case SKK_SIMPLE_CANDIDATE_LIST_PAGE_SIZE:
+		g_value_set_uint (value, skk_candidate_list_get_page_size ((SkkCandidateList*) self));
 		break;
-		case SKK_CANDIDATE_LIST_PAGE_VISIBLE:
-		g_value_set_boolean (value, skk_candidate_list_get_page_visible (self));
+		case SKK_SIMPLE_CANDIDATE_LIST_PAGE_VISIBLE:
+		g_value_set_boolean (value, skk_candidate_list_get_page_visible ((SkkCandidateList*) self));
 		break;
 		default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -1060,18 +1478,481 @@ static void _vala_skk_candidate_list_get_property (GObject * object, guint prope
 }
 
 
-static void _vala_skk_candidate_list_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
-	SkkCandidateList * self;
-	self = SKK_CANDIDATE_LIST (object);
+static void _vala_skk_simple_candidate_list_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
+	SkkSimpleCandidateList * self;
+	self = SKK_SIMPLE_CANDIDATE_LIST (object);
 	switch (property_id) {
-		case SKK_CANDIDATE_LIST_CURSOR_POS:
-		skk_candidate_list_set_cursor_pos (self, g_value_get_int (value));
+		case SKK_SIMPLE_CANDIDATE_LIST_PAGE_START:
+		skk_candidate_list_set_page_start ((SkkCandidateList*) self, g_value_get_uint (value));
 		break;
-		case SKK_CANDIDATE_LIST_PAGE_START:
-		skk_candidate_list_set_page_start (self, g_value_get_uint (value));
+		case SKK_SIMPLE_CANDIDATE_LIST_PAGE_SIZE:
+		skk_candidate_list_set_page_size ((SkkCandidateList*) self, g_value_get_uint (value));
 		break;
-		case SKK_CANDIDATE_LIST_PAGE_SIZE:
-		skk_candidate_list_set_page_size (self, g_value_get_uint (value));
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+
+static void skk_proxy_candidate_list_notify_cursor_pos_cb (SkkProxyCandidateList* self, GObject* s, GParamSpec* p) {
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (s != NULL);
+	g_object_notify ((GObject*) self, "cursor-pos");
+}
+
+
+static void skk_proxy_candidate_list_populated_cb (SkkProxyCandidateList* self) {
+	g_return_if_fail (self != NULL);
+	g_signal_emit_by_name ((SkkCandidateList*) self, "populated");
+}
+
+
+static void skk_proxy_candidate_list_selected_cb (SkkProxyCandidateList* self, SkkCandidate* c) {
+	SkkCandidate* _tmp0_;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (c != NULL);
+	_tmp0_ = c;
+	g_signal_emit_by_name ((SkkCandidateList*) self, "selected", _tmp0_);
+}
+
+
+static SkkCandidate* skk_proxy_candidate_list_real_get (SkkCandidateList* base, gint index) {
+	SkkProxyCandidateList * self;
+	SkkCandidate* result = NULL;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gint _tmp2_;
+	SkkCandidate* _tmp3_ = NULL;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = index;
+	_tmp3_ = skk_candidate_list_get (_tmp1_, _tmp2_);
+	result = _tmp3_;
+	return result;
+}
+
+
+static void skk_proxy_candidate_list_real_clear (SkkCandidateList* base) {
+	SkkProxyCandidateList * self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	skk_candidate_list_clear (_tmp1_);
+}
+
+
+static void skk_proxy_candidate_list_real_add_candidates (SkkCandidateList* base, SkkCandidate** array, int array_length1) {
+	SkkProxyCandidateList * self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	SkkCandidate** _tmp2_;
+	gint _tmp2__length1;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = array;
+	_tmp2__length1 = array_length1;
+	skk_candidate_list_add_candidates (_tmp1_, _tmp2_, _tmp2__length1);
+}
+
+
+static void skk_proxy_candidate_list_real_add_candidates_end (SkkCandidateList* base) {
+	SkkProxyCandidateList * self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	skk_candidate_list_add_candidates_end (_tmp1_);
+}
+
+
+static gboolean skk_proxy_candidate_list_real_select_at (SkkCandidateList* base, guint index_in_page) {
+	SkkProxyCandidateList * self;
+	gboolean result = FALSE;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	guint _tmp2_;
+	gboolean _tmp3_ = FALSE;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = index_in_page;
+	_tmp3_ = skk_candidate_list_select_at (_tmp1_, _tmp2_);
+	result = _tmp3_;
+	return result;
+}
+
+
+static void skk_proxy_candidate_list_real_select (SkkCandidateList* base) {
+	SkkProxyCandidateList * self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	skk_candidate_list_select (_tmp1_);
+}
+
+
+SkkProxyCandidateList* skk_proxy_candidate_list_construct (GType object_type, SkkCandidateList* candidates) {
+	SkkProxyCandidateList * self = NULL;
+	SkkCandidateList* _tmp0_;
+	g_return_val_if_fail (candidates != NULL, NULL);
+	self = (SkkProxyCandidateList*) skk_candidate_list_construct (object_type);
+	_tmp0_ = candidates;
+	skk_proxy_candidate_list_set_candidates (self, _tmp0_);
+	return self;
+}
+
+
+SkkProxyCandidateList* skk_proxy_candidate_list_new (SkkCandidateList* candidates) {
+	return skk_proxy_candidate_list_construct (SKK_TYPE_PROXY_CANDIDATE_LIST, candidates);
+}
+
+
+static gboolean skk_proxy_candidate_list_real_cursor_up (SkkCandidateList* base) {
+	SkkProxyCandidateList * self;
+	gboolean result = FALSE;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gboolean _tmp2_ = FALSE;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_cursor_up (_tmp1_);
+	result = _tmp2_;
+	return result;
+}
+
+
+static gboolean skk_proxy_candidate_list_real_cursor_down (SkkCandidateList* base) {
+	SkkProxyCandidateList * self;
+	gboolean result = FALSE;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gboolean _tmp2_ = FALSE;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_cursor_down (_tmp1_);
+	result = _tmp2_;
+	return result;
+}
+
+
+static gboolean skk_proxy_candidate_list_real_page_up (SkkCandidateList* base) {
+	SkkProxyCandidateList * self;
+	gboolean result = FALSE;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gboolean _tmp2_ = FALSE;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_page_up (_tmp1_);
+	result = _tmp2_;
+	return result;
+}
+
+
+static gboolean skk_proxy_candidate_list_real_page_down (SkkCandidateList* base) {
+	SkkProxyCandidateList * self;
+	gboolean result = FALSE;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gboolean _tmp2_ = FALSE;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_page_down (_tmp1_);
+	result = _tmp2_;
+	return result;
+}
+
+
+SkkCandidateList* skk_proxy_candidate_list_get_candidates (SkkProxyCandidateList* self) {
+	SkkCandidateList* result;
+	SkkCandidateList* _tmp0_;
+	g_return_val_if_fail (self != NULL, NULL);
+	_tmp0_ = self->priv->_candidates;
+	result = _tmp0_;
+	return result;
+}
+
+
+static void _skk_proxy_candidate_list_notify_cursor_pos_cb_g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self) {
+	skk_proxy_candidate_list_notify_cursor_pos_cb (self, _sender, pspec);
+}
+
+
+static void _skk_proxy_candidate_list_populated_cb_skk_candidate_list_populated (SkkCandidateList* _sender, gpointer self) {
+	skk_proxy_candidate_list_populated_cb (self);
+}
+
+
+static void _skk_proxy_candidate_list_selected_cb_skk_candidate_list_selected (SkkCandidateList* _sender, SkkCandidate* candidate, gpointer self) {
+	skk_proxy_candidate_list_selected_cb (self, candidate);
+}
+
+
+void skk_proxy_candidate_list_set_candidates (SkkProxyCandidateList* self, SkkCandidateList* value) {
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp8_;
+	SkkCandidateList* _tmp9_;
+	SkkCandidateList* _tmp10_;
+	SkkCandidateList* _tmp11_;
+	SkkCandidateList* _tmp12_;
+	g_return_if_fail (self != NULL);
+	_tmp0_ = self->priv->_candidates;
+	if (_tmp0_ != NULL) {
+		SkkCandidateList* _tmp1_;
+		guint _tmp2_ = 0U;
+		GQuark _tmp3_ = 0U;
+		SkkCandidateList* _tmp4_;
+		guint _tmp5_ = 0U;
+		SkkCandidateList* _tmp6_;
+		guint _tmp7_ = 0U;
+		_tmp1_ = self->priv->_candidates;
+		g_signal_parse_name ("notify::cursor-pos", G_TYPE_OBJECT, &_tmp2_, &_tmp3_, TRUE);
+		g_signal_handlers_disconnect_matched ((GObject*) _tmp1_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_DETAIL | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp2_, _tmp3_, NULL, (GCallback) _skk_proxy_candidate_list_notify_cursor_pos_cb_g_object_notify, self);
+		_tmp4_ = self->priv->_candidates;
+		g_signal_parse_name ("populated", SKK_TYPE_CANDIDATE_LIST, &_tmp5_, NULL, FALSE);
+		g_signal_handlers_disconnect_matched (_tmp4_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp5_, 0, NULL, (GCallback) _skk_proxy_candidate_list_populated_cb_skk_candidate_list_populated, self);
+		_tmp6_ = self->priv->_candidates;
+		g_signal_parse_name ("selected", SKK_TYPE_CANDIDATE_LIST, &_tmp7_, NULL, FALSE);
+		g_signal_handlers_disconnect_matched (_tmp6_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp7_, 0, NULL, (GCallback) _skk_proxy_candidate_list_selected_cb_skk_candidate_list_selected, self);
+	}
+	_tmp8_ = value;
+	_tmp9_ = _g_object_ref0 (_tmp8_);
+	_g_object_unref0 (self->priv->_candidates);
+	self->priv->_candidates = _tmp9_;
+	_tmp10_ = self->priv->_candidates;
+	g_signal_connect_object ((GObject*) _tmp10_, "notify::cursor-pos", (GCallback) _skk_proxy_candidate_list_notify_cursor_pos_cb_g_object_notify, self, 0);
+	_tmp11_ = self->priv->_candidates;
+	g_signal_connect_object (_tmp11_, "populated", (GCallback) _skk_proxy_candidate_list_populated_cb_skk_candidate_list_populated, self, 0);
+	_tmp12_ = self->priv->_candidates;
+	g_signal_connect_object (_tmp12_, "selected", (GCallback) _skk_proxy_candidate_list_selected_cb_skk_candidate_list_selected, self, 0);
+	g_signal_emit_by_name ((SkkCandidateList*) self, "populated");
+	g_object_notify ((GObject *) self, "candidates");
+}
+
+
+static gint skk_proxy_candidate_list_real_get_cursor_pos (SkkCandidateList* base) {
+	gint result;
+	SkkProxyCandidateList* self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gint _tmp2_;
+	gint _tmp3_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_cursor_pos (_tmp1_);
+	_tmp3_ = _tmp2_;
+	result = _tmp3_;
+	return result;
+}
+
+
+static gint skk_proxy_candidate_list_real_get_size (SkkCandidateList* base) {
+	gint result;
+	SkkProxyCandidateList* self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gint _tmp2_;
+	gint _tmp3_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_size (_tmp1_);
+	_tmp3_ = _tmp2_;
+	result = _tmp3_;
+	return result;
+}
+
+
+static guint skk_proxy_candidate_list_real_get_page_start (SkkCandidateList* base) {
+	guint result;
+	SkkProxyCandidateList* self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	guint _tmp2_;
+	guint _tmp3_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_page_start (_tmp1_);
+	_tmp3_ = _tmp2_;
+	result = _tmp3_;
+	return result;
+}
+
+
+static void skk_proxy_candidate_list_real_set_page_start (SkkCandidateList* base, guint value) {
+	SkkProxyCandidateList* self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	guint _tmp2_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = value;
+	skk_candidate_list_set_page_start (_tmp1_, _tmp2_);
+	g_object_notify ((GObject *) self, "page-start");
+}
+
+
+static guint skk_proxy_candidate_list_real_get_page_size (SkkCandidateList* base) {
+	guint result;
+	SkkProxyCandidateList* self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	guint _tmp2_;
+	guint _tmp3_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_page_size (_tmp1_);
+	_tmp3_ = _tmp2_;
+	result = _tmp3_;
+	return result;
+}
+
+
+static void skk_proxy_candidate_list_real_set_page_size (SkkCandidateList* base, guint value) {
+	SkkProxyCandidateList* self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	guint _tmp2_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = value;
+	skk_candidate_list_set_page_size (_tmp1_, _tmp2_);
+	g_object_notify ((GObject *) self, "page-size");
+}
+
+
+static gboolean skk_proxy_candidate_list_real_get_page_visible (SkkCandidateList* base) {
+	gboolean result;
+	SkkProxyCandidateList* self;
+	SkkCandidateList* _tmp0_;
+	SkkCandidateList* _tmp1_;
+	gboolean _tmp2_;
+	gboolean _tmp3_;
+	self = (SkkProxyCandidateList*) base;
+	_tmp0_ = skk_proxy_candidate_list_get_candidates (self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = skk_candidate_list_get_page_visible (_tmp1_);
+	_tmp3_ = _tmp2_;
+	result = _tmp3_;
+	return result;
+}
+
+
+static void skk_proxy_candidate_list_class_init (SkkProxyCandidateListClass * klass) {
+	skk_proxy_candidate_list_parent_class = g_type_class_peek_parent (klass);
+	g_type_class_add_private (klass, sizeof (SkkProxyCandidateListPrivate));
+	SKK_CANDIDATE_LIST_CLASS (klass)->get = skk_proxy_candidate_list_real_get;
+	SKK_CANDIDATE_LIST_CLASS (klass)->clear = skk_proxy_candidate_list_real_clear;
+	SKK_CANDIDATE_LIST_CLASS (klass)->add_candidates = skk_proxy_candidate_list_real_add_candidates;
+	SKK_CANDIDATE_LIST_CLASS (klass)->add_candidates_end = skk_proxy_candidate_list_real_add_candidates_end;
+	SKK_CANDIDATE_LIST_CLASS (klass)->select_at = skk_proxy_candidate_list_real_select_at;
+	SKK_CANDIDATE_LIST_CLASS (klass)->select = skk_proxy_candidate_list_real_select;
+	SKK_CANDIDATE_LIST_CLASS (klass)->cursor_up = skk_proxy_candidate_list_real_cursor_up;
+	SKK_CANDIDATE_LIST_CLASS (klass)->cursor_down = skk_proxy_candidate_list_real_cursor_down;
+	SKK_CANDIDATE_LIST_CLASS (klass)->page_up = skk_proxy_candidate_list_real_page_up;
+	SKK_CANDIDATE_LIST_CLASS (klass)->page_down = skk_proxy_candidate_list_real_page_down;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_cursor_pos = skk_proxy_candidate_list_real_get_cursor_pos;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_size = skk_proxy_candidate_list_real_get_size;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_page_start = skk_proxy_candidate_list_real_get_page_start;
+	SKK_CANDIDATE_LIST_CLASS (klass)->set_page_start = skk_proxy_candidate_list_real_set_page_start;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_page_size = skk_proxy_candidate_list_real_get_page_size;
+	SKK_CANDIDATE_LIST_CLASS (klass)->set_page_size = skk_proxy_candidate_list_real_set_page_size;
+	SKK_CANDIDATE_LIST_CLASS (klass)->get_page_visible = skk_proxy_candidate_list_real_get_page_visible;
+	G_OBJECT_CLASS (klass)->get_property = _vala_skk_proxy_candidate_list_get_property;
+	G_OBJECT_CLASS (klass)->set_property = _vala_skk_proxy_candidate_list_set_property;
+	G_OBJECT_CLASS (klass)->finalize = skk_proxy_candidate_list_finalize;
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_PROXY_CANDIDATE_LIST_CANDIDATES, g_param_spec_object ("candidates", "candidates", "candidates", SKK_TYPE_CANDIDATE_LIST, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_PROXY_CANDIDATE_LIST_CURSOR_POS, "cursor-pos");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_PROXY_CANDIDATE_LIST_SIZE, "size");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_PROXY_CANDIDATE_LIST_PAGE_START, "page-start");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_PROXY_CANDIDATE_LIST_PAGE_SIZE, "page-size");
+	g_object_class_override_property (G_OBJECT_CLASS (klass), SKK_PROXY_CANDIDATE_LIST_PAGE_VISIBLE, "page-visible");
+}
+
+
+static void skk_proxy_candidate_list_instance_init (SkkProxyCandidateList * self) {
+	self->priv = SKK_PROXY_CANDIDATE_LIST_GET_PRIVATE (self);
+}
+
+
+static void skk_proxy_candidate_list_finalize (GObject* obj) {
+	SkkProxyCandidateList * self;
+	self = SKK_PROXY_CANDIDATE_LIST (obj);
+	_g_object_unref0 (self->priv->_candidates);
+	G_OBJECT_CLASS (skk_proxy_candidate_list_parent_class)->finalize (obj);
+}
+
+
+GType skk_proxy_candidate_list_get_type (void) {
+	static volatile gsize skk_proxy_candidate_list_type_id__volatile = 0;
+	if (g_once_init_enter (&skk_proxy_candidate_list_type_id__volatile)) {
+		static const GTypeInfo g_define_type_info = { sizeof (SkkProxyCandidateListClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_proxy_candidate_list_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkProxyCandidateList), 0, (GInstanceInitFunc) skk_proxy_candidate_list_instance_init, NULL };
+		GType skk_proxy_candidate_list_type_id;
+		skk_proxy_candidate_list_type_id = g_type_register_static (SKK_TYPE_CANDIDATE_LIST, "SkkProxyCandidateList", &g_define_type_info, 0);
+		g_once_init_leave (&skk_proxy_candidate_list_type_id__volatile, skk_proxy_candidate_list_type_id);
+	}
+	return skk_proxy_candidate_list_type_id__volatile;
+}
+
+
+static void _vala_skk_proxy_candidate_list_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
+	SkkProxyCandidateList * self;
+	self = SKK_PROXY_CANDIDATE_LIST (object);
+	switch (property_id) {
+		case SKK_PROXY_CANDIDATE_LIST_CANDIDATES:
+		g_value_set_object (value, skk_proxy_candidate_list_get_candidates (self));
+		break;
+		case SKK_PROXY_CANDIDATE_LIST_CURSOR_POS:
+		g_value_set_int (value, skk_candidate_list_get_cursor_pos ((SkkCandidateList*) self));
+		break;
+		case SKK_PROXY_CANDIDATE_LIST_SIZE:
+		g_value_set_int (value, skk_candidate_list_get_size ((SkkCandidateList*) self));
+		break;
+		case SKK_PROXY_CANDIDATE_LIST_PAGE_START:
+		g_value_set_uint (value, skk_candidate_list_get_page_start ((SkkCandidateList*) self));
+		break;
+		case SKK_PROXY_CANDIDATE_LIST_PAGE_SIZE:
+		g_value_set_uint (value, skk_candidate_list_get_page_size ((SkkCandidateList*) self));
+		break;
+		case SKK_PROXY_CANDIDATE_LIST_PAGE_VISIBLE:
+		g_value_set_boolean (value, skk_candidate_list_get_page_visible ((SkkCandidateList*) self));
+		break;
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+
+static void _vala_skk_proxy_candidate_list_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
+	SkkProxyCandidateList * self;
+	self = SKK_PROXY_CANDIDATE_LIST (object);
+	switch (property_id) {
+		case SKK_PROXY_CANDIDATE_LIST_CANDIDATES:
+		skk_proxy_candidate_list_set_candidates (self, g_value_get_object (value));
+		break;
+		case SKK_PROXY_CANDIDATE_LIST_PAGE_START:
+		skk_candidate_list_set_page_start ((SkkCandidateList*) self, g_value_get_uint (value));
+		break;
+		case SKK_PROXY_CANDIDATE_LIST_PAGE_SIZE:
+		skk_candidate_list_set_page_size ((SkkCandidateList*) self, g_value_get_uint (value));
 		break;
 		default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);

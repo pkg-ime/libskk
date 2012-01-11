@@ -150,6 +150,16 @@ typedef struct _SkkKeymapMapFilePrivate SkkKeymapMapFilePrivate;
 typedef struct _SkkKeymap SkkKeymap;
 typedef struct _SkkKeymapClass SkkKeymapClass;
 
+#define SKK_TYPE_SIMPLE_CANDIDATE_LIST (skk_simple_candidate_list_get_type ())
+#define SKK_SIMPLE_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateList))
+#define SKK_SIMPLE_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateListClass))
+#define SKK_IS_SIMPLE_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST))
+#define SKK_IS_SIMPLE_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_SIMPLE_CANDIDATE_LIST))
+#define SKK_SIMPLE_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateListClass))
+
+typedef struct _SkkSimpleCandidateList SkkSimpleCandidateList;
+typedef struct _SkkSimpleCandidateListClass SkkSimpleCandidateListClass;
+
 #define SKK_TYPE_CANDIDATE (skk_candidate_get_type ())
 #define SKK_CANDIDATE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_CANDIDATE, SkkCandidate))
 #define SKK_CANDIDATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_CANDIDATE, SkkCandidateClass))
@@ -534,14 +544,15 @@ SkkKeyEvent* skk_state_where_is (SkkState* self, const gchar* command);
 SkkKeyEvent* skk_keymap_where_is (SkkKeymap* self, const gchar* command);
 SkkState* skk_state_new (GeeArrayList* dictionaries);
 SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries);
-SkkCandidateList* skk_candidate_list_new (guint page_start, guint page_size);
-SkkCandidateList* skk_candidate_list_construct (GType object_type, guint page_start, guint page_size);
+SkkSimpleCandidateList* skk_simple_candidate_list_new (guint page_start, guint page_size);
+SkkSimpleCandidateList* skk_simple_candidate_list_construct (GType object_type, guint page_start, guint page_size);
+GType skk_simple_candidate_list_get_type (void) G_GNUC_CONST;
 GType skk_candidate_get_type (void) G_GNUC_CONST;
 static void skk_state_candidate_selected (SkkState* self, SkkCandidate* c);
 static void _skk_state_candidate_selected_skk_candidate_list_selected (SkkCandidateList* _sender, SkkCandidate* candidate, gpointer self);
 SkkRomKanaConverter* skk_rom_kana_converter_new (void);
 SkkRomKanaConverter* skk_rom_kana_converter_construct (GType object_type);
-static gchar** _vala_array_dup2 (gchar** self, int length);
+static gchar** _vala_array_dup3 (gchar** self, int length);
 GQuark skk_rule_parse_error_quark (void);
 SkkRule* skk_rule_new (const gchar* name, GError** error);
 SkkRule* skk_rule_construct (GType object_type, const gchar* name, GError** error);
@@ -579,7 +590,6 @@ static gchar* skk_state_expand_numeric_references (SkkState* self, const gchar* 
 GType skk_numeric_conversion_type_get_type (void) G_GNUC_CONST;
 gchar* skk_util_get_numeric (gint numeric, SkkNumericConversionType type);
 void skk_state_lookup (SkkState* self, const gchar* midasi, gboolean okuri);
-void skk_candidate_list_add_candidates_start (SkkCandidateList* self);
 static void skk_state_lookup_internal (SkkState* self, const gchar* midasi, gint* numerics, int numerics_length1, gboolean okuri);
 void skk_candidate_list_add_candidates_end (SkkCandidateList* self);
 SkkCandidate** skk_dict_lookup (SkkDict* self, const gchar* midasi, gboolean okuri, int* result_length1);
@@ -698,7 +708,7 @@ gchar* skk_util_get_okurigana_prefix (const gchar* okurigana);
 gchar* skk_util_get_hiragana (const gchar* kana);
 gint skk_candidate_list_get_size (SkkCandidateList* self);
 gboolean skk_candidate_list_next (SkkCandidateList* self);
-void skk_candidate_list_select (SkkCandidateList* self, gint index);
+void skk_candidate_list_select (SkkCandidateList* self);
 static gchar* skk_select_state_handler_real_get_preedit (SkkStateHandler* base, SkkState* state, guint* underline_offset, guint* underline_nchars);
 SkkSelectStateHandler* skk_select_state_handler_new (void);
 SkkSelectStateHandler* skk_select_state_handler_construct (GType object_type);
@@ -785,7 +795,7 @@ static void _skk_state_candidate_selected_skk_candidate_list_selected (SkkCandid
 }
 
 
-static gchar** _vala_array_dup2 (gchar** self, int length) {
+static gchar** _vala_array_dup3 (gchar** self, int length) {
 	gchar** result;
 	int i;
 	result = g_new0 (gchar*, length + 1);
@@ -802,7 +812,7 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 	SkkState * self = NULL;
 	GeeArrayList* _tmp0_;
 	GeeArrayList* _tmp1_;
-	SkkCandidateList* _tmp2_;
+	SkkSimpleCandidateList* _tmp2_;
 	SkkCandidateList* _tmp3_;
 	SkkRomKanaConverter* _tmp4_;
 	SkkRomKanaConverter* _tmp5_;
@@ -815,9 +825,9 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 	_tmp1_ = _g_object_ref0 (_tmp0_);
 	_g_object_unref0 (self->dictionaries);
 	self->dictionaries = _tmp1_;
-	_tmp2_ = skk_candidate_list_new ((guint) 4, (guint) 7);
+	_tmp2_ = skk_simple_candidate_list_new ((guint) 4, (guint) 7);
 	_g_object_unref0 (self->candidates);
-	self->candidates = _tmp2_;
+	self->candidates = (SkkCandidateList*) _tmp2_;
 	_tmp3_ = self->candidates;
 	g_signal_connect_object (_tmp3_, "selected", (GCallback) _skk_state_candidate_selected_skk_candidate_list_selected, self, 0);
 	_tmp4_ = skk_rom_kana_converter_new ();
@@ -826,7 +836,7 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 	_tmp5_ = skk_rom_kana_converter_new ();
 	_g_object_unref0 (self->okuri_rom_kana_converter);
 	self->okuri_rom_kana_converter = _tmp5_;
-	_tmp6_ = (SKK_AUTO_START_HENKAN_KEYWORDS != NULL) ? _vala_array_dup2 (SKK_AUTO_START_HENKAN_KEYWORDS, G_N_ELEMENTS (SKK_AUTO_START_HENKAN_KEYWORDS)) : ((gpointer) SKK_AUTO_START_HENKAN_KEYWORDS);
+	_tmp6_ = (SKK_AUTO_START_HENKAN_KEYWORDS != NULL) ? _vala_array_dup3 (SKK_AUTO_START_HENKAN_KEYWORDS, G_N_ELEMENTS (SKK_AUTO_START_HENKAN_KEYWORDS)) : ((gpointer) SKK_AUTO_START_HENKAN_KEYWORDS);
 	_tmp6__length1 = G_N_ELEMENTS (SKK_AUTO_START_HENKAN_KEYWORDS);
 	self->auto_start_henkan_keywords = (_vala_array_free (self->auto_start_henkan_keywords, self->auto_start_henkan_keywords_length1, (GDestroyNotify) g_free), NULL);
 	self->auto_start_henkan_keywords = _tmp6_;
@@ -1572,52 +1582,49 @@ static gchar* skk_state_expand_numeric_references (SkkState* self, const gchar* 
 
 void skk_state_lookup (SkkState* self, const gchar* midasi, gboolean okuri) {
 	SkkCandidateList* _tmp0_;
-	SkkCandidateList* _tmp1_;
-	gint* _tmp2_ = NULL;
+	gint* _tmp1_ = NULL;
 	gint* numerics;
 	gint numerics_length1;
 	gint _numerics_size_;
-	const gchar* _tmp3_;
-	gint* _tmp4_;
-	gint _tmp4__length1;
-	gboolean _tmp5_;
-	const gchar* _tmp6_;
-	gint* _tmp7_ = NULL;
-	gint _tmp8_ = 0;
-	gchar* _tmp9_ = NULL;
+	const gchar* _tmp2_;
+	gint* _tmp3_;
+	gint _tmp3__length1;
+	gboolean _tmp4_;
+	const gchar* _tmp5_;
+	gint* _tmp6_ = NULL;
+	gint _tmp7_ = 0;
+	gchar* _tmp8_ = NULL;
 	gchar* numeric_midasi;
-	gint* _tmp10_;
-	gint _tmp10__length1;
-	gboolean _tmp11_;
-	SkkCandidateList* _tmp12_;
+	gint* _tmp9_;
+	gint _tmp9__length1;
+	gboolean _tmp10_;
+	SkkCandidateList* _tmp11_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (midasi != NULL);
 	_tmp0_ = self->candidates;
 	skk_candidate_list_clear (_tmp0_);
-	_tmp1_ = self->candidates;
-	skk_candidate_list_add_candidates_start (_tmp1_);
-	_tmp2_ = g_new0 (gint, 0);
-	numerics = _tmp2_;
+	_tmp1_ = g_new0 (gint, 0);
+	numerics = _tmp1_;
 	numerics_length1 = 0;
 	_numerics_size_ = numerics_length1;
-	_tmp3_ = midasi;
-	_tmp4_ = numerics;
-	_tmp4__length1 = numerics_length1;
-	_tmp5_ = okuri;
-	skk_state_lookup_internal (self, _tmp3_, _tmp4_, _tmp4__length1, _tmp5_);
-	_tmp6_ = midasi;
-	_tmp9_ = skk_state_extract_numerics (self, _tmp6_, &_tmp7_, &_tmp8_);
+	_tmp2_ = midasi;
+	_tmp3_ = numerics;
+	_tmp3__length1 = numerics_length1;
+	_tmp4_ = okuri;
+	skk_state_lookup_internal (self, _tmp2_, _tmp3_, _tmp3__length1, _tmp4_);
+	_tmp5_ = midasi;
+	_tmp8_ = skk_state_extract_numerics (self, _tmp5_, &_tmp6_, &_tmp7_);
 	numerics = (g_free (numerics), NULL);
-	numerics = _tmp7_;
-	numerics_length1 = _tmp8_;
+	numerics = _tmp6_;
+	numerics_length1 = _tmp7_;
 	_numerics_size_ = numerics_length1;
-	numeric_midasi = _tmp9_;
-	_tmp10_ = numerics;
-	_tmp10__length1 = numerics_length1;
-	_tmp11_ = okuri;
-	skk_state_lookup_internal (self, numeric_midasi, _tmp10_, _tmp10__length1, _tmp11_);
-	_tmp12_ = self->candidates;
-	skk_candidate_list_add_candidates_end (_tmp12_);
+	numeric_midasi = _tmp8_;
+	_tmp9_ = numerics;
+	_tmp9__length1 = numerics_length1;
+	_tmp10_ = okuri;
+	skk_state_lookup_internal (self, numeric_midasi, _tmp9_, _tmp9__length1, _tmp10_);
+	_tmp11_ = self->candidates;
+	skk_candidate_list_add_candidates_end (_tmp11_);
 	_g_free0 (numeric_midasi);
 	numerics = (g_free (numerics), NULL);
 }
@@ -3533,7 +3540,7 @@ static gboolean skk_kuten_state_handler_real_process_key_event (SkkStateHandler*
 					_tmp28_ = euc;
 					_tmp29_ = e;
 					_tmp30_ = _tmp29_->message;
-					g_warning ("state.vala:598: can't decode %s in EUC-JP: %s", _tmp28_, _tmp30_);
+					g_warning ("state.vala:597: can't decode %s in EUC-JP: %s", _tmp28_, _tmp30_);
 					_g_error_free0 (e);
 				}
 				__finally31:
@@ -4016,12 +4023,12 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 	gchar* _tmp2_ = NULL;
 	gchar* command;
 	const gchar* _tmp3_;
-	const gchar* _tmp36_;
-	gboolean _tmp240_ = FALSE;
-	SkkKeyEvent* _tmp241_;
-	SkkModifierType _tmp242_;
-	SkkModifierType _tmp243_;
-	gboolean _tmp248_;
+	const gchar* _tmp33_;
+	gboolean _tmp237_ = FALSE;
+	SkkKeyEvent* _tmp238_;
+	SkkModifierType _tmp239_;
+	SkkModifierType _tmp240_;
+	gboolean _tmp245_;
 	self = (SkkStartStateHandler*) base;
 	g_return_val_if_fail (state != NULL, FALSE);
 	g_return_val_if_fail (key != NULL, FALSE);
@@ -4073,9 +4080,6 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 					SkkState* _tmp30_;
 					SkkRomKanaConverter* _tmp31_;
 					SkkState* _tmp32_;
-					SkkEntry _tmp33_;
-					gconstpointer _tmp34_;
-					SkkState* _tmp35_;
 					_tmp8_ = state;
 					_tmp9_ = _tmp8_->rom_kana_converter;
 					skk_rom_kana_converter_output_nn_if_any (_tmp9_);
@@ -4117,11 +4121,7 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 					_tmp31_ = _tmp30_->rom_kana_converter;
 					skk_rom_kana_converter_reset (_tmp31_);
 					_tmp32_ = state;
-					_tmp33_ = entry;
-					_tmp34_ = _tmp33_.value;
-					skk_state_set_input_mode (_tmp32_, GPOINTER_TO_INT (_tmp34_));
-					_tmp35_ = state;
-					_tmp35_->handler_type = SKK_TYPE_NONE_STATE_HANDLER;
+					_tmp32_->handler_type = SKK_TYPE_NONE_STATE_HANDLER;
 					result = TRUE;
 					_g_free0 (command);
 					return result;
@@ -4129,297 +4129,297 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 			}
 		}
 	}
-	_tmp36_ = command;
-	if (g_strcmp0 (_tmp36_, "next-candidate") == 0) {
-		SkkState* _tmp37_;
-		SkkRomKanaConverter* _tmp38_;
-		const gchar* _tmp39_;
-		const gchar* _tmp40_;
-		gint _tmp41_;
-		gint _tmp42_;
-		SkkState* _tmp54_;
-		_tmp37_ = state;
-		_tmp38_ = _tmp37_->rom_kana_converter;
-		_tmp39_ = skk_rom_kana_converter_get_output (_tmp38_);
-		_tmp40_ = _tmp39_;
-		_tmp41_ = strlen (_tmp40_);
-		_tmp42_ = _tmp41_;
-		if (_tmp42_ == 0) {
-			SkkState* _tmp43_;
-			SkkUnicodeString* _tmp44_;
-			SkkState* _tmp53_;
-			_tmp43_ = state;
-			_tmp44_ = _tmp43_->surrounding_text;
-			if (_tmp44_ != NULL) {
-				SkkState* _tmp45_;
-				GString* _tmp46_;
-				SkkState* _tmp47_;
-				SkkUnicodeString* _tmp48_;
-				SkkState* _tmp49_;
-				guint _tmp50_;
-				gchar* _tmp51_ = NULL;
-				gchar* _tmp52_;
-				_tmp45_ = state;
-				_tmp46_ = _tmp45_->output;
-				_tmp47_ = state;
-				_tmp48_ = _tmp47_->surrounding_text;
-				_tmp49_ = state;
-				_tmp50_ = _tmp49_->surrounding_end;
-				_tmp51_ = skk_unicode_string_substring (_tmp48_, (glong) _tmp50_, (glong) (-1));
-				_tmp52_ = _tmp51_;
-				g_string_append (_tmp46_, _tmp52_);
-				_g_free0 (_tmp52_);
+	_tmp33_ = command;
+	if (g_strcmp0 (_tmp33_, "next-candidate") == 0) {
+		SkkState* _tmp34_;
+		SkkRomKanaConverter* _tmp35_;
+		const gchar* _tmp36_;
+		const gchar* _tmp37_;
+		gint _tmp38_;
+		gint _tmp39_;
+		SkkState* _tmp51_;
+		_tmp34_ = state;
+		_tmp35_ = _tmp34_->rom_kana_converter;
+		_tmp36_ = skk_rom_kana_converter_get_output (_tmp35_);
+		_tmp37_ = _tmp36_;
+		_tmp38_ = strlen (_tmp37_);
+		_tmp39_ = _tmp38_;
+		if (_tmp39_ == 0) {
+			SkkState* _tmp40_;
+			SkkUnicodeString* _tmp41_;
+			SkkState* _tmp50_;
+			_tmp40_ = state;
+			_tmp41_ = _tmp40_->surrounding_text;
+			if (_tmp41_ != NULL) {
+				SkkState* _tmp42_;
+				GString* _tmp43_;
+				SkkState* _tmp44_;
+				SkkUnicodeString* _tmp45_;
+				SkkState* _tmp46_;
+				guint _tmp47_;
+				gchar* _tmp48_ = NULL;
+				gchar* _tmp49_;
+				_tmp42_ = state;
+				_tmp43_ = _tmp42_->output;
+				_tmp44_ = state;
+				_tmp45_ = _tmp44_->surrounding_text;
+				_tmp46_ = state;
+				_tmp47_ = _tmp46_->surrounding_end;
+				_tmp48_ = skk_unicode_string_substring (_tmp45_, (glong) _tmp47_, (glong) (-1));
+				_tmp49_ = _tmp48_;
+				g_string_append (_tmp43_, _tmp49_);
+				_g_free0 (_tmp49_);
 			}
-			_tmp53_ = state;
-			skk_state_reset (_tmp53_);
+			_tmp50_ = state;
+			skk_state_reset (_tmp50_);
 			result = TRUE;
 			_g_free0 (command);
 			return result;
 		}
-		_tmp54_ = state;
-		_tmp54_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
+		_tmp51_ = state;
+		_tmp51_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
 		result = FALSE;
 		_g_free0 (command);
 		return result;
 	} else {
-		const gchar* _tmp55_;
-		_tmp55_ = command;
-		if (g_strcmp0 (_tmp55_, "commit") == 0) {
-			SkkState* _tmp56_;
-			GString* _tmp57_;
-			SkkState* _tmp58_;
-			SkkRomKanaConverter* _tmp59_;
-			const gchar* _tmp60_;
-			const gchar* _tmp61_;
-			SkkState* _tmp62_;
-			SkkUnicodeString* _tmp63_;
-			SkkState* _tmp72_;
-			_tmp56_ = state;
-			_tmp57_ = _tmp56_->output;
-			_tmp58_ = state;
-			_tmp59_ = _tmp58_->rom_kana_converter;
-			_tmp60_ = skk_rom_kana_converter_get_output (_tmp59_);
-			_tmp61_ = _tmp60_;
-			g_string_append (_tmp57_, _tmp61_);
-			_tmp62_ = state;
-			_tmp63_ = _tmp62_->surrounding_text;
-			if (_tmp63_ != NULL) {
-				SkkState* _tmp64_;
-				GString* _tmp65_;
-				SkkState* _tmp66_;
-				SkkUnicodeString* _tmp67_;
-				SkkState* _tmp68_;
-				guint _tmp69_;
-				gchar* _tmp70_ = NULL;
-				gchar* _tmp71_;
-				_tmp64_ = state;
-				_tmp65_ = _tmp64_->output;
-				_tmp66_ = state;
-				_tmp67_ = _tmp66_->surrounding_text;
-				_tmp68_ = state;
-				_tmp69_ = _tmp68_->surrounding_end;
-				_tmp70_ = skk_unicode_string_substring (_tmp67_, (glong) _tmp69_, (glong) (-1));
-				_tmp71_ = _tmp70_;
-				g_string_append (_tmp65_, _tmp71_);
-				_g_free0 (_tmp71_);
+		const gchar* _tmp52_;
+		_tmp52_ = command;
+		if (g_strcmp0 (_tmp52_, "commit") == 0) {
+			SkkState* _tmp53_;
+			GString* _tmp54_;
+			SkkState* _tmp55_;
+			SkkRomKanaConverter* _tmp56_;
+			const gchar* _tmp57_;
+			const gchar* _tmp58_;
+			SkkState* _tmp59_;
+			SkkUnicodeString* _tmp60_;
+			SkkState* _tmp69_;
+			_tmp53_ = state;
+			_tmp54_ = _tmp53_->output;
+			_tmp55_ = state;
+			_tmp56_ = _tmp55_->rom_kana_converter;
+			_tmp57_ = skk_rom_kana_converter_get_output (_tmp56_);
+			_tmp58_ = _tmp57_;
+			g_string_append (_tmp54_, _tmp58_);
+			_tmp59_ = state;
+			_tmp60_ = _tmp59_->surrounding_text;
+			if (_tmp60_ != NULL) {
+				SkkState* _tmp61_;
+				GString* _tmp62_;
+				SkkState* _tmp63_;
+				SkkUnicodeString* _tmp64_;
+				SkkState* _tmp65_;
+				guint _tmp66_;
+				gchar* _tmp67_ = NULL;
+				gchar* _tmp68_;
+				_tmp61_ = state;
+				_tmp62_ = _tmp61_->output;
+				_tmp63_ = state;
+				_tmp64_ = _tmp63_->surrounding_text;
+				_tmp65_ = state;
+				_tmp66_ = _tmp65_->surrounding_end;
+				_tmp67_ = skk_unicode_string_substring (_tmp64_, (glong) _tmp66_, (glong) (-1));
+				_tmp68_ = _tmp67_;
+				g_string_append (_tmp62_, _tmp68_);
+				_g_free0 (_tmp68_);
 			}
-			_tmp72_ = state;
-			skk_state_reset (_tmp72_);
+			_tmp69_ = state;
+			skk_state_reset (_tmp69_);
 			result = TRUE;
 			_g_free0 (command);
 			return result;
 		} else {
-			const gchar* _tmp73_;
-			_tmp73_ = command;
-			if (g_strcmp0 (_tmp73_, "commit-unhandled") == 0) {
-				SkkState* _tmp74_;
-				GString* _tmp75_;
-				SkkState* _tmp76_;
-				SkkRomKanaConverter* _tmp77_;
-				const gchar* _tmp78_;
-				const gchar* _tmp79_;
-				SkkState* _tmp80_;
-				SkkUnicodeString* _tmp81_;
-				SkkState* _tmp90_;
-				SkkState* _tmp91_;
-				gboolean _tmp92_;
-				_tmp74_ = state;
-				_tmp75_ = _tmp74_->output;
-				_tmp76_ = state;
-				_tmp77_ = _tmp76_->rom_kana_converter;
-				_tmp78_ = skk_rom_kana_converter_get_output (_tmp77_);
-				_tmp79_ = _tmp78_;
-				g_string_append (_tmp75_, _tmp79_);
-				_tmp80_ = state;
-				_tmp81_ = _tmp80_->surrounding_text;
-				if (_tmp81_ != NULL) {
-					SkkState* _tmp82_;
-					GString* _tmp83_;
-					SkkState* _tmp84_;
-					SkkUnicodeString* _tmp85_;
-					SkkState* _tmp86_;
-					guint _tmp87_;
-					gchar* _tmp88_ = NULL;
-					gchar* _tmp89_;
-					_tmp82_ = state;
-					_tmp83_ = _tmp82_->output;
-					_tmp84_ = state;
-					_tmp85_ = _tmp84_->surrounding_text;
-					_tmp86_ = state;
-					_tmp87_ = _tmp86_->surrounding_end;
-					_tmp88_ = skk_unicode_string_substring (_tmp85_, (glong) _tmp87_, (glong) (-1));
-					_tmp89_ = _tmp88_;
-					g_string_append (_tmp83_, _tmp89_);
-					_g_free0 (_tmp89_);
+			const gchar* _tmp70_;
+			_tmp70_ = command;
+			if (g_strcmp0 (_tmp70_, "commit-unhandled") == 0) {
+				SkkState* _tmp71_;
+				GString* _tmp72_;
+				SkkState* _tmp73_;
+				SkkRomKanaConverter* _tmp74_;
+				const gchar* _tmp75_;
+				const gchar* _tmp76_;
+				SkkState* _tmp77_;
+				SkkUnicodeString* _tmp78_;
+				SkkState* _tmp87_;
+				SkkState* _tmp88_;
+				gboolean _tmp89_;
+				_tmp71_ = state;
+				_tmp72_ = _tmp71_->output;
+				_tmp73_ = state;
+				_tmp74_ = _tmp73_->rom_kana_converter;
+				_tmp75_ = skk_rom_kana_converter_get_output (_tmp74_);
+				_tmp76_ = _tmp75_;
+				g_string_append (_tmp72_, _tmp76_);
+				_tmp77_ = state;
+				_tmp78_ = _tmp77_->surrounding_text;
+				if (_tmp78_ != NULL) {
+					SkkState* _tmp79_;
+					GString* _tmp80_;
+					SkkState* _tmp81_;
+					SkkUnicodeString* _tmp82_;
+					SkkState* _tmp83_;
+					guint _tmp84_;
+					gchar* _tmp85_ = NULL;
+					gchar* _tmp86_;
+					_tmp79_ = state;
+					_tmp80_ = _tmp79_->output;
+					_tmp81_ = state;
+					_tmp82_ = _tmp81_->surrounding_text;
+					_tmp83_ = state;
+					_tmp84_ = _tmp83_->surrounding_end;
+					_tmp85_ = skk_unicode_string_substring (_tmp82_, (glong) _tmp84_, (glong) (-1));
+					_tmp86_ = _tmp85_;
+					g_string_append (_tmp80_, _tmp86_);
+					_g_free0 (_tmp86_);
 				}
-				_tmp90_ = state;
-				skk_state_reset (_tmp90_);
-				_tmp91_ = state;
-				_tmp92_ = _tmp91_->egg_like_newline;
-				result = _tmp92_;
+				_tmp87_ = state;
+				skk_state_reset (_tmp87_);
+				_tmp88_ = state;
+				_tmp89_ = _tmp88_->egg_like_newline;
+				result = _tmp89_;
 				_g_free0 (command);
 				return result;
 			} else {
-				const gchar* _tmp93_;
-				_tmp93_ = command;
-				if (g_strcmp0 (_tmp93_, "delete") == 0) {
-					SkkState* _tmp94_;
-					SkkRomKanaConverter* _tmp95_;
-					gboolean _tmp96_ = FALSE;
-					SkkState* _tmp120_;
-					_tmp94_ = state;
-					_tmp95_ = _tmp94_->okuri_rom_kana_converter;
-					_tmp96_ = skk_rom_kana_converter_delete (_tmp95_);
-					if (_tmp96_) {
-						SkkState* _tmp97_;
-						SkkRomKanaConverter* _tmp98_;
-						const gchar* _tmp99_;
-						const gchar* _tmp100_;
-						gint _tmp101_;
-						gint _tmp102_;
-						_tmp97_ = state;
-						_tmp98_ = _tmp97_->okuri_rom_kana_converter;
-						_tmp99_ = skk_rom_kana_converter_get_preedit (_tmp98_);
-						_tmp100_ = _tmp99_;
-						_tmp101_ = strlen (_tmp100_);
-						_tmp102_ = _tmp101_;
-						if (_tmp102_ == 0) {
-							SkkState* _tmp103_;
-							_tmp103_ = state;
-							_tmp103_->okuri = FALSE;
+				const gchar* _tmp90_;
+				_tmp90_ = command;
+				if (g_strcmp0 (_tmp90_, "delete") == 0) {
+					SkkState* _tmp91_;
+					SkkRomKanaConverter* _tmp92_;
+					gboolean _tmp93_ = FALSE;
+					SkkState* _tmp117_;
+					_tmp91_ = state;
+					_tmp92_ = _tmp91_->okuri_rom_kana_converter;
+					_tmp93_ = skk_rom_kana_converter_delete (_tmp92_);
+					if (_tmp93_) {
+						SkkState* _tmp94_;
+						SkkRomKanaConverter* _tmp95_;
+						const gchar* _tmp96_;
+						const gchar* _tmp97_;
+						gint _tmp98_;
+						gint _tmp99_;
+						_tmp94_ = state;
+						_tmp95_ = _tmp94_->okuri_rom_kana_converter;
+						_tmp96_ = skk_rom_kana_converter_get_preedit (_tmp95_);
+						_tmp97_ = _tmp96_;
+						_tmp98_ = strlen (_tmp97_);
+						_tmp99_ = _tmp98_;
+						if (_tmp99_ == 0) {
+							SkkState* _tmp100_;
+							_tmp100_ = state;
+							_tmp100_->okuri = FALSE;
 						}
 						result = TRUE;
 						_g_free0 (command);
 						return result;
 					} else {
-						SkkState* _tmp104_;
-						SkkRomKanaConverter* _tmp105_;
-						gboolean _tmp106_ = FALSE;
-						_tmp104_ = state;
-						_tmp105_ = _tmp104_->rom_kana_converter;
-						_tmp106_ = skk_rom_kana_converter_delete (_tmp105_);
-						if (_tmp106_) {
+						SkkState* _tmp101_;
+						SkkRomKanaConverter* _tmp102_;
+						gboolean _tmp103_ = FALSE;
+						_tmp101_ = state;
+						_tmp102_ = _tmp101_->rom_kana_converter;
+						_tmp103_ = skk_rom_kana_converter_delete (_tmp102_);
+						if (_tmp103_) {
 							result = TRUE;
 							_g_free0 (command);
 							return result;
 						} else {
-							SkkState* _tmp107_;
-							GString* _tmp108_;
-							gssize _tmp109_;
-							_tmp107_ = state;
-							_tmp108_ = _tmp107_->output;
-							_tmp109_ = _tmp108_->len;
-							if (_tmp109_ > ((gssize) 0)) {
-								SkkState* _tmp110_;
-								GString* _tmp111_;
+							SkkState* _tmp104_;
+							GString* _tmp105_;
+							gssize _tmp106_;
+							_tmp104_ = state;
+							_tmp105_ = _tmp104_->output;
+							_tmp106_ = _tmp105_->len;
+							if (_tmp106_ > ((gssize) 0)) {
+								SkkState* _tmp107_;
+								GString* _tmp108_;
+								SkkState* _tmp109_;
+								GString* _tmp110_;
+								const gchar* _tmp111_;
 								SkkState* _tmp112_;
 								GString* _tmp113_;
 								const gchar* _tmp114_;
-								SkkState* _tmp115_;
-								GString* _tmp116_;
-								const gchar* _tmp117_;
-								gint _tmp118_ = 0;
-								gint _tmp119_ = 0;
-								_tmp110_ = state;
-								_tmp111_ = _tmp110_->output;
+								gint _tmp115_ = 0;
+								gint _tmp116_ = 0;
+								_tmp107_ = state;
+								_tmp108_ = _tmp107_->output;
+								_tmp109_ = state;
+								_tmp110_ = _tmp109_->output;
+								_tmp111_ = _tmp110_->str;
 								_tmp112_ = state;
 								_tmp113_ = _tmp112_->output;
 								_tmp114_ = _tmp113_->str;
-								_tmp115_ = state;
-								_tmp116_ = _tmp115_->output;
-								_tmp117_ = _tmp116_->str;
-								_tmp118_ = g_utf8_strlen (_tmp117_, (gssize) (-1));
-								_tmp119_ = string_index_of_nth_char (_tmp114_, (glong) (_tmp118_ - 1));
-								g_string_truncate (_tmp111_, (gsize) _tmp119_);
+								_tmp115_ = g_utf8_strlen (_tmp114_, (gssize) (-1));
+								_tmp116_ = string_index_of_nth_char (_tmp111_, (glong) (_tmp115_ - 1));
+								g_string_truncate (_tmp108_, (gsize) _tmp116_);
 								result = TRUE;
 								_g_free0 (command);
 								return result;
 							}
 						}
 					}
-					_tmp120_ = state;
-					_tmp120_->handler_type = SKK_TYPE_NONE_STATE_HANDLER;
+					_tmp117_ = state;
+					_tmp117_->handler_type = SKK_TYPE_NONE_STATE_HANDLER;
 					result = TRUE;
 					_g_free0 (command);
 					return result;
 				} else {
-					const gchar* _tmp121_;
-					_tmp121_ = command;
-					if (g_strcmp0 (_tmp121_, "complete") == 0) {
-						SkkState* _tmp122_;
-						GeeIterator* _tmp123_;
-						SkkState* _tmp129_;
-						GeeIterator* _tmp130_;
-						_tmp122_ = state;
-						_tmp123_ = _tmp122_->completion_iterator;
-						if (_tmp123_ == NULL) {
-							SkkState* _tmp124_;
-							SkkState* _tmp125_;
-							SkkRomKanaConverter* _tmp126_;
-							const gchar* _tmp127_;
-							const gchar* _tmp128_;
-							_tmp124_ = state;
-							_tmp125_ = state;
-							_tmp126_ = _tmp125_->rom_kana_converter;
-							_tmp127_ = skk_rom_kana_converter_get_output (_tmp126_);
-							_tmp128_ = _tmp127_;
-							skk_state_completion_start (_tmp124_, _tmp128_);
+					const gchar* _tmp118_;
+					_tmp118_ = command;
+					if (g_strcmp0 (_tmp118_, "complete") == 0) {
+						SkkState* _tmp119_;
+						GeeIterator* _tmp120_;
+						SkkState* _tmp126_;
+						GeeIterator* _tmp127_;
+						_tmp119_ = state;
+						_tmp120_ = _tmp119_->completion_iterator;
+						if (_tmp120_ == NULL) {
+							SkkState* _tmp121_;
+							SkkState* _tmp122_;
+							SkkRomKanaConverter* _tmp123_;
+							const gchar* _tmp124_;
+							const gchar* _tmp125_;
+							_tmp121_ = state;
+							_tmp122_ = state;
+							_tmp123_ = _tmp122_->rom_kana_converter;
+							_tmp124_ = skk_rom_kana_converter_get_output (_tmp123_);
+							_tmp125_ = _tmp124_;
+							skk_state_completion_start (_tmp121_, _tmp125_);
 						}
-						_tmp129_ = state;
-						_tmp130_ = _tmp129_->completion_iterator;
-						if (_tmp130_ != NULL) {
-							SkkState* _tmp131_;
-							GeeIterator* _tmp132_;
-							gpointer _tmp133_ = NULL;
+						_tmp126_ = state;
+						_tmp127_ = _tmp126_->completion_iterator;
+						if (_tmp127_ != NULL) {
+							SkkState* _tmp128_;
+							GeeIterator* _tmp129_;
+							gpointer _tmp130_ = NULL;
 							gchar* midasi;
-							SkkState* _tmp134_;
-							SkkRomKanaConverter* _tmp135_;
+							SkkState* _tmp131_;
+							SkkRomKanaConverter* _tmp132_;
+							SkkState* _tmp133_;
+							SkkRomKanaConverter* _tmp134_;
+							const gchar* _tmp135_;
 							SkkState* _tmp136_;
-							SkkRomKanaConverter* _tmp137_;
-							const gchar* _tmp138_;
-							SkkState* _tmp139_;
-							GeeIterator* _tmp140_;
-							gboolean _tmp141_ = FALSE;
+							GeeIterator* _tmp137_;
+							gboolean _tmp138_ = FALSE;
+							_tmp128_ = state;
+							_tmp129_ = _tmp128_->completion_iterator;
+							_tmp130_ = gee_iterator_get (_tmp129_);
+							midasi = (gchar*) _tmp130_;
 							_tmp131_ = state;
-							_tmp132_ = _tmp131_->completion_iterator;
-							_tmp133_ = gee_iterator_get (_tmp132_);
-							midasi = (gchar*) _tmp133_;
-							_tmp134_ = state;
-							_tmp135_ = _tmp134_->rom_kana_converter;
-							skk_rom_kana_converter_reset (_tmp135_);
+							_tmp132_ = _tmp131_->rom_kana_converter;
+							skk_rom_kana_converter_reset (_tmp132_);
+							_tmp133_ = state;
+							_tmp134_ = _tmp133_->rom_kana_converter;
+							_tmp135_ = midasi;
+							skk_rom_kana_converter_set_output (_tmp134_, _tmp135_);
 							_tmp136_ = state;
-							_tmp137_ = _tmp136_->rom_kana_converter;
-							_tmp138_ = midasi;
-							skk_rom_kana_converter_set_output (_tmp137_, _tmp138_);
-							_tmp139_ = state;
-							_tmp140_ = _tmp139_->completion_iterator;
-							_tmp141_ = gee_iterator_has_next (_tmp140_);
-							if (_tmp141_) {
-								SkkState* _tmp142_;
-								GeeIterator* _tmp143_;
-								_tmp142_ = state;
-								_tmp143_ = _tmp142_->completion_iterator;
-								gee_iterator_next (_tmp143_);
+							_tmp137_ = _tmp136_->completion_iterator;
+							_tmp138_ = gee_iterator_has_next (_tmp137_);
+							if (_tmp138_) {
+								SkkState* _tmp139_;
+								GeeIterator* _tmp140_;
+								_tmp139_ = state;
+								_tmp140_ = _tmp139_->completion_iterator;
+								gee_iterator_next (_tmp140_);
 							}
 							_g_free0 (midasi);
 						}
@@ -4427,141 +4427,141 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 						_g_free0 (command);
 						return result;
 					} else {
-						const gchar* _tmp144_;
-						_tmp144_ = command;
-						if (g_strcmp0 (_tmp144_, "special-midasi") == 0) {
-							SkkState* _tmp145_;
-							SkkRomKanaConverter* _tmp146_;
-							const gchar* _tmp147_;
-							const gchar* _tmp148_;
-							gint _tmp149_;
-							gint _tmp150_;
-							_tmp145_ = state;
-							_tmp146_ = _tmp145_->rom_kana_converter;
-							_tmp147_ = skk_rom_kana_converter_get_output (_tmp146_);
-							_tmp148_ = _tmp147_;
-							_tmp149_ = strlen (_tmp148_);
-							_tmp150_ = _tmp149_;
-							if (_tmp150_ > 0) {
-								SkkState* _tmp151_;
-								SkkRomKanaConverter* _tmp152_;
-								SkkKeyEvent* _tmp153_;
-								gunichar _tmp154_;
-								gunichar _tmp155_;
-								gunichar _tmp156_ = 0U;
-								SkkState* _tmp157_;
-								SkkState* _tmp158_;
-								SkkKeyEvent* _tmp159_ = NULL;
-								_tmp151_ = state;
-								_tmp152_ = _tmp151_->rom_kana_converter;
-								_tmp153_ = *key;
-								_tmp154_ = skk_key_event_get_code (_tmp153_);
-								_tmp155_ = _tmp154_;
-								_tmp156_ = g_unichar_tolower (_tmp155_);
-								skk_rom_kana_converter_append (_tmp152_, _tmp156_);
-								_tmp157_ = state;
-								_tmp157_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
-								_tmp158_ = state;
-								_tmp159_ = skk_state_where_is (_tmp158_, "next-candidate");
+						const gchar* _tmp141_;
+						_tmp141_ = command;
+						if (g_strcmp0 (_tmp141_, "special-midasi") == 0) {
+							SkkState* _tmp142_;
+							SkkRomKanaConverter* _tmp143_;
+							const gchar* _tmp144_;
+							const gchar* _tmp145_;
+							gint _tmp146_;
+							gint _tmp147_;
+							_tmp142_ = state;
+							_tmp143_ = _tmp142_->rom_kana_converter;
+							_tmp144_ = skk_rom_kana_converter_get_output (_tmp143_);
+							_tmp145_ = _tmp144_;
+							_tmp146_ = strlen (_tmp145_);
+							_tmp147_ = _tmp146_;
+							if (_tmp147_ > 0) {
+								SkkState* _tmp148_;
+								SkkRomKanaConverter* _tmp149_;
+								SkkKeyEvent* _tmp150_;
+								gunichar _tmp151_;
+								gunichar _tmp152_;
+								gunichar _tmp153_ = 0U;
+								SkkState* _tmp154_;
+								SkkState* _tmp155_;
+								SkkKeyEvent* _tmp156_ = NULL;
+								_tmp148_ = state;
+								_tmp149_ = _tmp148_->rom_kana_converter;
+								_tmp150_ = *key;
+								_tmp151_ = skk_key_event_get_code (_tmp150_);
+								_tmp152_ = _tmp151_;
+								_tmp153_ = g_unichar_tolower (_tmp152_);
+								skk_rom_kana_converter_append (_tmp149_, _tmp153_);
+								_tmp154_ = state;
+								_tmp154_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
+								_tmp155_ = state;
+								_tmp156_ = skk_state_where_is (_tmp155_, "next-candidate");
 								_skk_key_event_unref0 (*key);
-								*key = _tmp159_;
+								*key = _tmp156_;
 								result = FALSE;
 								_g_free0 (command);
 								return result;
 							} else {
-								SkkState* _tmp160_;
-								SkkRomKanaConverter* _tmp161_;
-								SkkKeyEvent* _tmp162_;
-								gunichar _tmp163_;
-								gunichar _tmp164_;
-								_tmp160_ = state;
-								_tmp161_ = _tmp160_->rom_kana_converter;
-								_tmp162_ = *key;
-								_tmp163_ = skk_key_event_get_code (_tmp162_);
-								_tmp164_ = _tmp163_;
-								skk_rom_kana_converter_append (_tmp161_, _tmp164_);
+								SkkState* _tmp157_;
+								SkkRomKanaConverter* _tmp158_;
+								SkkKeyEvent* _tmp159_;
+								gunichar _tmp160_;
+								gunichar _tmp161_;
+								_tmp157_ = state;
+								_tmp158_ = _tmp157_->rom_kana_converter;
+								_tmp159_ = *key;
+								_tmp160_ = skk_key_event_get_code (_tmp159_);
+								_tmp161_ = _tmp160_;
+								skk_rom_kana_converter_append (_tmp158_, _tmp161_);
 								result = TRUE;
 								_g_free0 (command);
 								return result;
 							}
 						} else {
-							gboolean _tmp165_ = FALSE;
-							const gchar* _tmp166_;
-							gboolean _tmp169_;
-							_tmp166_ = command;
-							if (_tmp166_ != NULL) {
-								const gchar* _tmp167_;
-								gboolean _tmp168_ = FALSE;
-								_tmp167_ = command;
-								_tmp168_ = g_str_has_prefix (_tmp167_, "insert-kana-");
-								_tmp165_ = _tmp168_;
+							gboolean _tmp162_ = FALSE;
+							const gchar* _tmp163_;
+							gboolean _tmp166_;
+							_tmp163_ = command;
+							if (_tmp163_ != NULL) {
+								const gchar* _tmp164_;
+								gboolean _tmp165_ = FALSE;
+								_tmp164_ = command;
+								_tmp165_ = g_str_has_prefix (_tmp164_, "insert-kana-");
+								_tmp162_ = _tmp165_;
 							} else {
-								_tmp165_ = FALSE;
+								_tmp162_ = FALSE;
 							}
-							_tmp169_ = _tmp165_;
-							if (_tmp169_) {
+							_tmp166_ = _tmp162_;
+							if (_tmp166_) {
+								const gchar* _tmp167_;
+								gint _tmp168_;
+								gint _tmp169_;
 								const gchar* _tmp170_;
 								gint _tmp171_;
 								gint _tmp172_;
-								const gchar* _tmp173_;
-								gint _tmp174_;
-								gint _tmp175_;
-								gchar* _tmp176_ = NULL;
-								gchar* _tmp177_;
-								SkkState* _tmp178_;
-								SkkInputMode _tmp179_;
-								SkkInputMode _tmp180_;
-								gchar* _tmp181_ = NULL;
-								gchar* _tmp182_;
+								gchar* _tmp173_ = NULL;
+								gchar* _tmp174_;
+								SkkState* _tmp175_;
+								SkkInputMode _tmp176_;
+								SkkInputMode _tmp177_;
+								gchar* _tmp178_ = NULL;
+								gchar* _tmp179_;
 								gchar* kana;
-								SkkState* _tmp183_;
-								gboolean _tmp184_;
+								SkkState* _tmp180_;
+								gboolean _tmp181_;
+								_tmp167_ = command;
+								_tmp168_ = strlen ("insert-kana-");
+								_tmp169_ = _tmp168_;
 								_tmp170_ = command;
-								_tmp171_ = strlen ("insert-kana-");
+								_tmp171_ = strlen (_tmp170_);
 								_tmp172_ = _tmp171_;
-								_tmp173_ = command;
-								_tmp174_ = strlen (_tmp173_);
-								_tmp175_ = _tmp174_;
-								_tmp176_ = string_slice (_tmp170_, (glong) _tmp172_, (glong) _tmp175_);
+								_tmp173_ = string_slice (_tmp167_, (glong) _tmp169_, (glong) _tmp172_);
+								_tmp174_ = _tmp173_;
+								_tmp175_ = state;
+								_tmp176_ = skk_state_get_input_mode (_tmp175_);
 								_tmp177_ = _tmp176_;
-								_tmp178_ = state;
-								_tmp179_ = skk_state_get_input_mode (_tmp178_);
-								_tmp180_ = _tmp179_;
-								_tmp181_ = skk_util_convert_by_input_mode (_tmp177_, _tmp180_);
-								_tmp182_ = _tmp181_;
-								_g_free0 (_tmp177_);
-								kana = _tmp182_;
-								_tmp183_ = state;
-								_tmp184_ = _tmp183_->okuri;
-								if (_tmp184_) {
+								_tmp178_ = skk_util_convert_by_input_mode (_tmp174_, _tmp177_);
+								_tmp179_ = _tmp178_;
+								_g_free0 (_tmp174_);
+								kana = _tmp179_;
+								_tmp180_ = state;
+								_tmp181_ = _tmp180_->okuri;
+								if (_tmp181_) {
+									SkkState* _tmp182_;
+									SkkRomKanaConverter* _tmp183_;
+									const gchar* _tmp184_;
 									SkkState* _tmp185_;
-									SkkRomKanaConverter* _tmp186_;
-									const gchar* _tmp187_;
-									SkkState* _tmp188_;
-									SkkState* _tmp189_;
-									SkkKeyEvent* _tmp190_ = NULL;
+									SkkState* _tmp186_;
+									SkkKeyEvent* _tmp187_ = NULL;
+									_tmp182_ = state;
+									_tmp183_ = _tmp182_->okuri_rom_kana_converter;
+									_tmp184_ = kana;
+									skk_rom_kana_converter_set_output (_tmp183_, _tmp184_);
 									_tmp185_ = state;
-									_tmp186_ = _tmp185_->okuri_rom_kana_converter;
-									_tmp187_ = kana;
-									skk_rom_kana_converter_set_output (_tmp186_, _tmp187_);
-									_tmp188_ = state;
-									_tmp188_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
-									_tmp189_ = state;
-									_tmp190_ = skk_state_where_is (_tmp189_, "next-candidate");
+									_tmp185_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
+									_tmp186_ = state;
+									_tmp187_ = skk_state_where_is (_tmp186_, "next-candidate");
 									_skk_key_event_unref0 (*key);
-									*key = _tmp190_;
+									*key = _tmp187_;
 									result = FALSE;
 									_g_free0 (kana);
 									_g_free0 (command);
 									return result;
 								} else {
-									SkkState* _tmp191_;
-									SkkRomKanaConverter* _tmp192_;
-									const gchar* _tmp193_;
-									_tmp191_ = state;
-									_tmp192_ = _tmp191_->rom_kana_converter;
-									_tmp193_ = kana;
-									skk_rom_kana_converter_set_output (_tmp192_, _tmp193_);
+									SkkState* _tmp188_;
+									SkkRomKanaConverter* _tmp189_;
+									const gchar* _tmp190_;
+									_tmp188_ = state;
+									_tmp189_ = _tmp188_->rom_kana_converter;
+									_tmp190_ = kana;
+									skk_rom_kana_converter_set_output (_tmp189_, _tmp190_);
 									result = TRUE;
 									_g_free0 (kana);
 									_g_free0 (command);
@@ -4569,134 +4569,134 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 								}
 								_g_free0 (kana);
 							} else {
-								const gchar* _tmp194_;
-								_tmp194_ = command;
-								if (g_strcmp0 (_tmp194_, "start-preedit") == 0) {
+								const gchar* _tmp191_;
+								_tmp191_ = command;
+								if (g_strcmp0 (_tmp191_, "start-preedit") == 0) {
 									result = TRUE;
 									_g_free0 (command);
 									return result;
 								} else {
-									const gchar* _tmp195_;
-									_tmp195_ = command;
-									if (g_strcmp0 (_tmp195_, "start-preedit-kana") == 0) {
-										SkkState* _tmp196_;
-										SkkRomKanaConverter* _tmp197_;
-										const gchar* _tmp198_;
-										const gchar* _tmp199_;
-										gint _tmp200_;
-										gint _tmp201_;
-										_tmp196_ = state;
-										_tmp197_ = _tmp196_->rom_kana_converter;
-										_tmp198_ = skk_rom_kana_converter_get_output (_tmp197_);
-										_tmp199_ = _tmp198_;
-										_tmp200_ = strlen (_tmp199_);
-										_tmp201_ = _tmp200_;
-										if (_tmp201_ > 0) {
-											SkkState* _tmp202_;
-											_tmp202_ = state;
-											_tmp202_->okuri = TRUE;
+									const gchar* _tmp192_;
+									_tmp192_ = command;
+									if (g_strcmp0 (_tmp192_, "start-preedit-kana") == 0) {
+										SkkState* _tmp193_;
+										SkkRomKanaConverter* _tmp194_;
+										const gchar* _tmp195_;
+										const gchar* _tmp196_;
+										gint _tmp197_;
+										gint _tmp198_;
+										_tmp193_ = state;
+										_tmp194_ = _tmp193_->rom_kana_converter;
+										_tmp195_ = skk_rom_kana_converter_get_output (_tmp194_);
+										_tmp196_ = _tmp195_;
+										_tmp197_ = strlen (_tmp196_);
+										_tmp198_ = _tmp197_;
+										if (_tmp198_ > 0) {
+											SkkState* _tmp199_;
+											_tmp199_ = state;
+											_tmp199_->okuri = TRUE;
 										}
 										result = TRUE;
 										_g_free0 (command);
 										return result;
 									} else {
-										const gchar* _tmp203_;
-										_tmp203_ = command;
-										if (g_strcmp0 (_tmp203_, "expand-preedit") == 0) {
-											gboolean _tmp204_ = FALSE;
-											SkkState* _tmp205_;
-											SkkUnicodeString* _tmp206_;
-											gboolean _tmp212_;
-											_tmp205_ = state;
-											_tmp206_ = _tmp205_->surrounding_text;
-											if (_tmp206_ != NULL) {
-												SkkState* _tmp207_;
-												guint _tmp208_;
-												SkkState* _tmp209_;
-												SkkUnicodeString* _tmp210_;
-												gint _tmp211_;
-												_tmp207_ = state;
-												_tmp208_ = _tmp207_->surrounding_end;
-												_tmp209_ = state;
-												_tmp210_ = _tmp209_->surrounding_text;
-												_tmp211_ = _tmp210_->length;
-												_tmp204_ = _tmp208_ < ((guint) _tmp211_);
+										const gchar* _tmp200_;
+										_tmp200_ = command;
+										if (g_strcmp0 (_tmp200_, "expand-preedit") == 0) {
+											gboolean _tmp201_ = FALSE;
+											SkkState* _tmp202_;
+											SkkUnicodeString* _tmp203_;
+											gboolean _tmp209_;
+											_tmp202_ = state;
+											_tmp203_ = _tmp202_->surrounding_text;
+											if (_tmp203_ != NULL) {
+												SkkState* _tmp204_;
+												guint _tmp205_;
+												SkkState* _tmp206_;
+												SkkUnicodeString* _tmp207_;
+												gint _tmp208_;
+												_tmp204_ = state;
+												_tmp205_ = _tmp204_->surrounding_end;
+												_tmp206_ = state;
+												_tmp207_ = _tmp206_->surrounding_text;
+												_tmp208_ = _tmp207_->length;
+												_tmp201_ = _tmp205_ < ((guint) _tmp208_);
 											} else {
-												_tmp204_ = FALSE;
+												_tmp201_ = FALSE;
 											}
-											_tmp212_ = _tmp204_;
-											if (_tmp212_) {
-												SkkState* _tmp213_;
-												guint _tmp214_;
-												SkkState* _tmp215_;
-												SkkRomKanaConverter* _tmp216_;
-												SkkState* _tmp217_;
-												SkkUnicodeString* _tmp218_;
-												SkkState* _tmp219_;
-												guint _tmp220_;
-												gchar* _tmp221_ = NULL;
-												gchar* _tmp222_;
-												_tmp213_ = state;
-												_tmp214_ = _tmp213_->surrounding_end;
-												_tmp213_->surrounding_end = _tmp214_ + 1;
-												_tmp215_ = state;
-												_tmp216_ = _tmp215_->rom_kana_converter;
-												_tmp217_ = state;
-												_tmp218_ = _tmp217_->surrounding_text;
-												_tmp219_ = state;
-												_tmp220_ = _tmp219_->surrounding_end;
-												_tmp221_ = skk_unicode_string_substring (_tmp218_, (glong) 0, (glong) _tmp220_);
-												_tmp222_ = _tmp221_;
-												skk_rom_kana_converter_set_output (_tmp216_, _tmp222_);
-												_g_free0 (_tmp222_);
+											_tmp209_ = _tmp201_;
+											if (_tmp209_) {
+												SkkState* _tmp210_;
+												guint _tmp211_;
+												SkkState* _tmp212_;
+												SkkRomKanaConverter* _tmp213_;
+												SkkState* _tmp214_;
+												SkkUnicodeString* _tmp215_;
+												SkkState* _tmp216_;
+												guint _tmp217_;
+												gchar* _tmp218_ = NULL;
+												gchar* _tmp219_;
+												_tmp210_ = state;
+												_tmp211_ = _tmp210_->surrounding_end;
+												_tmp210_->surrounding_end = _tmp211_ + 1;
+												_tmp212_ = state;
+												_tmp213_ = _tmp212_->rom_kana_converter;
+												_tmp214_ = state;
+												_tmp215_ = _tmp214_->surrounding_text;
+												_tmp216_ = state;
+												_tmp217_ = _tmp216_->surrounding_end;
+												_tmp218_ = skk_unicode_string_substring (_tmp215_, (glong) 0, (glong) _tmp217_);
+												_tmp219_ = _tmp218_;
+												skk_rom_kana_converter_set_output (_tmp213_, _tmp219_);
+												_g_free0 (_tmp219_);
 												result = TRUE;
 												_g_free0 (command);
 												return result;
 											}
 										} else {
-											const gchar* _tmp223_;
-											_tmp223_ = command;
-											if (g_strcmp0 (_tmp223_, "shrink-preedit") == 0) {
-												gboolean _tmp224_ = FALSE;
-												SkkState* _tmp225_;
-												SkkUnicodeString* _tmp226_;
-												gboolean _tmp229_;
-												_tmp225_ = state;
-												_tmp226_ = _tmp225_->surrounding_text;
-												if (_tmp226_ != NULL) {
+											const gchar* _tmp220_;
+											_tmp220_ = command;
+											if (g_strcmp0 (_tmp220_, "shrink-preedit") == 0) {
+												gboolean _tmp221_ = FALSE;
+												SkkState* _tmp222_;
+												SkkUnicodeString* _tmp223_;
+												gboolean _tmp226_;
+												_tmp222_ = state;
+												_tmp223_ = _tmp222_->surrounding_text;
+												if (_tmp223_ != NULL) {
+													SkkState* _tmp224_;
+													guint _tmp225_;
+													_tmp224_ = state;
+													_tmp225_ = _tmp224_->surrounding_end;
+													_tmp221_ = _tmp225_ > ((guint) 0);
+												} else {
+													_tmp221_ = FALSE;
+												}
+												_tmp226_ = _tmp221_;
+												if (_tmp226_) {
 													SkkState* _tmp227_;
 													guint _tmp228_;
+													SkkState* _tmp229_;
+													SkkRomKanaConverter* _tmp230_;
+													SkkState* _tmp231_;
+													SkkUnicodeString* _tmp232_;
+													SkkState* _tmp233_;
+													guint _tmp234_;
+													gchar* _tmp235_ = NULL;
+													gchar* _tmp236_;
 													_tmp227_ = state;
 													_tmp228_ = _tmp227_->surrounding_end;
-													_tmp224_ = _tmp228_ > ((guint) 0);
-												} else {
-													_tmp224_ = FALSE;
-												}
-												_tmp229_ = _tmp224_;
-												if (_tmp229_) {
-													SkkState* _tmp230_;
-													guint _tmp231_;
-													SkkState* _tmp232_;
-													SkkRomKanaConverter* _tmp233_;
-													SkkState* _tmp234_;
-													SkkUnicodeString* _tmp235_;
-													SkkState* _tmp236_;
-													guint _tmp237_;
-													gchar* _tmp238_ = NULL;
-													gchar* _tmp239_;
-													_tmp230_ = state;
-													_tmp231_ = _tmp230_->surrounding_end;
-													_tmp230_->surrounding_end = _tmp231_ - 1;
-													_tmp232_ = state;
-													_tmp233_ = _tmp232_->rom_kana_converter;
-													_tmp234_ = state;
-													_tmp235_ = _tmp234_->surrounding_text;
-													_tmp236_ = state;
-													_tmp237_ = _tmp236_->surrounding_end;
-													_tmp238_ = skk_unicode_string_substring (_tmp235_, (glong) 0, (glong) _tmp237_);
-													_tmp239_ = _tmp238_;
-													skk_rom_kana_converter_set_output (_tmp233_, _tmp239_);
-													_g_free0 (_tmp239_);
+													_tmp227_->surrounding_end = _tmp228_ - 1;
+													_tmp229_ = state;
+													_tmp230_ = _tmp229_->rom_kana_converter;
+													_tmp231_ = state;
+													_tmp232_ = _tmp231_->surrounding_text;
+													_tmp233_ = state;
+													_tmp234_ = _tmp233_->surrounding_end;
+													_tmp235_ = skk_unicode_string_substring (_tmp232_, (glong) 0, (glong) _tmp234_);
+													_tmp236_ = _tmp235_;
+													skk_rom_kana_converter_set_output (_tmp230_, _tmp236_);
+													_g_free0 (_tmp236_);
 													result = TRUE;
 													_g_free0 (command);
 													return result;
@@ -4712,171 +4712,171 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 			}
 		}
 	}
-	_tmp241_ = *key;
-	_tmp242_ = skk_key_event_get_modifiers (_tmp241_);
-	_tmp243_ = _tmp242_;
-	if (_tmp243_ == 0) {
-		SkkKeyEvent* _tmp244_;
-		gunichar _tmp245_;
-		gunichar _tmp246_;
-		gboolean _tmp247_ = FALSE;
-		_tmp244_ = *key;
-		_tmp245_ = skk_key_event_get_code (_tmp244_);
-		_tmp246_ = _tmp245_;
-		_tmp247_ = g_unichar_isalpha (_tmp246_);
-		_tmp240_ = _tmp247_;
+	_tmp238_ = *key;
+	_tmp239_ = skk_key_event_get_modifiers (_tmp238_);
+	_tmp240_ = _tmp239_;
+	if (_tmp240_ == 0) {
+		SkkKeyEvent* _tmp241_;
+		gunichar _tmp242_;
+		gunichar _tmp243_;
+		gboolean _tmp244_ = FALSE;
+		_tmp241_ = *key;
+		_tmp242_ = skk_key_event_get_code (_tmp241_);
+		_tmp243_ = _tmp242_;
+		_tmp244_ = g_unichar_isalpha (_tmp243_);
+		_tmp237_ = _tmp244_;
 	} else {
-		_tmp240_ = FALSE;
+		_tmp237_ = FALSE;
 	}
-	_tmp248_ = _tmp240_;
-	if (_tmp248_) {
-		gboolean _tmp249_ = FALSE;
-		SkkState* _tmp250_;
-		gboolean _tmp251_;
-		gboolean _tmp273_;
-		_tmp250_ = state;
-		_tmp251_ = _tmp250_->okuri;
-		if (_tmp251_) {
-			_tmp249_ = TRUE;
+	_tmp245_ = _tmp237_;
+	if (_tmp245_) {
+		gboolean _tmp246_ = FALSE;
+		SkkState* _tmp247_;
+		gboolean _tmp248_;
+		gboolean _tmp270_;
+		_tmp247_ = state;
+		_tmp248_ = _tmp247_->okuri;
+		if (_tmp248_) {
+			_tmp246_ = TRUE;
 		} else {
-			gboolean _tmp252_ = FALSE;
-			gboolean _tmp253_ = FALSE;
-			SkkKeyEvent* _tmp254_;
-			gunichar _tmp255_;
-			gunichar _tmp256_;
-			gboolean _tmp257_ = FALSE;
-			gboolean _tmp264_;
-			gboolean _tmp272_;
-			_tmp254_ = *key;
-			_tmp255_ = skk_key_event_get_code (_tmp254_);
-			_tmp256_ = _tmp255_;
-			_tmp257_ = g_unichar_isupper (_tmp256_);
-			if (_tmp257_) {
-				SkkState* _tmp258_;
-				SkkRomKanaConverter* _tmp259_;
-				const gchar* _tmp260_;
-				const gchar* _tmp261_;
-				gint _tmp262_;
-				gint _tmp263_;
-				_tmp258_ = state;
-				_tmp259_ = _tmp258_->rom_kana_converter;
-				_tmp260_ = skk_rom_kana_converter_get_output (_tmp259_);
-				_tmp261_ = _tmp260_;
-				_tmp262_ = strlen (_tmp261_);
-				_tmp263_ = _tmp262_;
-				_tmp253_ = _tmp263_ > 0;
+			gboolean _tmp249_ = FALSE;
+			gboolean _tmp250_ = FALSE;
+			SkkKeyEvent* _tmp251_;
+			gunichar _tmp252_;
+			gunichar _tmp253_;
+			gboolean _tmp254_ = FALSE;
+			gboolean _tmp261_;
+			gboolean _tmp269_;
+			_tmp251_ = *key;
+			_tmp252_ = skk_key_event_get_code (_tmp251_);
+			_tmp253_ = _tmp252_;
+			_tmp254_ = g_unichar_isupper (_tmp253_);
+			if (_tmp254_) {
+				SkkState* _tmp255_;
+				SkkRomKanaConverter* _tmp256_;
+				const gchar* _tmp257_;
+				const gchar* _tmp258_;
+				gint _tmp259_;
+				gint _tmp260_;
+				_tmp255_ = state;
+				_tmp256_ = _tmp255_->rom_kana_converter;
+				_tmp257_ = skk_rom_kana_converter_get_output (_tmp256_);
+				_tmp258_ = _tmp257_;
+				_tmp259_ = strlen (_tmp258_);
+				_tmp260_ = _tmp259_;
+				_tmp250_ = _tmp260_ > 0;
 			} else {
-				_tmp253_ = FALSE;
+				_tmp250_ = FALSE;
 			}
-			_tmp264_ = _tmp253_;
-			if (_tmp264_) {
-				SkkState* _tmp265_;
-				SkkRomKanaConverter* _tmp266_;
-				SkkKeyEvent* _tmp267_;
-				gunichar _tmp268_;
-				gunichar _tmp269_;
-				gunichar _tmp270_ = 0U;
-				gboolean _tmp271_ = FALSE;
-				_tmp265_ = state;
-				_tmp266_ = _tmp265_->rom_kana_converter;
-				_tmp267_ = *key;
-				_tmp268_ = skk_key_event_get_code (_tmp267_);
-				_tmp269_ = _tmp268_;
-				_tmp270_ = g_unichar_tolower (_tmp269_);
-				_tmp271_ = skk_rom_kana_converter_can_consume (_tmp266_, _tmp270_, TRUE, TRUE);
-				_tmp252_ = !_tmp271_;
+			_tmp261_ = _tmp250_;
+			if (_tmp261_) {
+				SkkState* _tmp262_;
+				SkkRomKanaConverter* _tmp263_;
+				SkkKeyEvent* _tmp264_;
+				gunichar _tmp265_;
+				gunichar _tmp266_;
+				gunichar _tmp267_ = 0U;
+				gboolean _tmp268_ = FALSE;
+				_tmp262_ = state;
+				_tmp263_ = _tmp262_->rom_kana_converter;
+				_tmp264_ = *key;
+				_tmp265_ = skk_key_event_get_code (_tmp264_);
+				_tmp266_ = _tmp265_;
+				_tmp267_ = g_unichar_tolower (_tmp266_);
+				_tmp268_ = skk_rom_kana_converter_can_consume (_tmp263_, _tmp267_, TRUE, TRUE);
+				_tmp249_ = !_tmp268_;
 			} else {
-				_tmp252_ = FALSE;
+				_tmp249_ = FALSE;
 			}
-			_tmp272_ = _tmp252_;
-			_tmp249_ = _tmp272_;
+			_tmp269_ = _tmp249_;
+			_tmp246_ = _tmp269_;
 		}
-		_tmp273_ = _tmp249_;
-		if (_tmp273_) {
-			gboolean _tmp274_ = FALSE;
-			SkkState* _tmp275_;
-			gboolean _tmp276_;
-			gboolean _tmp284_;
+		_tmp270_ = _tmp246_;
+		if (_tmp270_) {
+			gboolean _tmp271_ = FALSE;
+			SkkState* _tmp272_;
+			gboolean _tmp273_;
+			gboolean _tmp281_;
+			SkkState* _tmp288_;
+			SkkRomKanaConverter* _tmp289_;
+			SkkState* _tmp290_;
 			SkkState* _tmp291_;
 			SkkRomKanaConverter* _tmp292_;
-			SkkState* _tmp293_;
-			SkkState* _tmp294_;
-			SkkRomKanaConverter* _tmp295_;
-			SkkKeyEvent* _tmp296_;
-			gunichar _tmp297_;
-			gunichar _tmp298_;
-			gunichar _tmp299_ = 0U;
-			SkkState* _tmp300_;
-			SkkRomKanaConverter* _tmp301_;
-			const gchar* _tmp302_;
-			const gchar* _tmp303_;
-			gint _tmp304_;
-			gint _tmp305_;
-			_tmp275_ = state;
-			_tmp276_ = _tmp275_->okuri;
-			if (!_tmp276_) {
-				SkkState* _tmp277_;
-				SkkRomKanaConverter* _tmp278_;
-				SkkKeyEvent* _tmp279_;
-				gunichar _tmp280_;
-				gunichar _tmp281_;
-				gunichar _tmp282_ = 0U;
-				gboolean _tmp283_ = FALSE;
-				_tmp277_ = state;
-				_tmp278_ = _tmp277_->rom_kana_converter;
-				_tmp279_ = *key;
-				_tmp280_ = skk_key_event_get_code (_tmp279_);
-				_tmp281_ = _tmp280_;
-				_tmp282_ = g_unichar_tolower (_tmp281_);
-				_tmp283_ = skk_rom_kana_converter_can_consume (_tmp278_, _tmp282_, TRUE, FALSE);
-				_tmp274_ = _tmp283_;
+			SkkKeyEvent* _tmp293_;
+			gunichar _tmp294_;
+			gunichar _tmp295_;
+			gunichar _tmp296_ = 0U;
+			SkkState* _tmp297_;
+			SkkRomKanaConverter* _tmp298_;
+			const gchar* _tmp299_;
+			const gchar* _tmp300_;
+			gint _tmp301_;
+			gint _tmp302_;
+			_tmp272_ = state;
+			_tmp273_ = _tmp272_->okuri;
+			if (!_tmp273_) {
+				SkkState* _tmp274_;
+				SkkRomKanaConverter* _tmp275_;
+				SkkKeyEvent* _tmp276_;
+				gunichar _tmp277_;
+				gunichar _tmp278_;
+				gunichar _tmp279_ = 0U;
+				gboolean _tmp280_ = FALSE;
+				_tmp274_ = state;
+				_tmp275_ = _tmp274_->rom_kana_converter;
+				_tmp276_ = *key;
+				_tmp277_ = skk_key_event_get_code (_tmp276_);
+				_tmp278_ = _tmp277_;
+				_tmp279_ = g_unichar_tolower (_tmp278_);
+				_tmp280_ = skk_rom_kana_converter_can_consume (_tmp275_, _tmp279_, TRUE, FALSE);
+				_tmp271_ = _tmp280_;
 			} else {
-				_tmp274_ = FALSE;
+				_tmp271_ = FALSE;
 			}
-			_tmp284_ = _tmp274_;
-			if (_tmp284_) {
-				SkkState* _tmp285_;
-				SkkRomKanaConverter* _tmp286_;
-				SkkKeyEvent* _tmp287_;
-				gunichar _tmp288_;
-				gunichar _tmp289_;
-				gunichar _tmp290_ = 0U;
-				_tmp285_ = state;
-				_tmp286_ = _tmp285_->rom_kana_converter;
-				_tmp287_ = *key;
-				_tmp288_ = skk_key_event_get_code (_tmp287_);
-				_tmp289_ = _tmp288_;
-				_tmp290_ = g_unichar_tolower (_tmp289_);
-				skk_rom_kana_converter_append (_tmp286_, _tmp290_);
+			_tmp281_ = _tmp271_;
+			if (_tmp281_) {
+				SkkState* _tmp282_;
+				SkkRomKanaConverter* _tmp283_;
+				SkkKeyEvent* _tmp284_;
+				gunichar _tmp285_;
+				gunichar _tmp286_;
+				gunichar _tmp287_ = 0U;
+				_tmp282_ = state;
+				_tmp283_ = _tmp282_->rom_kana_converter;
+				_tmp284_ = *key;
+				_tmp285_ = skk_key_event_get_code (_tmp284_);
+				_tmp286_ = _tmp285_;
+				_tmp287_ = g_unichar_tolower (_tmp286_);
+				skk_rom_kana_converter_append (_tmp283_, _tmp287_);
 			}
+			_tmp288_ = state;
+			_tmp289_ = _tmp288_->rom_kana_converter;
+			skk_rom_kana_converter_output_nn_if_any (_tmp289_);
+			_tmp290_ = state;
+			_tmp290_->okuri = TRUE;
 			_tmp291_ = state;
-			_tmp292_ = _tmp291_->rom_kana_converter;
-			skk_rom_kana_converter_output_nn_if_any (_tmp292_);
-			_tmp293_ = state;
-			_tmp293_->okuri = TRUE;
-			_tmp294_ = state;
-			_tmp295_ = _tmp294_->okuri_rom_kana_converter;
-			_tmp296_ = *key;
-			_tmp297_ = skk_key_event_get_code (_tmp296_);
-			_tmp298_ = _tmp297_;
-			_tmp299_ = g_unichar_tolower (_tmp298_);
-			skk_rom_kana_converter_append (_tmp295_, _tmp299_);
-			_tmp300_ = state;
-			_tmp301_ = _tmp300_->okuri_rom_kana_converter;
-			_tmp302_ = skk_rom_kana_converter_get_preedit (_tmp301_);
-			_tmp303_ = _tmp302_;
-			_tmp304_ = strlen (_tmp303_);
-			_tmp305_ = _tmp304_;
-			if (_tmp305_ == 0) {
-				SkkState* _tmp306_;
-				SkkState* _tmp307_;
-				SkkKeyEvent* _tmp308_ = NULL;
-				_tmp306_ = state;
-				_tmp306_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
-				_tmp307_ = state;
-				_tmp308_ = skk_state_where_is (_tmp307_, "next-candidate");
+			_tmp292_ = _tmp291_->okuri_rom_kana_converter;
+			_tmp293_ = *key;
+			_tmp294_ = skk_key_event_get_code (_tmp293_);
+			_tmp295_ = _tmp294_;
+			_tmp296_ = g_unichar_tolower (_tmp295_);
+			skk_rom_kana_converter_append (_tmp292_, _tmp296_);
+			_tmp297_ = state;
+			_tmp298_ = _tmp297_->okuri_rom_kana_converter;
+			_tmp299_ = skk_rom_kana_converter_get_preedit (_tmp298_);
+			_tmp300_ = _tmp299_;
+			_tmp301_ = strlen (_tmp300_);
+			_tmp302_ = _tmp301_;
+			if (_tmp302_ == 0) {
+				SkkState* _tmp303_;
+				SkkState* _tmp304_;
+				SkkKeyEvent* _tmp305_ = NULL;
+				_tmp303_ = state;
+				_tmp303_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
+				_tmp304_ = state;
+				_tmp305_ = skk_state_where_is (_tmp304_, "next-candidate");
 				_skk_key_event_unref0 (*key);
-				*key = _tmp308_;
+				*key = _tmp305_;
 				result = FALSE;
 				_g_free0 (command);
 				return result;
@@ -4885,35 +4885,35 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 			_g_free0 (command);
 			return result;
 		} else {
-			SkkState* _tmp309_;
-			SkkRomKanaConverter* _tmp310_;
-			SkkKeyEvent* _tmp311_;
-			gunichar _tmp312_;
-			gunichar _tmp313_;
-			gunichar _tmp314_ = 0U;
-			SkkState* _tmp315_;
-			SkkKeyEvent* _tmp316_;
-			gboolean _tmp317_ = FALSE;
-			_tmp309_ = state;
-			_tmp310_ = _tmp309_->rom_kana_converter;
-			_tmp311_ = *key;
-			_tmp312_ = skk_key_event_get_code (_tmp311_);
-			_tmp313_ = _tmp312_;
-			_tmp314_ = g_unichar_tolower (_tmp313_);
-			skk_rom_kana_converter_append (_tmp310_, _tmp314_);
-			_tmp315_ = state;
-			_tmp316_ = *key;
-			_tmp317_ = skk_start_state_handler_check_auto_conversion (self, _tmp315_, _tmp316_);
-			if (_tmp317_) {
-				SkkState* _tmp318_;
-				SkkState* _tmp319_;
-				SkkKeyEvent* _tmp320_ = NULL;
-				_tmp318_ = state;
-				_tmp318_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
-				_tmp319_ = state;
-				_tmp320_ = skk_state_where_is (_tmp319_, "next-candidate");
+			SkkState* _tmp306_;
+			SkkRomKanaConverter* _tmp307_;
+			SkkKeyEvent* _tmp308_;
+			gunichar _tmp309_;
+			gunichar _tmp310_;
+			gunichar _tmp311_ = 0U;
+			SkkState* _tmp312_;
+			SkkKeyEvent* _tmp313_;
+			gboolean _tmp314_ = FALSE;
+			_tmp306_ = state;
+			_tmp307_ = _tmp306_->rom_kana_converter;
+			_tmp308_ = *key;
+			_tmp309_ = skk_key_event_get_code (_tmp308_);
+			_tmp310_ = _tmp309_;
+			_tmp311_ = g_unichar_tolower (_tmp310_);
+			skk_rom_kana_converter_append (_tmp307_, _tmp311_);
+			_tmp312_ = state;
+			_tmp313_ = *key;
+			_tmp314_ = skk_start_state_handler_check_auto_conversion (self, _tmp312_, _tmp313_);
+			if (_tmp314_) {
+				SkkState* _tmp315_;
+				SkkState* _tmp316_;
+				SkkKeyEvent* _tmp317_ = NULL;
+				_tmp315_ = state;
+				_tmp315_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
+				_tmp316_ = state;
+				_tmp317_ = skk_state_where_is (_tmp316_, "next-candidate");
 				_skk_key_event_unref0 (*key);
-				*key = _tmp320_;
+				*key = _tmp317_;
 				result = FALSE;
 				_g_free0 (command);
 				return result;
@@ -4923,42 +4923,42 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 			return result;
 		}
 	} else {
-		SkkKeyEvent* _tmp321_;
-		SkkModifierType _tmp322_;
-		SkkModifierType _tmp323_;
-		_tmp321_ = *key;
-		_tmp322_ = skk_key_event_get_modifiers (_tmp321_);
-		_tmp323_ = _tmp322_;
-		if (_tmp323_ == 0) {
-			SkkState* _tmp324_;
-			SkkRomKanaConverter* _tmp325_;
-			SkkKeyEvent* _tmp326_;
-			gunichar _tmp327_;
-			gunichar _tmp328_;
-			gunichar _tmp329_ = 0U;
-			SkkState* _tmp330_;
-			SkkKeyEvent* _tmp331_;
-			gboolean _tmp332_ = FALSE;
-			_tmp324_ = state;
-			_tmp325_ = _tmp324_->rom_kana_converter;
-			_tmp326_ = *key;
-			_tmp327_ = skk_key_event_get_code (_tmp326_);
-			_tmp328_ = _tmp327_;
-			_tmp329_ = g_unichar_tolower (_tmp328_);
-			skk_rom_kana_converter_append (_tmp325_, _tmp329_);
-			_tmp330_ = state;
-			_tmp331_ = *key;
-			_tmp332_ = skk_start_state_handler_check_auto_conversion (self, _tmp330_, _tmp331_);
-			if (_tmp332_) {
-				SkkState* _tmp333_;
-				SkkState* _tmp334_;
-				SkkKeyEvent* _tmp335_ = NULL;
-				_tmp333_ = state;
-				_tmp333_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
-				_tmp334_ = state;
-				_tmp335_ = skk_state_where_is (_tmp334_, "next-candidate");
+		SkkKeyEvent* _tmp318_;
+		SkkModifierType _tmp319_;
+		SkkModifierType _tmp320_;
+		_tmp318_ = *key;
+		_tmp319_ = skk_key_event_get_modifiers (_tmp318_);
+		_tmp320_ = _tmp319_;
+		if (_tmp320_ == 0) {
+			SkkState* _tmp321_;
+			SkkRomKanaConverter* _tmp322_;
+			SkkKeyEvent* _tmp323_;
+			gunichar _tmp324_;
+			gunichar _tmp325_;
+			gunichar _tmp326_ = 0U;
+			SkkState* _tmp327_;
+			SkkKeyEvent* _tmp328_;
+			gboolean _tmp329_ = FALSE;
+			_tmp321_ = state;
+			_tmp322_ = _tmp321_->rom_kana_converter;
+			_tmp323_ = *key;
+			_tmp324_ = skk_key_event_get_code (_tmp323_);
+			_tmp325_ = _tmp324_;
+			_tmp326_ = g_unichar_tolower (_tmp325_);
+			skk_rom_kana_converter_append (_tmp322_, _tmp326_);
+			_tmp327_ = state;
+			_tmp328_ = *key;
+			_tmp329_ = skk_start_state_handler_check_auto_conversion (self, _tmp327_, _tmp328_);
+			if (_tmp329_) {
+				SkkState* _tmp330_;
+				SkkState* _tmp331_;
+				SkkKeyEvent* _tmp332_ = NULL;
+				_tmp330_ = state;
+				_tmp330_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
+				_tmp331_ = state;
+				_tmp332_ = skk_state_where_is (_tmp331_, "next-candidate");
 				_skk_key_event_unref0 (*key);
-				*key = _tmp335_;
+				*key = _tmp332_;
 				result = FALSE;
 				_g_free0 (command);
 				return result;
@@ -5465,7 +5465,7 @@ static gboolean skk_select_state_handler_real_process_key_event (SkkStateHandler
 					}
 					_tmp86_ = state;
 					_tmp87_ = _tmp86_->candidates;
-					skk_candidate_list_select (_tmp87_, -1);
+					skk_candidate_list_select (_tmp87_);
 					_tmp88_ = state;
 					_tmp89_ = _tmp88_->output;
 					_tmp90_ = surrounding_after;

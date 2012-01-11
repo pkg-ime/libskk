@@ -393,6 +393,28 @@ typedef struct _SkkContextPrivate SkkContextPrivate;
 typedef struct _SkkCandidatePrivate SkkCandidatePrivate;
 typedef struct _SkkCandidateListPrivate SkkCandidateListPrivate;
 
+#define SKK_TYPE_SIMPLE_CANDIDATE_LIST (skk_simple_candidate_list_get_type ())
+#define SKK_SIMPLE_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateList))
+#define SKK_SIMPLE_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateListClass))
+#define SKK_IS_SIMPLE_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST))
+#define SKK_IS_SIMPLE_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_SIMPLE_CANDIDATE_LIST))
+#define SKK_SIMPLE_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_SIMPLE_CANDIDATE_LIST, SkkSimpleCandidateListClass))
+
+typedef struct _SkkSimpleCandidateList SkkSimpleCandidateList;
+typedef struct _SkkSimpleCandidateListClass SkkSimpleCandidateListClass;
+typedef struct _SkkSimpleCandidateListPrivate SkkSimpleCandidateListPrivate;
+
+#define SKK_TYPE_PROXY_CANDIDATE_LIST (skk_proxy_candidate_list_get_type ())
+#define SKK_PROXY_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateList))
+#define SKK_PROXY_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateListClass))
+#define SKK_IS_PROXY_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST))
+#define SKK_IS_PROXY_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_PROXY_CANDIDATE_LIST))
+#define SKK_PROXY_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateListClass))
+
+typedef struct _SkkProxyCandidateList SkkProxyCandidateList;
+typedef struct _SkkProxyCandidateListClass SkkProxyCandidateListClass;
+typedef struct _SkkProxyCandidateListPrivate SkkProxyCandidateListPrivate;
+
 #define SKK_TYPE_NICOLA_KEY_EVENT_FILTER (skk_nicola_key_event_filter_get_type ())
 #define SKK_NICOLA_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_NICOLA_KEY_EVENT_FILTER, SkkNicolaKeyEventFilter))
 #define SKK_NICOLA_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_NICOLA_KEY_EVENT_FILTER, SkkNicolaKeyEventFilterClass))
@@ -883,6 +905,43 @@ struct _SkkCandidateList {
 
 struct _SkkCandidateListClass {
 	GObjectClass parent_class;
+	SkkCandidate* (*get) (SkkCandidateList* self, gint index);
+	void (*clear) (SkkCandidateList* self);
+	void (*add_candidates) (SkkCandidateList* self, SkkCandidate** array, int array_length1);
+	void (*add_candidates_end) (SkkCandidateList* self);
+	gboolean (*cursor_up) (SkkCandidateList* self);
+	gboolean (*cursor_down) (SkkCandidateList* self);
+	gboolean (*page_up) (SkkCandidateList* self);
+	gboolean (*page_down) (SkkCandidateList* self);
+	gboolean (*next) (SkkCandidateList* self);
+	gboolean (*previous) (SkkCandidateList* self);
+	gboolean (*select_at) (SkkCandidateList* self, guint index_in_page);
+	void (*select) (SkkCandidateList* self);
+	gint (*get_cursor_pos) (SkkCandidateList* self);
+	gint (*get_size) (SkkCandidateList* self);
+	guint (*get_page_start) (SkkCandidateList* self);
+	void (*set_page_start) (SkkCandidateList* self, guint value);
+	guint (*get_page_size) (SkkCandidateList* self);
+	void (*set_page_size) (SkkCandidateList* self, guint value);
+	gboolean (*get_page_visible) (SkkCandidateList* self);
+};
+
+struct _SkkSimpleCandidateList {
+	SkkCandidateList parent_instance;
+	SkkSimpleCandidateListPrivate * priv;
+};
+
+struct _SkkSimpleCandidateListClass {
+	SkkCandidateListClass parent_class;
+};
+
+struct _SkkProxyCandidateList {
+	SkkCandidateList parent_instance;
+	SkkProxyCandidateListPrivate * priv;
+};
+
+struct _SkkProxyCandidateListClass {
+	SkkCandidateListClass parent_class;
 };
 
 typedef gint64 (*SkkGetTime) (void* user_data);
@@ -1186,6 +1245,8 @@ SkkSelectStateHandler* skk_select_state_handler_new (void);
 SkkSelectStateHandler* skk_select_state_handler_construct (GType object_type);
 void skk_init (void);
 GType skk_context_get_type (void) G_GNUC_CONST;
+void skk_context_add_dictionary (SkkContext* self, SkkDict* dict);
+void skk_context_remove_dictionary (SkkContext* self, SkkDict* dict);
 SkkContext* skk_context_new (SkkDict** dictionaries, int dictionaries_length1);
 SkkContext* skk_context_construct (GType object_type, SkkDict** dictionaries, int dictionaries_length1);
 gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq);
@@ -1225,11 +1286,8 @@ const gchar* skk_candidate_get_output (SkkCandidate* self);
 void skk_candidate_set_output (SkkCandidate* self, const gchar* value);
 SkkCandidate* skk_candidate_list_get (SkkCandidateList* self, gint index);
 void skk_candidate_list_clear (SkkCandidateList* self);
-void skk_candidate_list_add_candidates_start (SkkCandidateList* self);
 void skk_candidate_list_add_candidates (SkkCandidateList* self, SkkCandidate** array, int array_length1);
 void skk_candidate_list_add_candidates_end (SkkCandidateList* self);
-SkkCandidateList* skk_candidate_list_new (guint page_start, guint page_size);
-SkkCandidateList* skk_candidate_list_construct (GType object_type, guint page_start, guint page_size);
 gboolean skk_candidate_list_cursor_up (SkkCandidateList* self);
 gboolean skk_candidate_list_cursor_down (SkkCandidateList* self);
 gboolean skk_candidate_list_page_up (SkkCandidateList* self);
@@ -1237,15 +1295,24 @@ gboolean skk_candidate_list_page_down (SkkCandidateList* self);
 gboolean skk_candidate_list_next (SkkCandidateList* self);
 gboolean skk_candidate_list_previous (SkkCandidateList* self);
 guint skk_candidate_list_get_page_start_cursor_pos (SkkCandidateList* self);
-void skk_candidate_list_select (SkkCandidateList* self, gint index);
+gboolean skk_candidate_list_select_at (SkkCandidateList* self, guint index_in_page);
+void skk_candidate_list_select (SkkCandidateList* self);
+SkkCandidateList* skk_candidate_list_construct (GType object_type);
 gint skk_candidate_list_get_cursor_pos (SkkCandidateList* self);
-void skk_candidate_list_set_cursor_pos (SkkCandidateList* self, gint value);
 gint skk_candidate_list_get_size (SkkCandidateList* self);
 guint skk_candidate_list_get_page_start (SkkCandidateList* self);
 void skk_candidate_list_set_page_start (SkkCandidateList* self, guint value);
 guint skk_candidate_list_get_page_size (SkkCandidateList* self);
 void skk_candidate_list_set_page_size (SkkCandidateList* self, guint value);
 gboolean skk_candidate_list_get_page_visible (SkkCandidateList* self);
+GType skk_simple_candidate_list_get_type (void) G_GNUC_CONST;
+SkkSimpleCandidateList* skk_simple_candidate_list_new (guint page_start, guint page_size);
+SkkSimpleCandidateList* skk_simple_candidate_list_construct (GType object_type, guint page_start, guint page_size);
+GType skk_proxy_candidate_list_get_type (void) G_GNUC_CONST;
+SkkProxyCandidateList* skk_proxy_candidate_list_new (SkkCandidateList* candidates);
+SkkProxyCandidateList* skk_proxy_candidate_list_construct (GType object_type, SkkCandidateList* candidates);
+SkkCandidateList* skk_proxy_candidate_list_get_candidates (SkkProxyCandidateList* self);
+void skk_proxy_candidate_list_set_candidates (SkkProxyCandidateList* self, SkkCandidateList* value);
 GType skk_nicola_key_event_filter_get_type (void) G_GNUC_CONST;
 SkkNicolaKeyEventFilter* skk_nicola_key_event_filter_new (void);
 SkkNicolaKeyEventFilter* skk_nicola_key_event_filter_construct (GType object_type);

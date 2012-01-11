@@ -150,7 +150,7 @@ void skk_entry_copy (const SkkEntry* self, SkkEntry* dest);
 void skk_entry_destroy (SkkEntry* self);
 GQuark skk_skk_dict_error_quark (void);
 static void skk_user_dict_load (SkkUserDict* self, GError** error);
-static guint8* _vala_array_dup1 (guint8* self, int length);
+static guint8* _vala_array_dup2 (guint8* self, int length);
 SkkEncodingConverter* skk_encoding_converter_new (const gchar* encoding, GError** error);
 SkkEncodingConverter* skk_encoding_converter_construct (GType object_type, const gchar* encoding, GError** error);
 gchar* skk_encoding_converter_decode (SkkEncodingConverter* self, const gchar* external_str, GError** error);
@@ -183,7 +183,7 @@ static void _vala_array_free (gpointer array, gint array_length, GDestroyNotify 
 
 static const SkkEntry SKK_USER_DICT_ENCODING_TO_CODING_SYSTEM_RULE[4] = {{"UTF-8", "utf-8"}, {"EUC-JP", "euc-jp"}, {"Shift_JIS", "shift_jis"}, {"ISO-2022-JP", "iso-2022-jp"}};
 
-static guint8* _vala_array_dup1 (guint8* self, int length) {
+static guint8* _vala_array_dup2 (guint8* self, int length) {
 	return g_memdup (self, length * sizeof (guint8));
 }
 
@@ -369,7 +369,7 @@ static void skk_user_dict_load (SkkUserDict* self, GError** error) {
 	}
 	_tmp5_ = contents;
 	_tmp5__length1 = contents_length1;
-	_tmp6_ = (_tmp5_ != NULL) ? _vala_array_dup1 (_tmp5_, _tmp5__length1) : ((gpointer) _tmp5_);
+	_tmp6_ = (_tmp5_ != NULL) ? _vala_array_dup2 (_tmp5_, _tmp5__length1) : ((gpointer) _tmp5_);
 	_tmp6__length1 = _tmp5__length1;
 	_tmp7_ = g_free;
 	_tmp8_ = (GMemoryInputStream*) g_memory_input_stream_new_from_data (_tmp6_, _tmp6__length1, _tmp7_);
@@ -1388,29 +1388,32 @@ static SkkCandidate** skk_user_dict_real_lookup (SkkDict* base, const gchar* mid
 static gchar** skk_user_dict_real_complete (SkkDict* base, const gchar* midasi, int* result_length1) {
 	SkkUserDict * self;
 	gchar** result = NULL;
-	GeeTreeSet* _tmp0_;
-	GeeSortedSet* keys;
-	GeeArrayList* _tmp1_;
+	GeeArrayList* _tmp0_;
 	GeeList* completion;
-	GeeSortedSet* _tmp2_;
+	GeeArrayList* _tmp1_;
+	GeeList* keys;
+	GeeList* _tmp2_;
 	GeeMap* _tmp3_;
 	GeeSet* _tmp4_;
 	GeeSet* _tmp5_;
 	GeeSet* _tmp6_;
-	GeeSortedSet* _tmp7_;
-	gboolean _tmp8_;
-	gboolean _tmp9_;
-	GeeList* _tmp40_;
-	gint _tmp41_ = 0;
-	gpointer* _tmp42_ = NULL;
-	gchar** _tmp43_;
-	gint _tmp43__length1;
+	GeeList* _tmp7_;
+	GeeList* _tmp8_;
+	GeeIterator* _tmp9_ = NULL;
+	GeeIterator* iter;
+	GeeIterator* _tmp10_;
+	gboolean _tmp11_ = FALSE;
+	GeeList* _tmp36_;
+	gint _tmp37_ = 0;
+	gpointer* _tmp38_ = NULL;
+	gchar** _tmp39_;
+	gint _tmp39__length1;
 	self = (SkkUserDict*) base;
 	g_return_val_if_fail (midasi != NULL, NULL);
-	_tmp0_ = gee_tree_set_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, NULL);
-	keys = (GeeSortedSet*) _tmp0_;
+	_tmp0_ = gee_array_list_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, NULL);
+	completion = (GeeList*) _tmp0_;
 	_tmp1_ = gee_array_list_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, NULL);
-	completion = (GeeList*) _tmp1_;
+	keys = (GeeList*) _tmp1_;
 	_tmp2_ = keys;
 	_tmp3_ = self->priv->okuri_nasi_entries;
 	_tmp4_ = gee_map_get_keys (_tmp3_);
@@ -1419,63 +1422,52 @@ static gchar** skk_user_dict_real_complete (SkkDict* base, const gchar* midasi, 
 	gee_collection_add_all ((GeeCollection*) _tmp2_, (GeeCollection*) _tmp6_);
 	_g_object_unref0 (_tmp6_);
 	_tmp7_ = keys;
-	_tmp8_ = gee_collection_get_is_empty ((GeeCollection*) _tmp7_);
-	_tmp9_ = _tmp8_;
-	if (!_tmp9_) {
-		GeeSortedSet* _tmp10_;
-		GeeSortedSet* _tmp11_;
-		gpointer _tmp12_ = NULL;
-		gchar* _tmp13_;
-		GeeBidirIterator* _tmp14_ = NULL;
-		GeeBidirIterator* _tmp15_;
-		GeeBidirIterator* iter;
-		_tmp10_ = keys;
-		_tmp11_ = keys;
-		_tmp12_ = gee_sorted_set_first (_tmp11_);
-		_tmp13_ = (gchar*) _tmp12_;
-		_tmp14_ = gee_sorted_set_iterator_at (_tmp10_, _tmp13_);
-		_tmp15_ = _tmp14_;
-		_g_free0 (_tmp13_);
-		iter = _tmp15_;
+	gee_list_sort (_tmp7_, NULL);
+	_tmp8_ = keys;
+	_tmp9_ = gee_iterable_iterator ((GeeIterable*) _tmp8_);
+	iter = _tmp9_;
+	_tmp10_ = iter;
+	_tmp11_ = gee_iterator_first (_tmp10_);
+	if (_tmp11_) {
 		{
-			gboolean _tmp16_;
-			_tmp16_ = TRUE;
+			gboolean _tmp12_;
+			_tmp12_ = TRUE;
 			while (TRUE) {
-				gboolean _tmp17_;
-				GeeBidirIterator* _tmp20_;
-				gpointer _tmp21_ = NULL;
+				gboolean _tmp13_;
+				GeeIterator* _tmp16_;
+				gpointer _tmp17_ = NULL;
 				gchar* key;
-				const gchar* _tmp22_;
-				const gchar* _tmp23_;
-				gboolean _tmp24_ = FALSE;
-				_tmp17_ = _tmp16_;
-				if (!_tmp17_) {
-					GeeBidirIterator* _tmp18_;
-					gboolean _tmp19_ = FALSE;
-					_tmp18_ = iter;
-					_tmp19_ = gee_iterator_next ((GeeIterator*) _tmp18_);
-					if (!_tmp19_) {
+				const gchar* _tmp18_;
+				const gchar* _tmp19_;
+				gboolean _tmp20_ = FALSE;
+				_tmp13_ = _tmp12_;
+				if (!_tmp13_) {
+					GeeIterator* _tmp14_;
+					gboolean _tmp15_ = FALSE;
+					_tmp14_ = iter;
+					_tmp15_ = gee_iterator_next (_tmp14_);
+					if (!_tmp15_) {
 						break;
 					}
 				}
-				_tmp16_ = FALSE;
-				_tmp20_ = iter;
-				_tmp21_ = gee_iterator_get ((GeeIterator*) _tmp20_);
-				key = (gchar*) _tmp21_;
-				_tmp22_ = key;
-				_tmp23_ = midasi;
-				_tmp24_ = g_str_has_prefix (_tmp22_, _tmp23_);
-				if (_tmp24_) {
-					const gchar* _tmp25_;
-					const gchar* _tmp26_;
-					_tmp25_ = key;
-					_tmp26_ = midasi;
-					if (g_strcmp0 (_tmp25_, _tmp26_) != 0) {
-						GeeList* _tmp27_;
-						const gchar* _tmp28_;
-						_tmp27_ = completion;
-						_tmp28_ = key;
-						gee_collection_add ((GeeCollection*) _tmp27_, _tmp28_);
+				_tmp12_ = FALSE;
+				_tmp16_ = iter;
+				_tmp17_ = gee_iterator_get (_tmp16_);
+				key = (gchar*) _tmp17_;
+				_tmp18_ = key;
+				_tmp19_ = midasi;
+				_tmp20_ = g_str_has_prefix (_tmp18_, _tmp19_);
+				if (_tmp20_) {
+					const gchar* _tmp21_;
+					const gchar* _tmp22_;
+					_tmp21_ = key;
+					_tmp22_ = midasi;
+					if (g_strcmp0 (_tmp21_, _tmp22_) != 0) {
+						GeeList* _tmp23_;
+						const gchar* _tmp24_;
+						_tmp23_ = completion;
+						_tmp24_ = key;
+						gee_collection_add ((GeeCollection*) _tmp23_, _tmp24_);
 					}
 					_g_free0 (key);
 					break;
@@ -1484,54 +1476,54 @@ static gchar** skk_user_dict_real_complete (SkkDict* base, const gchar* midasi, 
 			}
 		}
 		while (TRUE) {
-			GeeBidirIterator* _tmp29_;
-			gboolean _tmp30_ = FALSE;
-			GeeBidirIterator* _tmp31_;
-			gpointer _tmp32_ = NULL;
+			GeeIterator* _tmp25_;
+			gboolean _tmp26_ = FALSE;
+			GeeIterator* _tmp27_;
+			gpointer _tmp28_ = NULL;
 			gchar* key;
+			const gchar* _tmp29_;
+			const gchar* _tmp30_;
+			gboolean _tmp31_ = FALSE;
+			const gchar* _tmp32_;
 			const gchar* _tmp33_;
-			const gchar* _tmp34_;
-			gboolean _tmp35_ = FALSE;
-			const gchar* _tmp36_;
-			const gchar* _tmp37_;
-			_tmp29_ = iter;
-			_tmp30_ = gee_iterator_next ((GeeIterator*) _tmp29_);
-			if (!_tmp30_) {
+			_tmp25_ = iter;
+			_tmp26_ = gee_iterator_next (_tmp25_);
+			if (!_tmp26_) {
 				break;
 			}
-			_tmp31_ = iter;
-			_tmp32_ = gee_iterator_get ((GeeIterator*) _tmp31_);
-			key = (gchar*) _tmp32_;
-			_tmp33_ = key;
-			_tmp34_ = midasi;
-			_tmp35_ = g_str_has_prefix (_tmp33_, _tmp34_);
-			if (!_tmp35_) {
+			_tmp27_ = iter;
+			_tmp28_ = gee_iterator_get (_tmp27_);
+			key = (gchar*) _tmp28_;
+			_tmp29_ = key;
+			_tmp30_ = midasi;
+			_tmp31_ = g_str_has_prefix (_tmp29_, _tmp30_);
+			if (!_tmp31_) {
 				_g_free0 (key);
 				break;
 			}
-			_tmp36_ = key;
-			_tmp37_ = midasi;
-			if (g_strcmp0 (_tmp36_, _tmp37_) != 0) {
-				GeeList* _tmp38_;
-				const gchar* _tmp39_;
-				_tmp38_ = completion;
-				_tmp39_ = key;
-				gee_collection_add ((GeeCollection*) _tmp38_, _tmp39_);
+			_tmp32_ = key;
+			_tmp33_ = midasi;
+			if (g_strcmp0 (_tmp32_, _tmp33_) != 0) {
+				GeeList* _tmp34_;
+				const gchar* _tmp35_;
+				_tmp34_ = completion;
+				_tmp35_ = key;
+				gee_collection_add ((GeeCollection*) _tmp34_, _tmp35_);
 			}
 			_g_free0 (key);
 		}
-		_g_object_unref0 (iter);
 	}
-	_tmp40_ = completion;
-	_tmp42_ = gee_collection_to_array ((GeeCollection*) _tmp40_, &_tmp41_);
-	_tmp43_ = _tmp42_;
-	_tmp43__length1 = _tmp41_;
+	_tmp36_ = completion;
+	_tmp38_ = gee_collection_to_array ((GeeCollection*) _tmp36_, &_tmp37_);
+	_tmp39_ = _tmp38_;
+	_tmp39__length1 = _tmp37_;
 	if (result_length1) {
-		*result_length1 = _tmp43__length1;
+		*result_length1 = _tmp39__length1;
 	}
-	result = _tmp43_;
-	_g_object_unref0 (completion);
+	result = _tmp39_;
+	_g_object_unref0 (iter);
 	_g_object_unref0 (keys);
+	_g_object_unref0 (completion);
 	return result;
 }
 
@@ -1567,8 +1559,8 @@ static gboolean skk_user_dict_real_select_candidate (SkkDict* base, SkkCandidate
 	const gchar* _tmp62_;
 	gpointer _tmp63_ = NULL;
 	GeeList* candidates;
-	GeeList* _tmp94_;
-	SkkCandidate* _tmp95_;
+	GeeList* _tmp93_;
+	SkkCandidate* _tmp94_;
 	self = (SkkUserDict*) base;
 	g_return_val_if_fail (candidate != NULL, FALSE);
 	{
@@ -1768,7 +1760,7 @@ static gboolean skk_user_dict_real_select_candidate (SkkDict* base, SkkCandidate
 			SkkCandidate* _tmp78_;
 			const gchar* _tmp79_;
 			const gchar* _tmp80_;
-			gint _tmp93_;
+			gint _tmp92_;
 			_tmp69_ = _c_index;
 			_c_index = _tmp69_ + 1;
 			_tmp70_ = _c_index;
@@ -1791,32 +1783,30 @@ static gboolean skk_user_dict_real_select_candidate (SkkDict* base, SkkCandidate
 				_tmp81_ = index;
 				if (_tmp81_ > 0) {
 					GeeList* _tmp82_;
-					gint _tmp83_;
-					gpointer _tmp84_ = NULL;
+					gpointer _tmp83_ = NULL;
 					SkkCandidate* first;
+					GeeList* _tmp84_;
 					GeeList* _tmp85_;
-					GeeList* _tmp86_;
-					gint _tmp87_;
-					gpointer _tmp88_ = NULL;
-					SkkCandidate* _tmp89_;
-					GeeList* _tmp90_;
-					gint _tmp91_;
-					SkkCandidate* _tmp92_;
+					gint _tmp86_;
+					gpointer _tmp87_ = NULL;
+					SkkCandidate* _tmp88_;
+					GeeList* _tmp89_;
+					gint _tmp90_;
+					SkkCandidate* _tmp91_;
 					_tmp82_ = candidates;
-					_tmp83_ = index;
-					_tmp84_ = gee_list_get (_tmp82_, _tmp83_);
-					first = (SkkCandidate*) _tmp84_;
+					_tmp83_ = gee_list_get (_tmp82_, 0);
+					first = (SkkCandidate*) _tmp83_;
+					_tmp84_ = candidates;
 					_tmp85_ = candidates;
-					_tmp86_ = candidates;
-					_tmp87_ = index;
-					_tmp88_ = gee_list_get (_tmp86_, _tmp87_);
-					_tmp89_ = (SkkCandidate*) _tmp88_;
-					gee_list_set (_tmp85_, 0, _tmp89_);
-					_g_object_unref0 (_tmp89_);
-					_tmp90_ = candidates;
-					_tmp91_ = index;
-					_tmp92_ = first;
-					gee_list_set (_tmp90_, _tmp91_, _tmp92_);
+					_tmp86_ = index;
+					_tmp87_ = gee_list_get (_tmp85_, _tmp86_);
+					_tmp88_ = (SkkCandidate*) _tmp87_;
+					gee_list_set (_tmp84_, 0, _tmp88_);
+					_g_object_unref0 (_tmp88_);
+					_tmp89_ = candidates;
+					_tmp90_ = index;
+					_tmp91_ = first;
+					gee_list_set (_tmp89_, _tmp90_, _tmp91_);
 					result = TRUE;
 					_g_object_unref0 (first);
 					_g_object_unref0 (c);
@@ -1832,15 +1822,15 @@ static gboolean skk_user_dict_real_select_candidate (SkkDict* base, SkkCandidate
 				_g_object_unref0 (entries);
 				return result;
 			}
-			_tmp93_ = index;
-			index = _tmp93_ + 1;
+			_tmp92_ = index;
+			index = _tmp92_ + 1;
 			_g_object_unref0 (c);
 		}
 		_g_object_unref0 (_c_list);
 	}
-	_tmp94_ = candidates;
-	_tmp95_ = candidate;
-	gee_list_insert (_tmp94_, 0, _tmp95_);
+	_tmp93_ = candidates;
+	_tmp94_ = candidate;
+	gee_list_insert (_tmp93_, 0, _tmp94_);
 	result = TRUE;
 	_g_object_unref0 (candidates);
 	_g_object_unref0 (entries);

@@ -73,6 +73,16 @@ typedef struct _SkkContextPrivate SkkContextPrivate;
 typedef struct _SkkDict SkkDict;
 typedef struct _SkkDictClass SkkDictClass;
 
+#define SKK_TYPE_CANDIDATE_LIST (skk_candidate_list_get_type ())
+#define SKK_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_CANDIDATE_LIST, SkkCandidateList))
+#define SKK_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_CANDIDATE_LIST, SkkCandidateListClass))
+#define SKK_IS_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_CANDIDATE_LIST))
+#define SKK_IS_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_CANDIDATE_LIST))
+#define SKK_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_CANDIDATE_LIST, SkkCandidateListClass))
+
+typedef struct _SkkCandidateList SkkCandidateList;
+typedef struct _SkkCandidateListClass SkkCandidateListClass;
+
 #define SKK_TYPE_STATE (skk_state_get_type ())
 #define SKK_STATE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_STATE, SkkState))
 #define SKK_STATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_STATE, SkkStateClass))
@@ -145,27 +155,6 @@ typedef struct _SkkAbbrevStateHandlerClass SkkAbbrevStateHandlerClass;
 
 typedef struct _SkkKutenStateHandler SkkKutenStateHandler;
 typedef struct _SkkKutenStateHandlerClass SkkKutenStateHandlerClass;
-
-#define SKK_TYPE_CANDIDATE_LIST (skk_candidate_list_get_type ())
-#define SKK_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_CANDIDATE_LIST, SkkCandidateList))
-#define SKK_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_CANDIDATE_LIST, SkkCandidateListClass))
-#define SKK_IS_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_CANDIDATE_LIST))
-#define SKK_IS_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_CANDIDATE_LIST))
-#define SKK_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_CANDIDATE_LIST, SkkCandidateListClass))
-
-typedef struct _SkkCandidateList SkkCandidateList;
-typedef struct _SkkCandidateListClass SkkCandidateListClass;
-
-#define SKK_TYPE_CANDIDATE (skk_candidate_get_type ())
-#define SKK_CANDIDATE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_CANDIDATE, SkkCandidate))
-#define SKK_CANDIDATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_CANDIDATE, SkkCandidateClass))
-#define SKK_IS_CANDIDATE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_CANDIDATE))
-#define SKK_IS_CANDIDATE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_CANDIDATE))
-#define SKK_CANDIDATE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_CANDIDATE, SkkCandidateClass))
-
-typedef struct _SkkCandidate SkkCandidate;
-typedef struct _SkkCandidateClass SkkCandidateClass;
-#define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 typedef struct _SkkStatePrivate SkkStatePrivate;
 
 #define SKK_TYPE_ROM_KANA_CONVERTER (skk_rom_kana_converter_get_type ())
@@ -187,6 +176,27 @@ typedef struct _SkkRomKanaConverterClass SkkRomKanaConverterClass;
 
 typedef struct _SkkUnicodeString SkkUnicodeString;
 typedef struct _SkkUnicodeStringClass SkkUnicodeStringClass;
+
+#define SKK_TYPE_PROXY_CANDIDATE_LIST (skk_proxy_candidate_list_get_type ())
+#define SKK_PROXY_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateList))
+#define SKK_PROXY_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateListClass))
+#define SKK_IS_PROXY_CANDIDATE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST))
+#define SKK_IS_PROXY_CANDIDATE_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_PROXY_CANDIDATE_LIST))
+#define SKK_PROXY_CANDIDATE_LIST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_PROXY_CANDIDATE_LIST, SkkProxyCandidateListClass))
+
+typedef struct _SkkProxyCandidateList SkkProxyCandidateList;
+typedef struct _SkkProxyCandidateListClass SkkProxyCandidateListClass;
+
+#define SKK_TYPE_CANDIDATE (skk_candidate_get_type ())
+#define SKK_CANDIDATE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_CANDIDATE, SkkCandidate))
+#define SKK_CANDIDATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_CANDIDATE, SkkCandidateClass))
+#define SKK_IS_CANDIDATE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_CANDIDATE))
+#define SKK_IS_CANDIDATE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_CANDIDATE))
+#define SKK_CANDIDATE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_CANDIDATE, SkkCandidateClass))
+
+typedef struct _SkkCandidate SkkCandidate;
+typedef struct _SkkCandidateClass SkkCandidateClass;
+#define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 #define _g_string_free0(var) ((var == NULL) ? NULL : (var = (g_string_free (var, TRUE), NULL)))
 
 #define SKK_TYPE_KEY_EVENT (skk_key_event_get_type ())
@@ -239,6 +249,7 @@ struct _SkkContextClass {
 
 struct _SkkContextPrivate {
 	GeeArrayList* _dictionaries;
+	SkkCandidateList* _candidates;
 	GSList* state_stack;
 	GeeHashMap* handlers;
 	gchar* _preedit;
@@ -290,6 +301,7 @@ GType skk_kana_mode_get_type (void) G_GNUC_CONST;
 GType skk_input_mode_get_type (void) G_GNUC_CONST;
 GType skk_context_get_type (void) G_GNUC_CONST;
 GType skk_dict_get_type (void) G_GNUC_CONST;
+GType skk_candidate_list_get_type (void) G_GNUC_CONST;
 GType skk_state_get_type (void) G_GNUC_CONST;
 GType skk_state_handler_get_type (void) G_GNUC_CONST;
 #define SKK_CONTEXT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_CONTEXT, SkkContextPrivate))
@@ -306,9 +318,10 @@ enum  {
 };
 static void _g_object_unref0_ (gpointer var);
 static void _g_slist_free__g_object_unref0_ (GSList* self);
+void skk_context_add_dictionary (SkkContext* self, SkkDict* dict);
+void skk_context_remove_dictionary (SkkContext* self, SkkDict* dict);
 SkkContext* skk_context_new (SkkDict** dictionaries, int dictionaries_length1);
 SkkContext* skk_context_construct (GType object_type, SkkDict** dictionaries, int dictionaries_length1);
-void skk_context_set_dictionaries (SkkContext* self, SkkDict** value, int value_length1);
 GType skk_none_state_handler_get_type (void) G_GNUC_CONST;
 SkkNoneStateHandler* skk_none_state_handler_new (void);
 SkkNoneStateHandler* skk_none_state_handler_construct (GType object_type);
@@ -327,35 +340,38 @@ SkkKutenStateHandler* skk_kuten_state_handler_construct (GType object_type);
 SkkState* skk_state_new (GeeArrayList* dictionaries);
 SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries);
 static void skk_context_connect_state_signals (SkkContext* self, SkkState* state);
-GType skk_candidate_list_get_type (void) G_GNUC_CONST;
-SkkCandidateList* skk_context_get_candidates (SkkContext* self);
-static void __lambda6_ (SkkContext* self);
+GType skk_rom_kana_converter_get_type (void) G_GNUC_CONST;
+GType skk_unicode_string_get_type (void) G_GNUC_CONST;
+SkkProxyCandidateList* skk_proxy_candidate_list_new (SkkCandidateList* candidates);
+SkkProxyCandidateList* skk_proxy_candidate_list_construct (GType object_type, SkkCandidateList* candidates);
+GType skk_proxy_candidate_list_get_type (void) G_GNUC_CONST;
+static void __lambda3_ (SkkContext* self);
 gint skk_candidate_list_get_cursor_pos (SkkCandidateList* self);
 static void skk_context_update_preedit (SkkContext* self);
-static void ___lambda6__g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self);
+static void ___lambda3__g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self);
 GType skk_candidate_get_type (void) G_GNUC_CONST;
-static void __lambda7_ (SkkContext* self, SkkCandidate* candidate);
+static void __lambda4_ (SkkContext* self, SkkCandidate* candidate);
 static gboolean skk_context_select_candidate_in_dictionaries (SkkContext* self, SkkCandidate* candidate);
 void skk_context_save_dictionaries (SkkContext* self, GError** error);
-static void ___lambda7__skk_candidate_list_selected (SkkCandidateList* _sender, SkkCandidate* candidate, gpointer self);
+static void ___lambda4__skk_candidate_list_selected (SkkCandidateList* _sender, SkkCandidate* candidate, gpointer self);
+static void skk_context_notify_input_mode_cb (SkkContext* self, GObject* s, GParamSpec* p);
+static gboolean skk_context_retrieve_surrounding_text_cb (SkkContext* self, gchar** text, guint* cursor_pos);
+static gboolean skk_context_delete_surrounding_text_cb (SkkContext* self, gint offset, guint nchars);
 static void skk_context_start_dict_edit (SkkContext* self, const gchar* midasi, gboolean okuri);
 static void _skk_context_start_dict_edit_skk_state_recursive_edit_start (SkkState* _sender, const gchar* midasi, gboolean okuri, gpointer self);
 static gboolean skk_context_end_dict_edit (SkkContext* self, const gchar* text);
 static gboolean _skk_context_end_dict_edit_skk_state_recursive_edit_end (SkkState* _sender, const gchar* text, gpointer self);
 static gboolean skk_context_abort_dict_edit (SkkContext* self);
 static gboolean _skk_context_abort_dict_edit_skk_state_recursive_edit_abort (SkkState* _sender, gpointer self);
-static void __lambda3_ (SkkContext* self, GObject* s, GParamSpec* p);
-static void ___lambda3__g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self);
-static gboolean __lambda4_ (SkkContext* self, gchar** t, guint* c);
-static gboolean ___lambda4__skk_state_retrieve_surrounding_text (SkkState* _sender, gchar** text, guint* cursor_pos, gpointer self);
-static gboolean __lambda5_ (SkkContext* self, gint o, guint n);
-static gboolean ___lambda5__skk_state_delete_surrounding_text (SkkState* _sender, gint offset, guint nchars, gpointer self);
+static void _skk_context_notify_input_mode_cb_g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self);
+static gboolean _skk_context_retrieve_surrounding_text_cb_skk_state_retrieve_surrounding_text (SkkState* _sender, gchar** text, guint* cursor_pos, gpointer self);
+static gboolean _skk_context_delete_surrounding_text_cb_skk_state_delete_surrounding_text (SkkState* _sender, gint offset, guint nchars, gpointer self);
+static void skk_context_disconnect_state_signals (SkkContext* self, SkkState* state);
 SkkDict** skk_context_get_dictionaries (SkkContext* self, int* result_length1);
 gboolean skk_dict_get_read_only (SkkDict* self);
 gboolean skk_dict_select_candidate (SkkDict* self, SkkCandidate* candidate);
 static guint skk_context_dict_edit_level (SkkContext* self);
-GType skk_rom_kana_converter_get_type (void) G_GNUC_CONST;
-GType skk_unicode_string_get_type (void) G_GNUC_CONST;
+void skk_proxy_candidate_list_set_candidates (SkkProxyCandidateList* self, SkkCandidateList* value);
 static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, gboolean** okuri);
 SkkCandidate* skk_candidate_new (const gchar* midasi, gboolean okuri, const gchar* text, const gchar* annotation, const gchar* output);
 SkkCandidate* skk_candidate_construct (GType object_type, const gchar* midasi, gboolean okuri, const gchar* text, const gchar* annotation, const gchar* output);
@@ -392,13 +408,15 @@ const gchar* skk_context_get_preedit (SkkContext* self);
 static void skk_context_set_preedit (SkkContext* self, const gchar* value);
 void skk_context_get_preedit_underline (SkkContext* self, guint* offset, guint* nchars);
 void skk_dict_save (SkkDict* self, GError** error);
+void skk_context_set_dictionaries (SkkContext* self, SkkDict** value, int value_length1);
+SkkCandidateList* skk_context_get_candidates (SkkContext* self);
 SkkInputMode skk_context_get_input_mode (SkkContext* self);
 SkkInputMode skk_state_get_input_mode (SkkState* self);
 void skk_context_set_input_mode (SkkContext* self, SkkInputMode value);
 void skk_state_set_input_mode (SkkState* self, SkkInputMode value);
 gchar** skk_context_get_auto_start_henkan_keywords (SkkContext* self, int* result_length1);
 void skk_context_set_auto_start_henkan_keywords (SkkContext* self, gchar** value, int value_length1);
-static gchar** _vala_array_dup3 (gchar** self, int length);
+static gchar** _vala_array_dup4 (gchar** self, int length);
 gboolean skk_context_get_egg_like_newline (SkkContext* self);
 void skk_context_set_egg_like_newline (SkkContext* self, gboolean value);
 GType skk_period_style_get_type (void) G_GNUC_CONST;
@@ -411,8 +429,8 @@ SkkRule* skk_state_get_typing_rule (SkkState* self);
 void skk_context_set_typing_rule (SkkContext* self, SkkRule* value);
 void skk_state_set_typing_rule (SkkState* self, SkkRule* value);
 SkkKeyEventFilter* skk_rule_get_filter (SkkRule* self);
-static void _skk_context_typing_rule___lambda8_ (SkkContext* self, SkkKeyEvent* key);
-static void __skk_context_typing_rule___lambda8__skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self);
+static void _skk_context_typing_rule___lambda5_ (SkkContext* self, SkkKeyEvent* key);
+static void __skk_context_typing_rule___lambda5__skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self);
 static void g_cclosure_user_marshal_BOOLEAN__POINTER_POINTER (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data);
 static void g_cclosure_user_marshal_BOOLEAN__INT_UINT (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data);
 static void skk_context_finalize (GObject* obj);
@@ -468,33 +486,70 @@ static void _g_slist_free__g_object_unref0_ (GSList* self) {
 
 
 /**
+         * Register dictionary.
+         *
+         * @param dict a dictionary
+         * @since 0.0.8
+         */
+void skk_context_add_dictionary (SkkContext* self, SkkDict* dict) {
+	GeeArrayList* _tmp0_;
+	SkkDict* _tmp1_;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (dict != NULL);
+	_tmp0_ = self->priv->_dictionaries;
+	_tmp1_ = dict;
+	gee_abstract_collection_add ((GeeAbstractCollection*) _tmp0_, _tmp1_);
+}
+
+
+/**
+         * Unregister dictionary.
+         *
+         * @param dict a dictionary
+         * @since 0.0.8
+         */
+void skk_context_remove_dictionary (SkkContext* self, SkkDict* dict) {
+	GeeArrayList* _tmp0_;
+	SkkDict* _tmp1_;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (dict != NULL);
+	_tmp0_ = self->priv->_dictionaries;
+	_tmp1_ = dict;
+	gee_abstract_collection_remove ((GeeAbstractCollection*) _tmp0_, _tmp1_);
+}
+
+
+/**
          * Create a new Context.
          *
          * @param dictionaries an array of Dict
          *
          * @return a new Context
          */
-static void __lambda6_ (SkkContext* self) {
+static gpointer _g_object_ref0 (gpointer self) {
+	return self ? g_object_ref (self) : NULL;
+}
+
+
+static void __lambda3_ (SkkContext* self) {
 	SkkCandidateList* _tmp0_;
-	SkkCandidateList* _tmp1_;
+	gint _tmp1_;
 	gint _tmp2_;
-	gint _tmp3_;
-	_tmp0_ = skk_context_get_candidates (self);
-	_tmp1_ = _tmp0_;
-	_tmp2_ = skk_candidate_list_get_cursor_pos (_tmp1_);
-	_tmp3_ = _tmp2_;
-	if (_tmp3_ >= 0) {
+	_tmp0_ = self->priv->_candidates;
+	_tmp1_ = skk_candidate_list_get_cursor_pos (_tmp0_);
+	_tmp2_ = _tmp1_;
+	if (_tmp2_ >= 0) {
 		skk_context_update_preedit (self);
 	}
 }
 
 
-static void ___lambda6__g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self) {
-	__lambda6_ (self);
+static void ___lambda3__g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self) {
+	__lambda3_ (self);
 }
 
 
-static void __lambda7_ (SkkContext* self, SkkCandidate* candidate) {
+static void __lambda4_ (SkkContext* self, SkkCandidate* candidate) {
 	SkkCandidate* _tmp0_;
 	gboolean _tmp1_ = FALSE;
 	GError * _inner_error_ = NULL;
@@ -518,7 +573,7 @@ static void __lambda7_ (SkkContext* self, SkkCandidate* candidate) {
 			_inner_error_ = NULL;
 			_tmp2_ = e;
 			_tmp3_ = _tmp2_->message;
-			g_warning ("context.vala:213: error saving dictionaries %s", _tmp3_);
+			g_warning ("context.vala:237: error saving dictionaries %s", _tmp3_);
 			_g_error_free0 (e);
 		}
 		__finally32:
@@ -532,8 +587,8 @@ static void __lambda7_ (SkkContext* self, SkkCandidate* candidate) {
 }
 
 
-static void ___lambda7__skk_candidate_list_selected (SkkCandidateList* _sender, SkkCandidate* candidate, gpointer self) {
-	__lambda7_ (self, candidate);
+static void ___lambda4__skk_candidate_list_selected (SkkCandidateList* _sender, SkkCandidate* candidate, gpointer self) {
+	__lambda4_ (self, candidate);
 }
 
 
@@ -541,76 +596,147 @@ SkkContext* skk_context_construct (GType object_type, SkkDict** dictionaries, in
 	SkkContext * self = NULL;
 	SkkDict** _tmp0_;
 	gint _tmp0__length1;
-	GeeHashMap* _tmp1_;
-	SkkNoneStateHandler* _tmp2_;
-	SkkNoneStateHandler* _tmp3_;
-	GeeHashMap* _tmp4_;
-	SkkStartStateHandler* _tmp5_;
-	SkkStartStateHandler* _tmp6_;
-	GeeHashMap* _tmp7_;
-	SkkSelectStateHandler* _tmp8_;
-	SkkSelectStateHandler* _tmp9_;
-	GeeHashMap* _tmp10_;
-	SkkAbbrevStateHandler* _tmp11_;
-	SkkAbbrevStateHandler* _tmp12_;
-	GeeHashMap* _tmp13_;
-	SkkKutenStateHandler* _tmp14_;
-	SkkKutenStateHandler* _tmp15_;
-	GeeArrayList* _tmp16_;
-	SkkState* _tmp17_;
-	GSList* _tmp18_;
-	gconstpointer _tmp19_;
-	SkkCandidateList* _tmp20_;
-	SkkCandidateList* _tmp21_;
-	SkkCandidateList* _tmp22_;
-	SkkCandidateList* _tmp23_;
+	GeeHashMap* _tmp3_;
+	SkkNoneStateHandler* _tmp4_;
+	SkkNoneStateHandler* _tmp5_;
+	GeeHashMap* _tmp6_;
+	SkkStartStateHandler* _tmp7_;
+	SkkStartStateHandler* _tmp8_;
+	GeeHashMap* _tmp9_;
+	SkkSelectStateHandler* _tmp10_;
+	SkkSelectStateHandler* _tmp11_;
+	GeeHashMap* _tmp12_;
+	SkkAbbrevStateHandler* _tmp13_;
+	SkkAbbrevStateHandler* _tmp14_;
+	GeeHashMap* _tmp15_;
+	SkkKutenStateHandler* _tmp16_;
+	SkkKutenStateHandler* _tmp17_;
+	GeeArrayList* _tmp18_;
+	SkkState* _tmp19_;
+	GSList* _tmp20_;
+	gconstpointer _tmp21_;
+	GSList* _tmp22_;
+	gconstpointer _tmp23_;
+	SkkCandidateList* _tmp24_;
+	SkkProxyCandidateList* _tmp25_;
+	SkkCandidateList* _tmp26_;
+	SkkCandidateList* _tmp27_;
 	self = (SkkContext*) g_object_new (object_type, NULL);
 	_tmp0_ = dictionaries;
 	_tmp0__length1 = dictionaries_length1;
-	skk_context_set_dictionaries (self, _tmp0_, _tmp0__length1);
-	_tmp1_ = self->priv->handlers;
-	_tmp2_ = skk_none_state_handler_new ();
-	_tmp3_ = _tmp2_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp1_, GINT_TO_POINTER (SKK_TYPE_NONE_STATE_HANDLER), (SkkStateHandler*) _tmp3_);
-	_g_object_unref0 (_tmp3_);
-	_tmp4_ = self->priv->handlers;
-	_tmp5_ = skk_start_state_handler_new ();
-	_tmp6_ = _tmp5_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp4_, GINT_TO_POINTER (SKK_TYPE_START_STATE_HANDLER), (SkkStateHandler*) _tmp6_);
-	_g_object_unref0 (_tmp6_);
-	_tmp7_ = self->priv->handlers;
-	_tmp8_ = skk_select_state_handler_new ();
-	_tmp9_ = _tmp8_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp7_, GINT_TO_POINTER (SKK_TYPE_SELECT_STATE_HANDLER), (SkkStateHandler*) _tmp9_);
-	_g_object_unref0 (_tmp9_);
-	_tmp10_ = self->priv->handlers;
-	_tmp11_ = skk_abbrev_state_handler_new ();
-	_tmp12_ = _tmp11_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp10_, GINT_TO_POINTER (SKK_TYPE_ABBREV_STATE_HANDLER), (SkkStateHandler*) _tmp12_);
-	_g_object_unref0 (_tmp12_);
-	_tmp13_ = self->priv->handlers;
-	_tmp14_ = skk_kuten_state_handler_new ();
-	_tmp15_ = _tmp14_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp13_, GINT_TO_POINTER (SKK_TYPE_KUTEN_STATE_HANDLER), (SkkStateHandler*) _tmp15_);
-	_g_object_unref0 (_tmp15_);
-	_tmp16_ = self->priv->_dictionaries;
-	_tmp17_ = skk_state_new (_tmp16_);
-	self->priv->state_stack = g_slist_prepend (self->priv->state_stack, _tmp17_);
-	_tmp18_ = self->priv->state_stack;
-	_tmp19_ = _tmp18_->data;
-	skk_context_connect_state_signals (self, (SkkState*) _tmp19_);
-	_tmp20_ = skk_context_get_candidates (self);
-	_tmp21_ = _tmp20_;
-	g_signal_connect_object ((GObject*) _tmp21_, "notify::cursor-pos", (GCallback) ___lambda6__g_object_notify, self, 0);
-	_tmp22_ = skk_context_get_candidates (self);
-	_tmp23_ = _tmp22_;
-	g_signal_connect_object (_tmp23_, "selected", (GCallback) ___lambda7__skk_candidate_list_selected, self, 0);
+	{
+		SkkDict** dict_collection = NULL;
+		gint dict_collection_length1 = 0;
+		gint _dict_collection_size_ = 0;
+		gint dict_it = 0;
+		dict_collection = _tmp0_;
+		dict_collection_length1 = _tmp0__length1;
+		for (dict_it = 0; dict_it < _tmp0__length1; dict_it = dict_it + 1) {
+			SkkDict* _tmp1_;
+			SkkDict* dict = NULL;
+			_tmp1_ = _g_object_ref0 (dict_collection[dict_it]);
+			dict = _tmp1_;
+			{
+				SkkDict* _tmp2_;
+				_tmp2_ = dict;
+				skk_context_add_dictionary (self, _tmp2_);
+				_g_object_unref0 (dict);
+			}
+		}
+	}
+	_tmp3_ = self->priv->handlers;
+	_tmp4_ = skk_none_state_handler_new ();
+	_tmp5_ = _tmp4_;
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp3_, GINT_TO_POINTER (SKK_TYPE_NONE_STATE_HANDLER), (SkkStateHandler*) _tmp5_);
+	_g_object_unref0 (_tmp5_);
+	_tmp6_ = self->priv->handlers;
+	_tmp7_ = skk_start_state_handler_new ();
+	_tmp8_ = _tmp7_;
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp6_, GINT_TO_POINTER (SKK_TYPE_START_STATE_HANDLER), (SkkStateHandler*) _tmp8_);
+	_g_object_unref0 (_tmp8_);
+	_tmp9_ = self->priv->handlers;
+	_tmp10_ = skk_select_state_handler_new ();
+	_tmp11_ = _tmp10_;
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp9_, GINT_TO_POINTER (SKK_TYPE_SELECT_STATE_HANDLER), (SkkStateHandler*) _tmp11_);
+	_g_object_unref0 (_tmp11_);
+	_tmp12_ = self->priv->handlers;
+	_tmp13_ = skk_abbrev_state_handler_new ();
+	_tmp14_ = _tmp13_;
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp12_, GINT_TO_POINTER (SKK_TYPE_ABBREV_STATE_HANDLER), (SkkStateHandler*) _tmp14_);
+	_g_object_unref0 (_tmp14_);
+	_tmp15_ = self->priv->handlers;
+	_tmp16_ = skk_kuten_state_handler_new ();
+	_tmp17_ = _tmp16_;
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp15_, GINT_TO_POINTER (SKK_TYPE_KUTEN_STATE_HANDLER), (SkkStateHandler*) _tmp17_);
+	_g_object_unref0 (_tmp17_);
+	_tmp18_ = self->priv->_dictionaries;
+	_tmp19_ = skk_state_new (_tmp18_);
+	self->priv->state_stack = g_slist_prepend (self->priv->state_stack, _tmp19_);
+	_tmp20_ = self->priv->state_stack;
+	_tmp21_ = _tmp20_->data;
+	skk_context_connect_state_signals (self, (SkkState*) _tmp21_);
+	_tmp22_ = self->priv->state_stack;
+	_tmp23_ = _tmp22_->data;
+	_tmp24_ = ((SkkState*) _tmp23_)->candidates;
+	_tmp25_ = skk_proxy_candidate_list_new (_tmp24_);
+	_g_object_unref0 (self->priv->_candidates);
+	self->priv->_candidates = (SkkCandidateList*) _tmp25_;
+	_tmp26_ = self->priv->_candidates;
+	g_signal_connect_object ((GObject*) _tmp26_, "notify::cursor-pos", (GCallback) ___lambda3__g_object_notify, self, 0);
+	_tmp27_ = self->priv->_candidates;
+	g_signal_connect_object (_tmp27_, "selected", (GCallback) ___lambda4__skk_candidate_list_selected, self, 0);
 	return self;
 }
 
 
 SkkContext* skk_context_new (SkkDict** dictionaries, int dictionaries_length1) {
 	return skk_context_construct (SKK_TYPE_CONTEXT, dictionaries, dictionaries_length1);
+}
+
+
+static void skk_context_notify_input_mode_cb (SkkContext* self, GObject* s, GParamSpec* p) {
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (s != NULL);
+	g_object_notify ((GObject*) self, "input-mode");
+}
+
+
+static gboolean skk_context_retrieve_surrounding_text_cb (SkkContext* self, gchar** text, guint* cursor_pos) {
+	gchar* _vala_text = NULL;
+	guint _vala_cursor_pos = 0U;
+	gboolean result = FALSE;
+	gchar* _tmp0_ = NULL;
+	guint _tmp1_ = 0U;
+	gboolean _tmp2_ = FALSE;
+	g_return_val_if_fail (self != NULL, FALSE);
+	g_signal_emit_by_name (self, "retrieve-surrounding-text", &_tmp0_, &_tmp1_, &_tmp2_);
+	_g_free0 (_vala_text);
+	_vala_text = _tmp0_;
+	_vala_cursor_pos = _tmp1_;
+	result = _tmp2_;
+	if (text) {
+		*text = _vala_text;
+	} else {
+		_g_free0 (_vala_text);
+	}
+	if (cursor_pos) {
+		*cursor_pos = _vala_cursor_pos;
+	}
+	return result;
+}
+
+
+static gboolean skk_context_delete_surrounding_text_cb (SkkContext* self, gint offset, guint nchars) {
+	gboolean result = FALSE;
+	gint _tmp0_;
+	guint _tmp1_;
+	gboolean _tmp2_ = FALSE;
+	g_return_val_if_fail (self != NULL, FALSE);
+	_tmp0_ = offset;
+	_tmp1_ = nchars;
+	g_signal_emit_by_name (self, "delete-surrounding-text", _tmp0_, _tmp1_, &_tmp2_);
+	result = _tmp2_;
+	return result;
 }
 
 
@@ -633,65 +759,21 @@ static gboolean _skk_context_abort_dict_edit_skk_state_recursive_edit_abort (Skk
 }
 
 
-static void __lambda3_ (SkkContext* self, GObject* s, GParamSpec* p) {
-	g_return_if_fail (s != NULL);
-	g_return_if_fail (p != NULL);
-	g_object_notify ((GObject*) self, "input-mode");
+static void _skk_context_notify_input_mode_cb_g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self) {
+	skk_context_notify_input_mode_cb (self, _sender, pspec);
 }
 
 
-static void ___lambda3__g_object_notify (GObject* _sender, GParamSpec* pspec, gpointer self) {
-	__lambda3_ (self, _sender, pspec);
-}
-
-
-static gboolean __lambda4_ (SkkContext* self, gchar** t, guint* c) {
-	gchar* _vala_t = NULL;
-	guint _vala_c = 0U;
-	gboolean result = FALSE;
-	gchar* _tmp0_ = NULL;
-	guint _tmp1_ = 0U;
-	gboolean _tmp2_ = FALSE;
-	g_signal_emit_by_name (self, "retrieve-surrounding-text", &_tmp0_, &_tmp1_, &_tmp2_);
-	_g_free0 (_vala_t);
-	_vala_t = _tmp0_;
-	_vala_c = _tmp1_;
-	result = _tmp2_;
-	if (t) {
-		*t = _vala_t;
-	} else {
-		_g_free0 (_vala_t);
-	}
-	if (c) {
-		*c = _vala_c;
-	}
-	return result;
-}
-
-
-static gboolean ___lambda4__skk_state_retrieve_surrounding_text (SkkState* _sender, gchar** text, guint* cursor_pos, gpointer self) {
+static gboolean _skk_context_retrieve_surrounding_text_cb_skk_state_retrieve_surrounding_text (SkkState* _sender, gchar** text, guint* cursor_pos, gpointer self) {
 	gboolean result;
-	result = __lambda4_ (self, text, cursor_pos);
+	result = skk_context_retrieve_surrounding_text_cb (self, text, cursor_pos);
 	return result;
 }
 
 
-static gboolean __lambda5_ (SkkContext* self, gint o, guint n) {
-	gboolean result = FALSE;
-	gint _tmp0_;
-	guint _tmp1_;
-	gboolean _tmp2_ = FALSE;
-	_tmp0_ = o;
-	_tmp1_ = n;
-	g_signal_emit_by_name (self, "delete-surrounding-text", _tmp0_, _tmp1_, &_tmp2_);
-	result = _tmp2_;
-	return result;
-}
-
-
-static gboolean ___lambda5__skk_state_delete_surrounding_text (SkkState* _sender, gint offset, guint nchars, gpointer self) {
+static gboolean _skk_context_delete_surrounding_text_cb_skk_state_delete_surrounding_text (SkkState* _sender, gint offset, guint nchars, gpointer self) {
 	gboolean result;
-	result = __lambda5_ (self, offset, nchars);
+	result = skk_context_delete_surrounding_text_cb (self, offset, nchars);
 	return result;
 }
 
@@ -712,16 +794,48 @@ static void skk_context_connect_state_signals (SkkContext* self, SkkState* state
 	_tmp2_ = state;
 	g_signal_connect_object (_tmp2_, "recursive-edit-abort", (GCallback) _skk_context_abort_dict_edit_skk_state_recursive_edit_abort, self, 0);
 	_tmp3_ = state;
-	g_signal_connect_object ((GObject*) _tmp3_, "notify::input-mode", (GCallback) ___lambda3__g_object_notify, self, 0);
+	g_signal_connect_object ((GObject*) _tmp3_, "notify::input-mode", (GCallback) _skk_context_notify_input_mode_cb_g_object_notify, self, 0);
 	_tmp4_ = state;
-	g_signal_connect_object (_tmp4_, "retrieve-surrounding-text", (GCallback) ___lambda4__skk_state_retrieve_surrounding_text, self, 0);
+	g_signal_connect_object (_tmp4_, "retrieve-surrounding-text", (GCallback) _skk_context_retrieve_surrounding_text_cb_skk_state_retrieve_surrounding_text, self, 0);
 	_tmp5_ = state;
-	g_signal_connect_object (_tmp5_, "delete-surrounding-text", (GCallback) ___lambda5__skk_state_delete_surrounding_text, self, 0);
+	g_signal_connect_object (_tmp5_, "delete-surrounding-text", (GCallback) _skk_context_delete_surrounding_text_cb_skk_state_delete_surrounding_text, self, 0);
 }
 
 
-static gpointer _g_object_ref0 (gpointer self) {
-	return self ? g_object_ref (self) : NULL;
+static void skk_context_disconnect_state_signals (SkkContext* self, SkkState* state) {
+	SkkState* _tmp0_;
+	guint _tmp1_ = 0U;
+	SkkState* _tmp2_;
+	guint _tmp3_ = 0U;
+	SkkState* _tmp4_;
+	guint _tmp5_ = 0U;
+	SkkState* _tmp6_;
+	guint _tmp7_ = 0U;
+	GQuark _tmp8_ = 0U;
+	SkkState* _tmp9_;
+	guint _tmp10_ = 0U;
+	SkkState* _tmp11_;
+	guint _tmp12_ = 0U;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (state != NULL);
+	_tmp0_ = state;
+	g_signal_parse_name ("recursive-edit-start", SKK_TYPE_STATE, &_tmp1_, NULL, FALSE);
+	g_signal_handlers_disconnect_matched (_tmp0_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp1_, 0, NULL, (GCallback) _skk_context_start_dict_edit_skk_state_recursive_edit_start, self);
+	_tmp2_ = state;
+	g_signal_parse_name ("recursive-edit-end", SKK_TYPE_STATE, &_tmp3_, NULL, FALSE);
+	g_signal_handlers_disconnect_matched (_tmp2_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp3_, 0, NULL, (GCallback) _skk_context_end_dict_edit_skk_state_recursive_edit_end, self);
+	_tmp4_ = state;
+	g_signal_parse_name ("recursive-edit-abort", SKK_TYPE_STATE, &_tmp5_, NULL, FALSE);
+	g_signal_handlers_disconnect_matched (_tmp4_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp5_, 0, NULL, (GCallback) _skk_context_abort_dict_edit_skk_state_recursive_edit_abort, self);
+	_tmp6_ = state;
+	g_signal_parse_name ("notify::input-mode", G_TYPE_OBJECT, &_tmp7_, &_tmp8_, TRUE);
+	g_signal_handlers_disconnect_matched ((GObject*) _tmp6_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_DETAIL | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp7_, _tmp8_, NULL, (GCallback) _skk_context_notify_input_mode_cb_g_object_notify, self);
+	_tmp9_ = state;
+	g_signal_parse_name ("retrieve-surrounding-text", SKK_TYPE_STATE, &_tmp10_, NULL, FALSE);
+	g_signal_handlers_disconnect_matched (_tmp9_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp10_, 0, NULL, (GCallback) _skk_context_retrieve_surrounding_text_cb_skk_state_retrieve_surrounding_text, self);
+	_tmp11_ = state;
+	g_signal_parse_name ("delete-surrounding-text", SKK_TYPE_STATE, &_tmp12_, NULL, FALSE);
+	g_signal_handlers_disconnect_matched (_tmp11_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp12_, 0, NULL, (GCallback) _skk_context_delete_surrounding_text_cb_skk_state_delete_surrounding_text, self);
 }
 
 
@@ -803,9 +917,15 @@ static void skk_context_start_dict_edit (SkkContext* self, const gchar* midasi, 
 	const gchar* _tmp2_;
 	gchar* _tmp3_;
 	gboolean _tmp4_;
-	SkkState* _tmp5_;
-	GSList* _tmp6_;
-	gconstpointer _tmp7_;
+	GSList* _tmp5_;
+	gconstpointer _tmp6_;
+	SkkState* _tmp7_;
+	GSList* _tmp8_;
+	gconstpointer _tmp9_;
+	SkkCandidateList* _tmp10_;
+	GSList* _tmp11_;
+	gconstpointer _tmp12_;
+	SkkCandidateList* _tmp13_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (midasi != NULL);
 	_tmp0_ = self->priv->_dictionaries;
@@ -817,13 +937,20 @@ static void skk_context_start_dict_edit (SkkContext* self, const gchar* midasi, 
 	state->midasi = _tmp3_;
 	_tmp4_ = okuri;
 	state->okuri = _tmp4_;
-	_tmp5_ = _g_object_ref0 (state);
-	self->priv->state_stack = g_slist_prepend (self->priv->state_stack, _tmp5_);
-	_tmp6_ = self->priv->state_stack;
-	_tmp7_ = _tmp6_->data;
-	skk_context_connect_state_signals (self, (SkkState*) _tmp7_);
+	_tmp5_ = self->priv->state_stack;
+	_tmp6_ = _tmp5_->data;
+	skk_context_disconnect_state_signals (self, (SkkState*) _tmp6_);
+	_tmp7_ = _g_object_ref0 (state);
+	self->priv->state_stack = g_slist_prepend (self->priv->state_stack, _tmp7_);
+	_tmp8_ = self->priv->state_stack;
+	_tmp9_ = _tmp8_->data;
+	skk_context_connect_state_signals (self, (SkkState*) _tmp9_);
 	skk_context_update_preedit (self);
-	g_object_notify ((GObject*) self, "candidates");
+	_tmp10_ = self->priv->_candidates;
+	_tmp11_ = self->priv->state_stack;
+	_tmp12_ = _tmp11_->data;
+	_tmp13_ = ((SkkState*) _tmp12_)->candidates;
+	skk_proxy_candidate_list_set_candidates (SKK_PROXY_CANDIDATE_LIST (_tmp10_), _tmp13_);
 	_g_object_unref0 (state);
 }
 
@@ -881,7 +1008,7 @@ static gboolean skk_context_end_dict_edit (SkkContext* self, const gchar* text) 
 				_inner_error_ = NULL;
 				_tmp9_ = e;
 				_tmp10_ = _tmp9_->message;
-				g_warning ("context.vala:297: error saving dictionaries %s", _tmp10_);
+				g_warning ("context.vala:343: error saving dictionaries %s", _tmp10_);
 				_g_error_free0 (e);
 			}
 			__finally33:
@@ -934,8 +1061,8 @@ static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, g
 	gboolean* _vala_okuri = FALSE;
 	gboolean result = FALSE;
 	guint _tmp0_ = 0U;
-	gboolean _tmp12_;
-	gboolean* _tmp13_;
+	gboolean _tmp20_;
+	gboolean* _tmp21_;
 	g_return_val_if_fail (self != NULL, FALSE);
 	_tmp0_ = skk_context_dict_edit_level (self);
 	if (_tmp0_ > ((guint) 0)) {
@@ -948,8 +1075,16 @@ static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, g
 		gboolean _tmp7_;
 		gboolean* _tmp8_;
 		GSList* _tmp9_;
-		GSList* _tmp10_;
-		gconstpointer _tmp11_;
+		gconstpointer _tmp10_;
+		GSList* _tmp11_;
+		GSList* _tmp12_;
+		gconstpointer _tmp13_;
+		GSList* _tmp14_;
+		gconstpointer _tmp15_;
+		SkkCandidateList* _tmp16_;
+		GSList* _tmp17_;
+		gconstpointer _tmp18_;
+		SkkCandidateList* _tmp19_;
 		_tmp1_ = self->priv->state_stack;
 		_tmp2_ = _tmp1_->data;
 		_tmp3_ = ((SkkState*) _tmp2_)->midasi;
@@ -963,11 +1098,21 @@ static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, g
 		_g_free0 (_vala_okuri);
 		_vala_okuri = _tmp8_;
 		_tmp9_ = self->priv->state_stack;
-		self->priv->state_stack = g_slist_delete_link (self->priv->state_stack, _tmp9_);
-		_tmp10_ = self->priv->state_stack;
-		_tmp11_ = _tmp10_->data;
-		skk_state_cancel_okuri ((SkkState*) _tmp11_);
-		g_object_notify ((GObject*) self, "candidates");
+		_tmp10_ = _tmp9_->data;
+		skk_context_disconnect_state_signals (self, (SkkState*) _tmp10_);
+		_tmp11_ = self->priv->state_stack;
+		self->priv->state_stack = g_slist_delete_link (self->priv->state_stack, _tmp11_);
+		_tmp12_ = self->priv->state_stack;
+		_tmp13_ = _tmp12_->data;
+		skk_context_connect_state_signals (self, (SkkState*) _tmp13_);
+		_tmp14_ = self->priv->state_stack;
+		_tmp15_ = _tmp14_->data;
+		skk_state_cancel_okuri ((SkkState*) _tmp15_);
+		_tmp16_ = self->priv->_candidates;
+		_tmp17_ = self->priv->state_stack;
+		_tmp18_ = _tmp17_->data;
+		_tmp19_ = ((SkkState*) _tmp18_)->candidates;
+		skk_proxy_candidate_list_set_candidates (SKK_PROXY_CANDIDATE_LIST (_tmp16_), _tmp19_);
 		result = TRUE;
 		if (midasi) {
 			*midasi = _vala_midasi;
@@ -983,10 +1128,10 @@ static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, g
 	}
 	_g_free0 (_vala_midasi);
 	_vala_midasi = NULL;
-	_tmp12_ = FALSE;
-	_tmp13_ = __bool_dup0 (&_tmp12_);
+	_tmp20_ = FALSE;
+	_tmp21_ = __bool_dup0 (&_tmp20_);
 	_g_free0 (_vala_okuri);
-	_vala_okuri = _tmp13_;
+	_vala_okuri = _tmp21_;
 	result = FALSE;
 	if (midasi) {
 		*midasi = _vala_midasi;
@@ -1132,7 +1277,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 				gunichar _tmp11_;
 				_tmp9_ = complex;
 				if (_tmp9_) {
-					g_warning ("context.vala:360: bare '(' is not allowed in complex keyseq");
+					g_warning ("context.vala:409: bare '(' is not allowed in complex keyseq");
 					result = FALSE;
 					_g_string_free0 (builder);
 					_g_object_unref0 (keys);
@@ -1155,7 +1300,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 				GString* _tmp18_;
 				_tmp12_ = complex;
 				if (!_tmp12_) {
-					g_warning ("context.vala:368: bare ')' is not allowed in simple keyseq");
+					g_warning ("context.vala:417: bare ')' is not allowed in simple keyseq");
 					result = FALSE;
 					_g_string_free0 (builder);
 					_g_object_unref0 (keys);
@@ -1216,7 +1361,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 	}
 	_tmp30_ = complex;
 	if (_tmp30_) {
-		g_warning ("context.vala:391: premature end of key events");
+		g_warning ("context.vala:440: premature end of key events");
 		result = FALSE;
 		_g_string_free0 (builder);
 		_g_object_unref0 (keys);
@@ -1456,33 +1601,51 @@ static gboolean skk_context_process_key_event_internal (SkkContext* self, SkkKey
          * Reset the context.
          */
 void skk_context_reset (SkkContext* self) {
-	GSList* _tmp4_;
-	gconstpointer _tmp5_;
-	GSList* _tmp6_;
-	gconstpointer _tmp7_;
+	GSList* _tmp8_;
+	gconstpointer _tmp9_;
+	GSList* _tmp10_;
+	gconstpointer _tmp11_;
+	SkkCandidateList* _tmp12_;
+	GSList* _tmp13_;
+	gconstpointer _tmp14_;
+	SkkCandidateList* _tmp15_;
 	g_return_if_fail (self != NULL);
 	while (TRUE) {
 		guint _tmp0_ = 0U;
 		GSList* _tmp1_;
-		GSList* _tmp2_;
-		gconstpointer _tmp3_;
+		gconstpointer _tmp2_;
+		GSList* _tmp3_;
+		GSList* _tmp4_;
+		gconstpointer _tmp5_;
+		GSList* _tmp6_;
+		gconstpointer _tmp7_;
 		_tmp0_ = skk_context_dict_edit_level (self);
 		if (!(_tmp0_ > ((guint) 0))) {
 			break;
 		}
 		_tmp1_ = self->priv->state_stack;
-		self->priv->state_stack = g_slist_delete_link (self->priv->state_stack, _tmp1_);
-		_tmp2_ = self->priv->state_stack;
-		_tmp3_ = _tmp2_->data;
-		skk_state_cancel_okuri ((SkkState*) _tmp3_);
+		_tmp2_ = _tmp1_->data;
+		skk_context_disconnect_state_signals (self, (SkkState*) _tmp2_);
+		_tmp3_ = self->priv->state_stack;
+		self->priv->state_stack = g_slist_delete_link (self->priv->state_stack, _tmp3_);
+		_tmp4_ = self->priv->state_stack;
+		_tmp5_ = _tmp4_->data;
+		skk_context_connect_state_signals (self, (SkkState*) _tmp5_);
+		_tmp6_ = self->priv->state_stack;
+		_tmp7_ = _tmp6_->data;
+		skk_state_cancel_okuri ((SkkState*) _tmp7_);
 	}
-	_tmp4_ = self->priv->state_stack;
-	_tmp5_ = _tmp4_->data;
-	skk_state_output_surrounding_text ((SkkState*) _tmp5_);
-	_tmp6_ = self->priv->state_stack;
-	_tmp7_ = _tmp6_->data;
-	skk_state_reset ((SkkState*) _tmp7_);
-	g_object_notify ((GObject*) self, "candidates");
+	_tmp8_ = self->priv->state_stack;
+	_tmp9_ = _tmp8_->data;
+	skk_state_output_surrounding_text ((SkkState*) _tmp9_);
+	_tmp10_ = self->priv->state_stack;
+	_tmp11_ = _tmp10_->data;
+	skk_state_reset ((SkkState*) _tmp11_);
+	_tmp12_ = self->priv->_candidates;
+	_tmp13_ = self->priv->state_stack;
+	_tmp14_ = _tmp13_->data;
+	_tmp15_ = ((SkkState*) _tmp14_)->candidates;
+	skk_proxy_candidate_list_set_candidates (SKK_PROXY_CANDIDATE_LIST (_tmp12_), _tmp15_);
 }
 
 
@@ -1639,6 +1802,10 @@ static void skk_context_update_preedit (SkkContext* self) {
 	const gchar* _tmp46_;
 	GString* _tmp47_;
 	const gchar* _tmp48_;
+	gboolean _tmp51_ = FALSE;
+	guint _tmp52_;
+	guint _tmp53_;
+	gboolean _tmp56_;
 	gboolean _tmp59_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
@@ -1772,32 +1939,27 @@ static void skk_context_update_preedit (SkkContext* self) {
 		_tmp50_ = _tmp49_->str;
 		skk_context_set_preedit (self, _tmp50_);
 		changed = TRUE;
+	}
+	_tmp52_ = self->priv->preedit_underline_offset;
+	_tmp53_ = offset;
+	if (_tmp52_ != _tmp53_) {
+		_tmp51_ = TRUE;
 	} else {
-		gboolean _tmp51_ = FALSE;
-		guint _tmp52_;
-		guint _tmp53_;
-		gboolean _tmp56_;
-		_tmp52_ = self->priv->preedit_underline_offset;
-		_tmp53_ = offset;
-		if (_tmp52_ != _tmp53_) {
-			_tmp51_ = TRUE;
-		} else {
-			guint _tmp54_;
-			guint _tmp55_;
-			_tmp54_ = self->priv->preedit_underline_nchars;
-			_tmp55_ = nchars;
-			_tmp51_ = _tmp54_ != _tmp55_;
-		}
-		_tmp56_ = _tmp51_;
-		if (_tmp56_) {
-			guint _tmp57_;
-			guint _tmp58_;
-			_tmp57_ = offset;
-			self->priv->preedit_underline_offset = _tmp57_;
-			_tmp58_ = nchars;
-			self->priv->preedit_underline_nchars = _tmp58_;
-			changed = TRUE;
-		}
+		guint _tmp54_;
+		guint _tmp55_;
+		_tmp54_ = self->priv->preedit_underline_nchars;
+		_tmp55_ = nchars;
+		_tmp51_ = _tmp54_ != _tmp55_;
+	}
+	_tmp56_ = _tmp51_;
+	if (_tmp56_) {
+		guint _tmp57_;
+		guint _tmp58_;
+		_tmp57_ = offset;
+		self->priv->preedit_underline_offset = _tmp57_;
+		_tmp58_ = nchars;
+		self->priv->preedit_underline_nchars = _tmp58_;
+		changed = TRUE;
 	}
 	_tmp59_ = changed;
 	if (_tmp59_) {
@@ -1942,14 +2104,10 @@ void skk_context_set_dictionaries (SkkContext* self, SkkDict** value, int value_
 
 SkkCandidateList* skk_context_get_candidates (SkkContext* self) {
 	SkkCandidateList* result;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkCandidateList* _tmp2_;
+	SkkCandidateList* _tmp0_;
 	g_return_val_if_fail (self != NULL, NULL);
-	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = ((SkkState*) _tmp1_)->candidates;
-	result = _tmp2_;
+	_tmp0_ = self->priv->_candidates;
+	result = _tmp0_;
 	return result;
 }
 
@@ -2006,7 +2164,7 @@ gchar** skk_context_get_auto_start_henkan_keywords (SkkContext* self, int* resul
 }
 
 
-static gchar** _vala_array_dup3 (gchar** self, int length) {
+static gchar** _vala_array_dup4 (gchar** self, int length) {
 	gchar** result;
 	int i;
 	result = g_new0 (gchar*, length + 1);
@@ -2031,7 +2189,7 @@ void skk_context_set_auto_start_henkan_keywords (SkkContext* self, gchar** value
 	_tmp1_ = _tmp0_->data;
 	_tmp2_ = value;
 	_tmp2__length1 = value_length1;
-	_tmp3_ = (_tmp2_ != NULL) ? _vala_array_dup3 (_tmp2_, _tmp2__length1) : ((gpointer) _tmp2_);
+	_tmp3_ = (_tmp2_ != NULL) ? _vala_array_dup4 (_tmp2_, _tmp2__length1) : ((gpointer) _tmp2_);
 	_tmp3__length1 = _tmp2__length1;
 	((SkkState*) _tmp1_)->auto_start_henkan_keywords = (_vala_array_free (((SkkState*) _tmp1_)->auto_start_henkan_keywords, ((SkkState*) _tmp1_)->auto_start_henkan_keywords_length1, (GDestroyNotify) g_free), NULL);
 	((SkkState*) _tmp1_)->auto_start_henkan_keywords = _tmp3_;
@@ -2113,7 +2271,7 @@ SkkRule* skk_context_get_typing_rule (SkkContext* self) {
 }
 
 
-static void _skk_context_typing_rule___lambda8_ (SkkContext* self, SkkKeyEvent* key) {
+static void _skk_context_typing_rule___lambda5_ (SkkContext* self, SkkKeyEvent* key) {
 	SkkKeyEvent* _tmp0_;
 	g_return_if_fail (key != NULL);
 	_tmp0_ = key;
@@ -2121,8 +2279,8 @@ static void _skk_context_typing_rule___lambda8_ (SkkContext* self, SkkKeyEvent* 
 }
 
 
-static void __skk_context_typing_rule___lambda8__skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self) {
-	_skk_context_typing_rule___lambda8_ (self, key);
+static void __skk_context_typing_rule___lambda5__skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self) {
+	_skk_context_typing_rule___lambda5_ (self, key);
 }
 
 
@@ -2143,7 +2301,7 @@ void skk_context_set_typing_rule (SkkContext* self, SkkRule* value) {
 	rule = _tmp3_;
 	_tmp4_ = skk_rule_get_filter (rule);
 	filter = _tmp4_;
-	g_signal_connect_object (filter, "forwarded", (GCallback) __skk_context_typing_rule___lambda8__skk_key_event_filter_forwarded, self, 0);
+	g_signal_connect_object (filter, "forwarded", (GCallback) __skk_context_typing_rule___lambda5__skk_key_event_filter_forwarded, self, 0);
 	_g_object_unref0 (filter);
 	_g_object_unref0 (rule);
 	g_object_notify ((GObject *) self, "typing-rule");
@@ -2321,6 +2479,7 @@ static void skk_context_finalize (GObject* obj) {
 	_tmp0_ = self->priv->_dictionaries;
 	gee_abstract_collection_clear ((GeeAbstractCollection*) _tmp0_);
 	_g_object_unref0 (self->priv->_dictionaries);
+	_g_object_unref0 (self->priv->_candidates);
 	__g_slist_free__g_object_unref0_0 (self->priv->state_stack);
 	_g_object_unref0 (self->priv->handlers);
 	_g_free0 (self->priv->_preedit);

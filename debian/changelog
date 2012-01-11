@@ -1,3 +1,9 @@
+libskk (0.0.8-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Daiki Ueno <ueno@unixuser.org>  Thu, 12 Jan 2012 07:29:48 +0900
+
 libskk (0.0.7-1) unstable; urgency=low
 
   * Initial release (Closes: #652917)
