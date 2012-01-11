@@ -1,0 +1,1227 @@
+<?xml version="1.0"?>
+<repository version="1.2" xmlns="http://www.gtk.org/introspection/core/1.0" xmlns:c="http://www.gtk.org/introspection/c/1.0" xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+<include name="GObject" version="2.0"/>
+<package name="skk-1.0"/>
+<c:include name="libskk/libskk.h"/>
+<namespace name="Skk" version="1.0" c:prefix="Skk">
+	<enumeration name="KanaMode" c:type="SkkKanaMode" glib:type-name="SkkKanaMode" glib:get-type="skk_kana_mode_get_type">
+		<member name="hiragana" c:identifier="SKK_KANA_MODE_HIRAGANA" value="0"/>
+		<member name="katakana" c:identifier="SKK_KANA_MODE_KATAKANA" value="1"/>
+		<member name="hankaku_katakana" c:identifier="SKK_KANA_MODE_HANKAKU_KATAKANA" value="2"/>
+	</enumeration>
+	<enumeration name="PeriodStyle" c:type="SkkPeriodStyle" glib:type-name="SkkPeriodStyle" glib:get-type="skk_period_style_get_type">
+		<member name="ja_ja" c:identifier="SKK_PERIOD_STYLE_JA_JA" value="0"/>
+		<member name="en_en" c:identifier="SKK_PERIOD_STYLE_EN_EN" value="1"/>
+		<member name="ja_en" c:identifier="SKK_PERIOD_STYLE_JA_EN" value="2"/>
+		<member name="en_ja" c:identifier="SKK_PERIOD_STYLE_EN_JA" value="3"/>
+	</enumeration>
+	<enumeration name="ModifierType" c:type="SkkModifierType" glib:type-name="SkkModifierType" glib:get-type="skk_modifier_type_get_type">
+		<member name="none" c:identifier="SKK_MODIFIER_TYPE_NONE" value="0"/>
+		<member name="shift_mask" c:identifier="SKK_MODIFIER_TYPE_SHIFT_MASK" value="(null)"/>
+		<member name="lock_mask" c:identifier="SKK_MODIFIER_TYPE_LOCK_MASK" value="(null)"/>
+		<member name="control_mask" c:identifier="SKK_MODIFIER_TYPE_CONTROL_MASK" value="(null)"/>
+		<member name="mod1_mask" c:identifier="SKK_MODIFIER_TYPE_MOD1_MASK" value="(null)"/>
+		<member name="mod2_mask" c:identifier="SKK_MODIFIER_TYPE_MOD2_MASK" value="(null)"/>
+		<member name="mod3_mask" c:identifier="SKK_MODIFIER_TYPE_MOD3_MASK" value="(null)"/>
+		<member name="mod4_mask" c:identifier="SKK_MODIFIER_TYPE_MOD4_MASK" value="(null)"/>
+		<member name="mod5_mask" c:identifier="SKK_MODIFIER_TYPE_MOD5_MASK" value="(null)"/>
+		<member name="lshift_mask" c:identifier="SKK_MODIFIER_TYPE_LSHIFT_MASK" value="(null)"/>
+		<member name="rshift_mask" c:identifier="SKK_MODIFIER_TYPE_RSHIFT_MASK" value="(null)"/>
+		<member name="usleep_mask" c:identifier="SKK_MODIFIER_TYPE_USLEEP_MASK" value="(null)"/>
+		<member name="super_mask" c:identifier="SKK_MODIFIER_TYPE_SUPER_MASK" value="(null)"/>
+		<member name="hyper_mask" c:identifier="SKK_MODIFIER_TYPE_HYPER_MASK" value="(null)"/>
+		<member name="meta_mask" c:identifier="SKK_MODIFIER_TYPE_META_MASK" value="(null)"/>
+		<member name="release_mask" c:identifier="SKK_MODIFIER_TYPE_RELEASE_MASK" value="(null)"/>
+	</enumeration>
+	<enumeration name="InputMode" c:type="SkkInputMode" glib:type-name="SkkInputMode" glib:get-type="skk_input_mode_get_type">
+		<member name="hiragana" c:identifier="SKK_INPUT_MODE_HIRAGANA" value="(null)"/>
+		<member name="katakana" c:identifier="SKK_INPUT_MODE_KATAKANA" value="(null)"/>
+		<member name="hankaku_katakana" c:identifier="SKK_INPUT_MODE_HANKAKU_KATAKANA" value="(null)"/>
+		<member name="latin" c:identifier="SKK_INPUT_MODE_LATIN" value="0"/>
+		<member name="wide_latin" c:identifier="SKK_INPUT_MODE_WIDE_LATIN" value="1"/>
+		<member name="last" c:identifier="SKK_INPUT_MODE_LAST" value="2"/>
+		<member name="default" c:identifier="SKK_INPUT_MODE_DEFAULT" value="(null)"/>
+	</enumeration>
+	<errordomain name="RuleParseError" get-quark="skk_rule_parse_error_quark" codes="RuleParseError">
+</errordomain>
+	<enumeration name="RuleParseError" c:type="SkkRuleParseError">
+		<member name="failed" c:identifier="SKK_RULE_PARSE_ERROR_FAILED" value="0"/>
+	</enumeration>
+	<class name="RomKanaConverter" c:type="SkkRomKanaConverter" glib:type-name="SkkRomKanaConverter" glib:get-type="skk_rom_kana_converter_get_type" glib:type-struct="RomKanaConverterClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="RomKanaConverterPrivate" c:type="SkkRomKanaConverterPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_rom_kana_converter_new">
+			<return-value transfer-ownership="full">
+				<type name="Skk.RomKanaConverter" c:type="SkkRomKanaConverter*"/>
+			</return-value>
+		</constructor>
+		<method name="output_nn_if_any" c:identifier="skk_rom_kana_converter_output_nn_if_any">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="append_text" c:identifier="skk_rom_kana_converter_append_text">
+			<parameters>
+				<parameter name="text" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="append" c:identifier="skk_rom_kana_converter_append">
+			<parameters>
+				<parameter name="uc" transfer-ownership="none">
+					<type name="gunichar" c:type="gunichar"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="can_consume" c:identifier="skk_rom_kana_converter_can_consume">
+			<parameters>
+				<parameter name="uc" transfer-ownership="none">
+					<type name="gunichar" c:type="gunichar"/>
+				</parameter>
+				<parameter name="preedit_only" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+				<parameter name="no_carryover" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="reset" c:identifier="skk_rom_kana_converter_reset">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="delete" c:identifier="skk_rom_kana_converter_delete">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<property name="kana-mode" writable="1">
+			<type name="Skk.KanaMode" c:type="SkkKanaMode"/>
+		</property>
+		<property name="period-style" writable="1">
+			<type name="Skk.PeriodStyle" c:type="SkkPeriodStyle"/>
+		</property>
+		<property name="output" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<property name="preedit">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+	</class>
+	<record name="RomKanaConverterClass" c:type="SkkRomKanaConverterClass" glib:is-gtype-struct-for="RomKanaConverter">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="RomKanaConverterPrivate" c:type="SkkRomKanaConverterPrivate" disguised="1"/>
+	<class name="KanaKanConverter" c:type="SkkKanaKanConverter" glib:type-name="SkkKanaKanConverter" glib:get-type="skk_kana_kan_converter_get_type" glib:type-struct="KanaKanConverterClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="KanaKanConverterPrivate" c:type="SkkKanaKanConverterPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_kana_kan_converter_new">
+			<parameters>
+				<parameter name="dict" transfer-ownership="none">
+					<type name="Skk.KanaKanDict" c:type="SkkKanaKanDict*"/>
+				</parameter>
+				<parameter name="map" transfer-ownership="none">
+					<type name="Skk.KanaKanScoreMap" c:type="SkkKanaKanScoreMap*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.KanaKanConverter" c:type="SkkKanaKanConverter*"/>
+			</return-value>
+		</constructor>
+		<method name="convert" c:identifier="skk_kana_kan_converter_convert">
+			<parameters>
+				<parameter name="kana" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+	</class>
+	<record name="KanaKanConverterClass" c:type="SkkKanaKanConverterClass" glib:is-gtype-struct-for="KanaKanConverter">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="KanaKanConverterPrivate" c:type="SkkKanaKanConverterPrivate" disguised="1"/>
+	<class name="KanaKanDict" c:type="SkkKanaKanDict" glib:type-name="SkkKanaKanDict" glib:get-type="skk_kana_kan_dict_get_type" glib:type-struct="KanaKanDictClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="KanaKanDictPrivate" c:type="SkkKanaKanDictPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_kana_kan_dict_new" throws="1">
+			<parameters>
+				<parameter name="path" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.KanaKanDict" c:type="SkkKanaKanDict*"/>
+			</return-value>
+		</constructor>
+		<method name="add" c:identifier="skk_kana_kan_dict_add">
+			<parameters>
+				<parameter name="pron" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="word" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+	</class>
+	<record name="KanaKanDictClass" c:type="SkkKanaKanDictClass" glib:is-gtype-struct-for="KanaKanDict">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="KanaKanDictPrivate" c:type="SkkKanaKanDictPrivate" disguised="1"/>
+	<class name="KanaKanScoreMap" c:type="SkkKanaKanScoreMap" glib:type-name="SkkKanaKanScoreMap" glib:get-type="skk_kana_kan_score_map_get_type" glib:type-struct="KanaKanScoreMapClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="KanaKanScoreMapPrivate" c:type="SkkKanaKanScoreMapPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_kana_kan_score_map_new" throws="1">
+			<parameters>
+				<parameter name="path" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="dict" transfer-ownership="none">
+					<type name="Skk.KanaKanDict" c:type="SkkKanaKanDict*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.KanaKanScoreMap" c:type="SkkKanaKanScoreMap*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="KanaKanScoreMapClass" c:type="SkkKanaKanScoreMapClass" glib:is-gtype-struct-for="KanaKanScoreMap">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="KanaKanScoreMapPrivate" c:type="SkkKanaKanScoreMapPrivate" disguised="1"/>
+	<class name="Dict" c:type="SkkDict" glib:type-name="SkkDict" glib:get-type="skk_dict_get_type" glib:type-struct="DictClass" parent="GObject.Object" abstract="1">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="DictPrivate" c:type="SkkDictPrivate*"/>
+		</field>
+		<method name="split_candidates" c:identifier="skk_dict_split_candidates">
+			<parameters>
+				<parameter name="midasi" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="okuri" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+				<parameter name="line" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<array length="3">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</array>
+			</return-value>
+		</method>
+		<method name="join_candidates" c:identifier="skk_dict_join_candidates">
+			<parameters>
+				<parameter name="candidates" transfer-ownership="none">
+					<array length="1">
+						<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+					</array>
+				</parameter>
+				<parameter name="candidates_length1" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="reload" c:identifier="skk_dict_reload" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<virtual-method name="reload" invoker="reload" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</virtual-method>
+		<method name="lookup" c:identifier="skk_dict_lookup">
+			<parameters>
+				<parameter name="midasi" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="okuri" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<array length="2">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</array>
+			</return-value>
+		</method>
+		<virtual-method name="lookup" invoker="lookup">
+			<parameters>
+				<parameter name="midasi" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="okuri" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<array length="2">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</array>
+			</return-value>
+		</virtual-method>
+		<method name="complete" c:identifier="skk_dict_complete">
+			<parameters>
+				<parameter name="midasi" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<array length="1">
+					<type name="utf8" c:type="gchar*"/>
+				</array>
+			</return-value>
+		</method>
+		<virtual-method name="complete" invoker="complete">
+			<parameters>
+				<parameter name="midasi" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<array length="1">
+					<type name="utf8" c:type="gchar*"/>
+				</array>
+			</return-value>
+		</virtual-method>
+		<method name="select_candidate" c:identifier="skk_dict_select_candidate">
+			<parameters>
+				<parameter name="candidate" transfer-ownership="none">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="select_candidate" invoker="select_candidate">
+			<parameters>
+				<parameter name="candidate" transfer-ownership="none">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="purge_candidate" c:identifier="skk_dict_purge_candidate">
+			<parameters>
+				<parameter name="candidate" transfer-ownership="none">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="purge_candidate" invoker="purge_candidate">
+			<parameters>
+				<parameter name="candidate" transfer-ownership="none">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="save" c:identifier="skk_dict_save" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<virtual-method name="save" invoker="save" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</virtual-method>
+		<property name="read-only">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+	</class>
+	<record name="DictClass" c:type="SkkDictClass" glib:is-gtype-struct-for="Dict">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+				<field name="reload">
+			<callback name="reload" c:type="reload" throws="1">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.Dict" c:type="SkkDict*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="lookup">
+			<callback name="lookup" c:type="lookup">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.Dict" c:type="SkkDict*"/>
+					</parameter>
+					<parameter name="midasi" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="okuri" transfer-ownership="none">
+						<type name="gboolean" c:type="gboolean"/>
+					</parameter>
+					<parameter name="result_length1" direction="out" transfer-ownership="none">
+						<type name="gint" c:type="gint"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<array length="3">
+						<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+					</array>
+				</return-value>
+			</callback>
+		</field>
+				<field name="complete">
+			<callback name="complete" c:type="complete">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.Dict" c:type="SkkDict*"/>
+					</parameter>
+					<parameter name="midasi" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="result_length1" direction="out" transfer-ownership="none">
+						<type name="gint" c:type="gint"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<array length="2">
+						<type name="utf8" c:type="gchar*"/>
+					</array>
+				</return-value>
+			</callback>
+		</field>
+				<field name="select_candidate">
+			<callback name="select_candidate" c:type="select_candidate">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.Dict" c:type="SkkDict*"/>
+					</parameter>
+					<parameter name="candidate" transfer-ownership="none">
+						<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="purge_candidate">
+			<callback name="purge_candidate" c:type="purge_candidate">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.Dict" c:type="SkkDict*"/>
+					</parameter>
+					<parameter name="candidate" transfer-ownership="none">
+						<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="save">
+			<callback name="save" c:type="save" throws="1">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.Dict" c:type="SkkDict*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+			</callback>
+		</field>
+	</record>
+	<record name="DictPrivate" c:type="SkkDictPrivate" disguised="1"/>
+	<class name="EmptyDict" c:type="SkkEmptyDict" glib:type-name="SkkEmptyDict" glib:get-type="skk_empty_dict_get_type" glib:type-struct="EmptyDictClass" parent="Skk.Dict">
+		<field name="parent_instance">
+			<type name="Skk.Dict" c:type="SkkDict"/>
+		</field>
+		<field name="priv">
+			<type name="EmptyDictPrivate" c:type="SkkEmptyDictPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_empty_dict_new">
+			<return-value transfer-ownership="full">
+				<type name="Skk.EmptyDict" c:type="SkkEmptyDict*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="EmptyDictClass" c:type="SkkEmptyDictClass" glib:is-gtype-struct-for="EmptyDict">
+		<field name="parent_class">
+			<type name="Skk.DictClass" c:type="SkkDictClass"/>
+		</field>
+	</record>
+	<record name="EmptyDictPrivate" c:type="SkkEmptyDictPrivate" disguised="1"/>
+	<class name="FileDict" c:type="SkkFileDict" glib:type-name="SkkFileDict" glib:get-type="skk_file_dict_get_type" glib:type-struct="FileDictClass" parent="Skk.Dict">
+		<field name="parent_instance">
+			<type name="Skk.Dict" c:type="SkkDict"/>
+		</field>
+		<field name="priv">
+			<type name="FileDictPrivate" c:type="SkkFileDictPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_file_dict_new" throws="1">
+			<parameters>
+				<parameter name="path" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="encoding" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.FileDict" c:type="SkkFileDict*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="FileDictClass" c:type="SkkFileDictClass" glib:is-gtype-struct-for="FileDict">
+		<field name="parent_class">
+			<type name="Skk.DictClass" c:type="SkkDictClass"/>
+		</field>
+	</record>
+	<record name="FileDictPrivate" c:type="SkkFileDictPrivate" disguised="1"/>
+	<class name="CdbDict" c:type="SkkCdbDict" glib:type-name="SkkCdbDict" glib:get-type="skk_cdb_dict_get_type" glib:type-struct="CdbDictClass" parent="Skk.Dict">
+		<field name="parent_instance">
+			<type name="Skk.Dict" c:type="SkkDict"/>
+		</field>
+		<field name="priv">
+			<type name="CdbDictPrivate" c:type="SkkCdbDictPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_cdb_dict_new" throws="1">
+			<parameters>
+				<parameter name="path" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="encoding" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.CdbDict" c:type="SkkCdbDict*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="CdbDictClass" c:type="SkkCdbDictClass" glib:is-gtype-struct-for="CdbDict">
+		<field name="parent_class">
+			<type name="Skk.DictClass" c:type="SkkDictClass"/>
+		</field>
+	</record>
+	<record name="CdbDictPrivate" c:type="SkkCdbDictPrivate" disguised="1"/>
+	<class name="UserDict" c:type="SkkUserDict" glib:type-name="SkkUserDict" glib:get-type="skk_user_dict_get_type" glib:type-struct="UserDictClass" parent="Skk.Dict">
+		<field name="parent_instance">
+			<type name="Skk.Dict" c:type="SkkDict"/>
+		</field>
+		<field name="priv">
+			<type name="UserDictPrivate" c:type="SkkUserDictPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_user_dict_new" throws="1">
+			<parameters>
+				<parameter name="path" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="encoding" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.UserDict" c:type="SkkUserDict*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="UserDictClass" c:type="SkkUserDictClass" glib:is-gtype-struct-for="UserDict">
+		<field name="parent_class">
+			<type name="Skk.DictClass" c:type="SkkDictClass"/>
+		</field>
+	</record>
+	<record name="UserDictPrivate" c:type="SkkUserDictPrivate" disguised="1"/>
+	<class name="SkkServ" c:type="SkkSkkServ" glib:type-name="SkkSkkServ" glib:get-type="skk_skk_serv_get_type" glib:type-struct="SkkServClass" parent="Skk.Dict">
+		<field name="parent_instance">
+			<type name="Skk.Dict" c:type="SkkDict"/>
+		</field>
+		<field name="priv">
+			<type name="SkkServPrivate" c:type="SkkSkkServPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_skk_serv_new" throws="1">
+			<parameters>
+				<parameter name="host" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="port" transfer-ownership="none">
+					<type name="guint16" c:type="guint16"/>
+				</parameter>
+				<parameter name="encoding" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.SkkServ" c:type="SkkSkkServ*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="SkkServClass" c:type="SkkSkkServClass" glib:is-gtype-struct-for="SkkServ">
+		<field name="parent_class">
+			<type name="Skk.DictClass" c:type="SkkDictClass"/>
+		</field>
+	</record>
+	<record name="SkkServPrivate" c:type="SkkSkkServPrivate" disguised="1"/>
+	<record name="KeyEvent">
+		<constructor name="new" c:identifier="skk_key_event_new">
+			<parameters>
+				<parameter name="name" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="code" transfer-ownership="none">
+					<type name="gunichar" c:type="gunichar"/>
+				</parameter>
+				<parameter name="modifiers" transfer-ownership="none">
+					<type name="Skk.ModifierType" c:type="SkkModifierType"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+			</return-value>
+		</constructor>
+		<method name="copy" c:identifier="skk_key_event_copy">
+			<return-value transfer-ownership="full">
+				<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+			</return-value>
+		</method>
+		<constructor name="from_string" c:identifier="skk_key_event_new_from_string">
+			<parameters>
+				<parameter name="key" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+			</return-value>
+		</constructor>
+		<method name="to_string" c:identifier="skk_key_event_to_string">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="base_equal" c:identifier="skk_key_event_base_equal">
+			<parameters>
+				<parameter name="key" transfer-ownership="none">
+					<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<property name="name" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<property name="code" writable="1">
+			<type name="gunichar" c:type="gunichar"/>
+		</property>
+		<property name="modifiers" writable="1">
+			<type name="Skk.ModifierType" c:type="SkkModifierType"/>
+		</property>
+	</record>
+	<class name="KeyEventFilter" c:type="SkkKeyEventFilter" glib:type-name="SkkKeyEventFilter" glib:get-type="skk_key_event_filter_get_type" glib:type-struct="KeyEventFilterClass" parent="GObject.Object" abstract="1">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="KeyEventFilterPrivate" c:type="SkkKeyEventFilterPrivate*"/>
+		</field>
+		<method name="filter_key_event" c:identifier="skk_key_event_filter_filter_key_event">
+			<parameters>
+				<parameter name="key" transfer-ownership="none">
+					<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+			</return-value>
+		</method>
+		<virtual-method name="filter_key_event" invoker="filter_key_event">
+			<parameters>
+				<parameter name="key" transfer-ownership="none">
+					<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+			</return-value>
+		</virtual-method>
+		<method name="reset" c:identifier="skk_key_event_filter_reset">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<virtual-method name="reset" invoker="reset">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</virtual-method>
+		<glib:signal name="forwarded">
+			<parameters>
+				<parameter name="key" transfer-ownership="none">
+					<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</glib:signal>
+	</class>
+	<record name="KeyEventFilterClass" c:type="SkkKeyEventFilterClass" glib:is-gtype-struct-for="KeyEventFilter">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+				<field name="filter_key_event">
+			<callback name="filter_key_event" c:type="filter_key_event">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.KeyEventFilter" c:type="SkkKeyEventFilter*"/>
+					</parameter>
+					<parameter name="key" transfer-ownership="none">
+						<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="reset">
+			<callback name="reset" c:type="reset">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.KeyEventFilter" c:type="SkkKeyEventFilter*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+			</callback>
+		</field>
+	</record>
+	<record name="KeyEventFilterPrivate" c:type="SkkKeyEventFilterPrivate" disguised="1"/>
+	<class name="SimpleKeyEventFilter" c:type="SkkSimpleKeyEventFilter" glib:type-name="SkkSimpleKeyEventFilter" glib:get-type="skk_simple_key_event_filter_get_type" glib:type-struct="SimpleKeyEventFilterClass" parent="Skk.KeyEventFilter">
+		<field name="parent_instance">
+			<type name="Skk.KeyEventFilter" c:type="SkkKeyEventFilter"/>
+		</field>
+		<field name="priv">
+			<type name="SimpleKeyEventFilterPrivate" c:type="SkkSimpleKeyEventFilterPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_simple_key_event_filter_new">
+			<return-value transfer-ownership="full">
+				<type name="Skk.SimpleKeyEventFilter" c:type="SkkSimpleKeyEventFilter*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="SimpleKeyEventFilterClass" c:type="SkkSimpleKeyEventFilterClass" glib:is-gtype-struct-for="SimpleKeyEventFilter">
+		<field name="parent_class">
+			<type name="Skk.KeyEventFilterClass" c:type="SkkKeyEventFilterClass"/>
+		</field>
+	</record>
+	<record name="SimpleKeyEventFilterPrivate" c:type="SkkSimpleKeyEventFilterPrivate" disguised="1"/>
+	<class name="Rule" c:type="SkkRule" glib:type-name="SkkRule" glib:get-type="skk_rule_get_type" glib:type-struct="RuleClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="RulePrivate" c:type="SkkRulePrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_rule_new" throws="1">
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.Rule" c:type="SkkRule*"/>
+			</return-value>
+		</constructor>
+		<function name="find_rule" c:identifier="skk_rule_find_rule">
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Skk.RuleMetadata" c:type="SkkRuleMetadata*"/>
+			</return-value>
+		</function>
+		<function name="list" c:identifier="skk_rule_list">
+			<parameters>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<array length="0">
+					<type name="Skk.RuleMetadata" c:type="SkkRuleMetadata"/>
+				</array>
+			</return-value>
+		</function>
+		<property name="metadata" writable="1">
+			<type name="Skk.RuleMetadata" c:type="SkkRuleMetadata"/>
+		</property>
+	</class>
+	<record name="RuleClass" c:type="SkkRuleClass" glib:is-gtype-struct-for="Rule">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="RulePrivate" c:type="SkkRulePrivate" disguised="1"/>
+	<class name="Context" c:type="SkkContext" glib:type-name="SkkContext" glib:get-type="skk_context_get_type" glib:type-struct="ContextClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="ContextPrivate" c:type="SkkContextPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="skk_context_new">
+			<parameters>
+				<parameter name="dictionaries" transfer-ownership="none">
+					<array length="1">
+						<type name="Skk.Dict" c:type="SkkDict*"/>
+					</array>
+				</parameter>
+				<parameter name="dictionaries_length1" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.Context" c:type="SkkContext*"/>
+			</return-value>
+		</constructor>
+		<method name="process_key_events" c:identifier="skk_context_process_key_events">
+			<parameters>
+				<parameter name="keyseq" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="process_key_event" c:identifier="skk_context_process_key_event">
+			<parameters>
+				<parameter name="key" transfer-ownership="none">
+					<type name="Skk.KeyEvent" c:type="SkkKeyEvent*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="reset" c:identifier="skk_context_reset">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="get_output" c:identifier="skk_context_get_output">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="peek_output" c:identifier="skk_context_peek_output">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="poll_output" c:identifier="skk_context_poll_output">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="clear_output" c:identifier="skk_context_clear_output">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="get_preedit_underline" c:identifier="skk_context_get_preedit_underline">
+			<parameters>
+				<parameter name="offset" direction="out" transfer-ownership="full">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+				<parameter name="nchars" direction="out" transfer-ownership="full">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="save_dictionaries" c:identifier="skk_context_save_dictionaries" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<property name="dictionaries" writable="1">
+			<array>
+				<type name="Skk.Dict" c:type="SkkDict*"/>
+			</array>
+		</property>
+		<property name="candidates">
+			<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+		</property>
+		<property name="input-mode" writable="1">
+			<type name="Skk.InputMode" c:type="SkkInputMode"/>
+		</property>
+		<property name="auto-start-henkan-keywords" writable="1">
+			<array>
+				<type name="utf8" c:type="gchar*"/>
+			</array>
+		</property>
+		<property name="egg-like-newline" writable="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<property name="period-style" writable="1">
+			<type name="Skk.PeriodStyle" c:type="SkkPeriodStyle"/>
+		</property>
+		<property name="typing-rule" writable="1">
+			<type name="Skk.Rule" c:type="SkkRule*"/>
+		</property>
+		<property name="key-event-filter">
+			<type name="Skk.KeyEventFilter" c:type="SkkKeyEventFilter*"/>
+		</property>
+		<property name="preedit" writable="1">
+			<annotation key="ccode.notify" value="false"/>
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<glib:signal name="retrieve_surrounding_text">
+			<parameters>
+				<parameter name="text" direction="out" transfer-ownership="full">
+					<type name="utf8" c:type="gchar*"/>
+				</parameter>
+				<parameter name="cursor_pos" direction="out" transfer-ownership="full">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</glib:signal>
+		<glib:signal name="delete_surrounding_text">
+			<parameters>
+				<parameter name="offset" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+				<parameter name="nchars" transfer-ownership="none">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</glib:signal>
+	</class>
+	<record name="ContextClass" c:type="SkkContextClass" glib:is-gtype-struct-for="Context">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="ContextPrivate" c:type="SkkContextPrivate" disguised="1"/>
+	<class name="Candidate" c:type="SkkCandidate" glib:type-name="SkkCandidate" glib:get-type="skk_candidate_get_type" glib:type-struct="CandidateClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="CandidatePrivate" c:type="SkkCandidatePrivate*"/>
+		</field>
+		<method name="to_string" c:identifier="skk_candidate_to_string">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<constructor name="new" c:identifier="skk_candidate_new">
+			<parameters>
+				<parameter name="midasi" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="okuri" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+				<parameter name="text" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="annotation" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="output" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+			</return-value>
+		</constructor>
+		<property name="midasi" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<property name="okuri" writable="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<property name="text" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<property name="annotation" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<property name="output" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+	</class>
+	<record name="CandidateClass" c:type="SkkCandidateClass" glib:is-gtype-struct-for="Candidate">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="CandidatePrivate" c:type="SkkCandidatePrivate" disguised="1"/>
+	<class name="CandidateList" c:type="SkkCandidateList" glib:type-name="SkkCandidateList" glib:get-type="skk_candidate_list_get_type" glib:type-struct="CandidateListClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="CandidateListPrivate" c:type="SkkCandidateListPrivate*"/>
+		</field>
+		<method name="get" c:identifier="skk_candidate_list_get">
+			<parameters>
+				<parameter name="index" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+			</return-value>
+		</method>
+		<constructor name="new" c:identifier="skk_candidate_list_new">
+			<parameters>
+				<parameter name="page_start" transfer-ownership="none">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+				<parameter name="page_size" transfer-ownership="none">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+			</return-value>
+		</constructor>
+		<method name="cursor_up" c:identifier="skk_candidate_list_cursor_up">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="cursor_down" c:identifier="skk_candidate_list_cursor_down">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="page_up" c:identifier="skk_candidate_list_page_up">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="page_down" c:identifier="skk_candidate_list_page_down">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="next" c:identifier="skk_candidate_list_next">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="previous" c:identifier="skk_candidate_list_previous">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="get_page_start_cursor_pos" c:identifier="skk_candidate_list_get_page_start_cursor_pos">
+			<return-value transfer-ownership="full">
+				<type name="guint" c:type="guint"/>
+			</return-value>
+		</method>
+		<method name="select" c:identifier="skk_candidate_list_select">
+			<parameters>
+				<parameter name="index" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<property name="cursor-pos" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<property name="size">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<property name="page-start" writable="1">
+			<type name="guint" c:type="guint"/>
+		</property>
+		<property name="page-size" writable="1">
+			<type name="guint" c:type="guint"/>
+		</property>
+		<property name="page-visible">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<glib:signal name="populated">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</glib:signal>
+		<glib:signal name="selected">
+			<parameters>
+				<parameter name="candidate" transfer-ownership="none">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</glib:signal>
+	</class>
+	<record name="CandidateListClass" c:type="SkkCandidateListClass" glib:is-gtype-struct-for="CandidateList">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="CandidateListPrivate" c:type="SkkCandidateListPrivate" disguised="1"/>
+	<class name="NicolaKeyEventFilter" c:type="SkkNicolaKeyEventFilter" glib:type-name="SkkNicolaKeyEventFilter" glib:get-type="skk_nicola_key_event_filter_get_type" glib:type-struct="NicolaKeyEventFilterClass" parent="Skk.KeyEventFilter">
+		<field name="parent_instance">
+			<type name="Skk.KeyEventFilter" c:type="SkkKeyEventFilter"/>
+		</field>
+		<field name="priv">
+			<type name="NicolaKeyEventFilterPrivate" c:type="SkkNicolaKeyEventFilterPrivate*"/>
+		</field>
+		<field name="get_time_func">
+			<type name="Skk.GetTime" c:type="SkkGetTime"/>
+		</field>
+		<field name="timeout">
+			<type name="gint64" c:type="gint64"/>
+		</field>
+		<field name="overlap">
+			<type name="gint64" c:type="gint64"/>
+		</field>
+		<field name="maxwait">
+			<type name="gint64" c:type="gint64"/>
+		</field>
+		<field name="special_doubles">
+			<array>
+				<type name="utf8" c:type="gchar*"/>
+			</array>
+		</field>
+		<constructor name="new" c:identifier="skk_nicola_key_event_filter_new">
+			<return-value transfer-ownership="full">
+				<type name="Skk.NicolaKeyEventFilter" c:type="SkkNicolaKeyEventFilter*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="NicolaKeyEventFilterClass" c:type="SkkNicolaKeyEventFilterClass" glib:is-gtype-struct-for="NicolaKeyEventFilter">
+		<field name="parent_class">
+			<type name="Skk.KeyEventFilterClass" c:type="SkkKeyEventFilterClass"/>
+		</field>
+	</record>
+	<record name="NicolaKeyEventFilterPrivate" c:type="SkkNicolaKeyEventFilterPrivate" disguised="1"/>
+	<record name="RuleMetadata">
+		<field name="base_dir">
+			<type name="utf8" c:type="gchar*"/>
+		</field>
+		<field name="name">
+			<type name="utf8" c:type="gchar*"/>
+		</field>
+		<field name="label">
+			<type name="utf8" c:type="gchar*"/>
+		</field>
+		<field name="description">
+			<type name="utf8" c:type="gchar*"/>
+		</field>
+		<field name="filter">
+			<type name="utf8" c:type="gchar*"/>
+		</field>
+	</record>
+	<callback name="GetTime" c:type="SkkGetTime">
+		<return-value transfer-ownership="full">
+			<type name="gint64" c:type="gint64"/>
+		</return-value>
+	</callback>
+	<function name="init" c:identifier="skk_init">
+		<return-value transfer-ownership="full">
+			<type name="none"/>
+		</return-value>
+	</function>
+</namespace>
+</repository>
