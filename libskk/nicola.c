@@ -209,7 +209,7 @@ SkkNicolaKeyEventFilter* skk_nicola_key_event_filter_new (void);
 SkkNicolaKeyEventFilter* skk_nicola_key_event_filter_construct (GType object_type);
 SkkKeyEventFilter* skk_key_event_filter_construct (GType object_type);
 static GObject * skk_nicola_key_event_filter_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties);
-static gchar** _vala_array_dup4 (gchar** self, int length);
+static gchar** _vala_array_dup5 (gchar** self, int length);
 #define SKK_NICOLA_KEY_EVENT_FILTER_TIMED_ENTRY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_NICOLA_KEY_EVENT_FILTER_TYPE_TIMED_ENTRY, SkkNicolaKeyEventFilterTimedEntryPrivate))
 enum  {
 	SKK_NICOLA_KEY_EVENT_FILTER_TIMED_ENTRY_DUMMY_PROPERTY
@@ -1421,7 +1421,7 @@ SkkNicolaKeyEventFilter* skk_nicola_key_event_filter_new (void) {
 }
 
 
-static gchar** _vala_array_dup4 (gchar** self, int length) {
+static gchar** _vala_array_dup5 (gchar** self, int length) {
 	gchar** result;
 	int i;
 	result = g_new0 (gchar*, length + 1);
@@ -1443,7 +1443,7 @@ static GObject * skk_nicola_key_event_filter_constructor (GType type, guint n_co
 	parent_class = G_OBJECT_CLASS (skk_nicola_key_event_filter_parent_class);
 	obj = parent_class->constructor (type, n_construct_properties, construct_properties);
 	self = SKK_NICOLA_KEY_EVENT_FILTER (obj);
-	_tmp0_ = (SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES != NULL) ? _vala_array_dup4 (SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES, G_N_ELEMENTS (SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES)) : ((gpointer) SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES);
+	_tmp0_ = (SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES != NULL) ? _vala_array_dup5 (SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES, G_N_ELEMENTS (SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES)) : ((gpointer) SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES);
 	_tmp0__length1 = G_N_ELEMENTS (SKK_NICOLA_KEY_EVENT_FILTER_SPECIAL_DOUBLES);
 	self->special_doubles = (_vala_array_free (self->special_doubles, self->special_doubles_length1, (GDestroyNotify) g_free), NULL);
 	self->special_doubles = _tmp0_;

@@ -12,22 +12,23 @@ namespace Skk {
 		public string text { get; set; }
 	}
 	[CCode (cheader_filename = "libskk/libskk.h")]
-	public class CandidateList : GLib.Object {
-		public CandidateList (uint page_start = 4, uint page_size = 7);
-		public bool cursor_down ();
-		public bool cursor_up ();
-		public new Skk.Candidate @get (int index = -1);
-		public uint get_page_start_cursor_pos ();
-		public bool next ();
-		public bool page_down ();
-		public bool page_up ();
-		public bool previous ();
-		public void select (int index = -1);
-		public int cursor_pos { get; set; }
-		public uint page_size { get; set; }
-		public uint page_start { get; set; }
-		public bool page_visible { get; }
-		public int size { get; }
+	public abstract class CandidateList : GLib.Object {
+		public CandidateList ();
+		public abstract bool cursor_down ();
+		public abstract bool cursor_up ();
+		public abstract new Skk.Candidate @get (int index = -1);
+		protected uint get_page_start_cursor_pos ();
+		public virtual bool next ();
+		public abstract bool page_down ();
+		public abstract bool page_up ();
+		public virtual bool previous ();
+		public abstract void select ();
+		public abstract bool select_at (uint index_in_page);
+		public abstract int cursor_pos { get; }
+		public abstract uint page_size { get; set; }
+		public abstract uint page_start { get; set; }
+		public abstract bool page_visible { get; }
+		public abstract int size { get; }
 		public signal void populated ();
 		public signal void selected (Skk.Candidate candidate);
 	}
@@ -42,6 +43,7 @@ namespace Skk {
 	[CCode (cheader_filename = "libskk/libskk.h")]
 	public class Context : GLib.Object {
 		public Context (Skk.Dict[] dictionaries);
+		public void add_dictionary (Skk.Dict dict);
 		public void clear_output ();
 		public string get_output ();
 		public void get_preedit_underline (out uint offset, out uint nchars);
@@ -49,6 +51,7 @@ namespace Skk {
 		public string poll_output ();
 		public bool process_key_event (Skk.KeyEvent key);
 		public bool process_key_events (string keyseq);
+		public void remove_dictionary (Skk.Dict dict);
 		public void reset ();
 		public void save_dictionaries () throws GLib.Error;
 		public string[] auto_start_henkan_keywords { get; set; }

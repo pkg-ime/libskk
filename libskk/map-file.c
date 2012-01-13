@@ -325,21 +325,21 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 	gboolean _tmp14_ = FALSE;
 	JsonParser* _tmp17_;
 	JsonParser* parser;
-	JsonParser* _tmp29_;
-	JsonNode* _tmp30_ = NULL;
-	JsonNode* _tmp31_;
-	JsonNode* root;
+	JsonParser* _tmp30_;
+	JsonNode* _tmp31_ = NULL;
 	JsonNode* _tmp32_;
-	JsonNodeType _tmp33_ = 0;
-	JsonNode* _tmp35_;
-	JsonObject* _tmp36_ = NULL;
-	JsonObject* _tmp37_;
+	JsonNode* root;
+	JsonNode* _tmp33_;
+	JsonNodeType _tmp34_ = 0;
+	JsonNode* _tmp36_;
+	JsonObject* _tmp37_ = NULL;
+	JsonObject* _tmp38_;
 	JsonObject* object;
 	JsonNode* member = NULL;
-	JsonObject* _tmp38_;
-	gboolean _tmp39_ = FALSE;
-	JsonObject* _tmp82_;
-	gboolean _tmp83_ = FALSE;
+	JsonObject* _tmp39_;
+	gboolean _tmp40_ = FALSE;
+	JsonObject* _tmp83_;
+	gboolean _tmp84_ = FALSE;
 	GError * _inner_error_ = NULL;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (rule != NULL);
@@ -423,22 +423,24 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 	__catch24_g_error:
 	{
 		GError* e = NULL;
-		GError* _tmp23_;
-		const gchar* _tmp24_;
-		gchar* _tmp25_ = NULL;
-		gchar* _tmp26_;
-		GError* _tmp27_;
+		const gchar* _tmp23_;
+		GError* _tmp24_;
+		const gchar* _tmp25_;
+		gchar* _tmp26_ = NULL;
+		gchar* _tmp27_;
 		GError* _tmp28_;
+		GError* _tmp29_;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp23_ = e;
-		_tmp24_ = _tmp23_->message;
-		_tmp25_ = g_strdup_printf ("%s", _tmp24_);
-		_tmp26_ = _tmp25_;
-		_tmp27_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, _tmp26_);
-		_tmp28_ = _tmp27_;
-		_g_free0 (_tmp26_);
-		_inner_error_ = _tmp28_;
+		_tmp23_ = filename;
+		_tmp24_ = e;
+		_tmp25_ = _tmp24_->message;
+		_tmp26_ = g_strdup_printf ("can't load %s: %s", _tmp23_, _tmp25_);
+		_tmp27_ = _tmp26_;
+		_tmp28_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, _tmp27_);
+		_tmp29_ = _tmp28_;
+		_g_free0 (_tmp27_);
+		_inner_error_ = _tmp29_;
 		_g_error_free0 (e);
 		goto __finally24;
 	}
@@ -459,16 +461,16 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 			return;
 		}
 	}
-	_tmp29_ = parser;
-	_tmp30_ = json_parser_get_root (_tmp29_);
-	_tmp31_ = __vala_JsonNode_copy0 (_tmp30_);
-	root = _tmp31_;
-	_tmp32_ = root;
-	_tmp33_ = json_node_get_node_type (_tmp32_);
-	if (_tmp33_ != JSON_NODE_OBJECT) {
-		GError* _tmp34_;
-		_tmp34_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "root element must be an object");
-		_inner_error_ = _tmp34_;
+	_tmp30_ = parser;
+	_tmp31_ = json_parser_get_root (_tmp30_);
+	_tmp32_ = __vala_JsonNode_copy0 (_tmp31_);
+	root = _tmp32_;
+	_tmp33_ = root;
+	_tmp34_ = json_node_get_node_type (_tmp33_);
+	if (_tmp34_ != JSON_NODE_OBJECT) {
+		GError* _tmp35_;
+		_tmp35_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "root element must be an object");
+		_inner_error_ = _tmp35_;
 		if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 			g_propagate_error (error, _inner_error_);
 			__vala_JsonNode_free0 (root);
@@ -486,37 +488,37 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 			return;
 		}
 	}
-	_tmp35_ = root;
-	_tmp36_ = json_node_get_object (_tmp35_);
-	_tmp37_ = __vala_JsonObject_copy0 (_tmp36_);
-	object = _tmp37_;
-	_tmp38_ = object;
-	_tmp39_ = json_object_has_member (_tmp38_, "include");
-	if (_tmp39_) {
-		JsonObject* _tmp40_;
-		JsonNode* _tmp41_ = NULL;
-		JsonNode* _tmp42_;
+	_tmp36_ = root;
+	_tmp37_ = json_node_get_object (_tmp36_);
+	_tmp38_ = __vala_JsonObject_copy0 (_tmp37_);
+	object = _tmp38_;
+	_tmp39_ = object;
+	_tmp40_ = json_object_has_member (_tmp39_, "include");
+	if (_tmp40_) {
+		JsonObject* _tmp41_;
+		JsonNode* _tmp42_ = NULL;
 		JsonNode* _tmp43_;
-		JsonNodeType _tmp44_ = 0;
-		JsonNode* _tmp46_;
-		JsonArray* _tmp47_ = NULL;
-		JsonArray* _tmp48_;
-		JsonArray* include;
+		JsonNode* _tmp44_;
+		JsonNodeType _tmp45_ = 0;
+		JsonNode* _tmp47_;
+		JsonArray* _tmp48_ = NULL;
 		JsonArray* _tmp49_;
-		GList* _tmp50_ = NULL;
+		JsonArray* include;
+		JsonArray* _tmp50_;
+		GList* _tmp51_ = NULL;
 		GList* elements;
-		GList* _tmp51_;
-		_tmp40_ = object;
-		_tmp41_ = json_object_get_member (_tmp40_, "include");
-		_tmp42_ = __vala_JsonNode_copy0 (_tmp41_);
+		GList* _tmp52_;
+		_tmp41_ = object;
+		_tmp42_ = json_object_get_member (_tmp41_, "include");
+		_tmp43_ = __vala_JsonNode_copy0 (_tmp42_);
 		__vala_JsonNode_free0 (member);
-		member = _tmp42_;
-		_tmp43_ = member;
-		_tmp44_ = json_node_get_node_type (_tmp43_);
-		if (_tmp44_ != JSON_NODE_ARRAY) {
-			GError* _tmp45_;
-			_tmp45_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "\"include\" element must be an array");
-			_inner_error_ = _tmp45_;
+		member = _tmp43_;
+		_tmp44_ = member;
+		_tmp45_ = json_node_get_node_type (_tmp44_);
+		if (_tmp45_ != JSON_NODE_ARRAY) {
+			GError* _tmp46_;
+			_tmp46_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "\"include\" element must be an array");
+			_inner_error_ = _tmp46_;
 			if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 				g_propagate_error (error, _inner_error_);
 				__vala_JsonNode_free0 (member);
@@ -538,48 +540,48 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 				return;
 			}
 		}
-		_tmp46_ = member;
-		_tmp47_ = json_node_get_array (_tmp46_);
-		_tmp48_ = __vala_JsonArray_copy0 (_tmp47_);
-		include = _tmp48_;
-		_tmp49_ = include;
-		_tmp50_ = json_array_get_elements (_tmp49_);
-		elements = _tmp50_;
-		_tmp51_ = elements;
+		_tmp47_ = member;
+		_tmp48_ = json_node_get_array (_tmp47_);
+		_tmp49_ = __vala_JsonArray_copy0 (_tmp48_);
+		include = _tmp49_;
+		_tmp50_ = include;
+		_tmp51_ = json_array_get_elements (_tmp50_);
+		elements = _tmp51_;
+		_tmp52_ = elements;
 		{
 			GList* element_collection = NULL;
 			GList* element_it = NULL;
-			element_collection = _tmp51_;
+			element_collection = _tmp52_;
 			for (element_it = element_collection; element_it != NULL; element_it = element_it->next) {
 				JsonNode* element = NULL;
 				element = (JsonNode*) element_it->data;
 				{
-					JsonNode* _tmp52_;
-					const gchar* _tmp53_ = NULL;
-					gchar* _tmp54_;
+					JsonNode* _tmp53_;
+					const gchar* _tmp54_ = NULL;
+					gchar* _tmp55_;
 					gchar* parent;
-					GeeSet* _tmp55_;
-					const gchar* _tmp56_;
-					gboolean _tmp57_ = FALSE;
-					const gchar* _tmp60_;
-					gint _tmp61_ = 0;
+					GeeSet* _tmp56_;
+					const gchar* _tmp57_;
+					gboolean _tmp58_ = FALSE;
+					const gchar* _tmp61_;
+					gint _tmp62_ = 0;
 					gint index;
-					gint _tmp62_;
-					GeeSet* _tmp80_;
-					const gchar* _tmp81_;
-					_tmp52_ = element;
-					_tmp53_ = json_node_get_string (_tmp52_);
-					_tmp54_ = g_strdup (_tmp53_);
-					parent = _tmp54_;
-					_tmp55_ = included;
-					_tmp56_ = parent;
-					_tmp57_ = gee_collection_contains ((GeeCollection*) _tmp55_, _tmp56_);
-					if (_tmp57_) {
-						const gchar* _tmp58_;
-						GError* _tmp59_;
-						_tmp58_ = parent;
-						_tmp59_ = g_error_new (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "found circular include of %s", _tmp58_);
-						_inner_error_ = _tmp59_;
+					gint _tmp63_;
+					GeeSet* _tmp81_;
+					const gchar* _tmp82_;
+					_tmp53_ = element;
+					_tmp54_ = json_node_get_string (_tmp53_);
+					_tmp55_ = g_strdup (_tmp54_);
+					parent = _tmp55_;
+					_tmp56_ = included;
+					_tmp57_ = parent;
+					_tmp58_ = gee_collection_contains ((GeeCollection*) _tmp56_, _tmp57_);
+					if (_tmp58_) {
+						const gchar* _tmp59_;
+						GError* _tmp60_;
+						_tmp59_ = parent;
+						_tmp60_ = g_error_new (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "found circular include of %s", _tmp59_);
+						_inner_error_ = _tmp60_;
 						if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 							g_propagate_error (error, _inner_error_);
 							_g_free0 (parent);
@@ -607,20 +609,20 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 							return;
 						}
 					}
-					_tmp60_ = parent;
-					_tmp61_ = string_index_of (_tmp60_, "/", 0);
-					index = _tmp61_;
-					_tmp62_ = index;
-					if (_tmp62_ < 0) {
-						const gchar* _tmp63_;
+					_tmp61_ = parent;
+					_tmp62_ = string_index_of (_tmp61_, "/", 0);
+					index = _tmp62_;
+					_tmp63_ = index;
+					if (_tmp63_ < 0) {
 						const gchar* _tmp64_;
 						const gchar* _tmp65_;
-						GeeSet* _tmp66_;
-						_tmp63_ = rule;
-						_tmp64_ = type;
-						_tmp65_ = parent;
-						_tmp66_ = included;
-						skk_map_file_load (self, _tmp63_, _tmp64_, _tmp65_, _tmp66_, &_inner_error_);
+						const gchar* _tmp66_;
+						GeeSet* _tmp67_;
+						_tmp64_ = rule;
+						_tmp65_ = type;
+						_tmp66_ = parent;
+						_tmp67_ = included;
+						skk_map_file_load (self, _tmp64_, _tmp65_, _tmp66_, _tmp67_, &_inner_error_);
 						if (_inner_error_ != NULL) {
 							if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 								g_propagate_error (error, _inner_error_);
@@ -650,35 +652,35 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 							}
 						}
 					} else {
-						const gchar* _tmp67_;
-						gint _tmp68_;
-						gchar* _tmp69_ = NULL;
-						gchar* _tmp70_;
-						const gchar* _tmp71_;
+						const gchar* _tmp68_;
+						gint _tmp69_;
+						gchar* _tmp70_ = NULL;
+						gchar* _tmp71_;
 						const gchar* _tmp72_;
-						gint _tmp73_;
-						const gchar* _tmp74_;
-						gint _tmp75_;
+						const gchar* _tmp73_;
+						gint _tmp74_;
+						const gchar* _tmp75_;
 						gint _tmp76_;
-						gchar* _tmp77_ = NULL;
-						gchar* _tmp78_;
-						GeeSet* _tmp79_;
-						_tmp67_ = parent;
-						_tmp68_ = index;
-						_tmp69_ = string_slice (_tmp67_, (glong) 0, (glong) _tmp68_);
-						_tmp70_ = _tmp69_;
-						_tmp71_ = type;
-						_tmp72_ = parent;
-						_tmp73_ = index;
-						_tmp74_ = parent;
-						_tmp75_ = strlen (_tmp74_);
-						_tmp76_ = _tmp75_;
-						_tmp77_ = string_slice (_tmp72_, (glong) (_tmp73_ + 1), (glong) _tmp76_);
-						_tmp78_ = _tmp77_;
-						_tmp79_ = included;
-						skk_map_file_load (self, _tmp70_, _tmp71_, _tmp78_, _tmp79_, &_inner_error_);
-						_g_free0 (_tmp78_);
-						_g_free0 (_tmp70_);
+						gint _tmp77_;
+						gchar* _tmp78_ = NULL;
+						gchar* _tmp79_;
+						GeeSet* _tmp80_;
+						_tmp68_ = parent;
+						_tmp69_ = index;
+						_tmp70_ = string_slice (_tmp68_, (glong) 0, (glong) _tmp69_);
+						_tmp71_ = _tmp70_;
+						_tmp72_ = type;
+						_tmp73_ = parent;
+						_tmp74_ = index;
+						_tmp75_ = parent;
+						_tmp76_ = strlen (_tmp75_);
+						_tmp77_ = _tmp76_;
+						_tmp78_ = string_slice (_tmp73_, (glong) (_tmp74_ + 1), (glong) _tmp77_);
+						_tmp79_ = _tmp78_;
+						_tmp80_ = included;
+						skk_map_file_load (self, _tmp71_, _tmp72_, _tmp79_, _tmp80_, &_inner_error_);
+						_g_free0 (_tmp79_);
+						_g_free0 (_tmp71_);
 						if (_inner_error_ != NULL) {
 							if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 								g_propagate_error (error, _inner_error_);
@@ -708,9 +710,9 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 							}
 						}
 					}
-					_tmp80_ = included;
-					_tmp81_ = parent;
-					gee_collection_add ((GeeCollection*) _tmp80_, _tmp81_);
+					_tmp81_ = included;
+					_tmp82_ = parent;
+					gee_collection_add ((GeeCollection*) _tmp81_, _tmp82_);
 					_g_free0 (parent);
 				}
 			}
@@ -718,33 +720,33 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 		_g_list_free0 (elements);
 		__vala_JsonArray_free0 (include);
 	}
-	_tmp82_ = object;
-	_tmp83_ = json_object_has_member (_tmp82_, "define");
-	if (_tmp83_) {
-		JsonObject* _tmp84_;
-		JsonNode* _tmp85_ = NULL;
-		JsonNode* _tmp86_;
+	_tmp83_ = object;
+	_tmp84_ = json_object_has_member (_tmp83_, "define");
+	if (_tmp84_) {
+		JsonObject* _tmp85_;
+		JsonNode* _tmp86_ = NULL;
 		JsonNode* _tmp87_;
-		JsonNodeType _tmp88_ = 0;
-		JsonNode* _tmp90_;
-		JsonObject* _tmp91_ = NULL;
-		JsonObject* _tmp92_;
-		JsonObject* define;
+		JsonNode* _tmp88_;
+		JsonNodeType _tmp89_ = 0;
+		JsonNode* _tmp91_;
+		JsonObject* _tmp92_ = NULL;
 		JsonObject* _tmp93_;
-		GList* _tmp94_ = NULL;
+		JsonObject* define;
+		JsonObject* _tmp94_;
+		GList* _tmp95_ = NULL;
 		GList* keys;
-		GList* _tmp95_;
-		_tmp84_ = object;
-		_tmp85_ = json_object_get_member (_tmp84_, "define");
-		_tmp86_ = __vala_JsonNode_copy0 (_tmp85_);
+		GList* _tmp96_;
+		_tmp85_ = object;
+		_tmp86_ = json_object_get_member (_tmp85_, "define");
+		_tmp87_ = __vala_JsonNode_copy0 (_tmp86_);
 		__vala_JsonNode_free0 (member);
-		member = _tmp86_;
-		_tmp87_ = member;
-		_tmp88_ = json_node_get_node_type (_tmp87_);
-		if (_tmp88_ != JSON_NODE_OBJECT) {
-			GError* _tmp89_;
-			_tmp89_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "\"define\" element must be an object");
-			_inner_error_ = _tmp89_;
+		member = _tmp87_;
+		_tmp88_ = member;
+		_tmp89_ = json_node_get_node_type (_tmp88_);
+		if (_tmp89_ != JSON_NODE_OBJECT) {
+			GError* _tmp90_;
+			_tmp90_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "\"define\" element must be an object");
+			_inner_error_ = _tmp90_;
 			if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 				g_propagate_error (error, _inner_error_);
 				__vala_JsonNode_free0 (member);
@@ -766,66 +768,66 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 				return;
 			}
 		}
-		_tmp90_ = member;
-		_tmp91_ = json_node_get_object (_tmp90_);
-		_tmp92_ = __vala_JsonObject_copy0 (_tmp91_);
-		define = _tmp92_;
-		_tmp93_ = define;
-		_tmp94_ = json_object_get_members (_tmp93_);
-		keys = _tmp94_;
-		_tmp95_ = keys;
+		_tmp91_ = member;
+		_tmp92_ = json_node_get_object (_tmp91_);
+		_tmp93_ = __vala_JsonObject_copy0 (_tmp92_);
+		define = _tmp93_;
+		_tmp94_ = define;
+		_tmp95_ = json_object_get_members (_tmp94_);
+		keys = _tmp95_;
+		_tmp96_ = keys;
 		{
 			GList* key_collection = NULL;
 			GList* key_it = NULL;
-			key_collection = _tmp95_;
+			key_collection = _tmp96_;
 			for (key_it = key_collection; key_it != NULL; key_it = key_it->next) {
 				const gchar* key = NULL;
 				key = (const gchar*) key_it->data;
 				{
-					GeeMap* _tmp96_;
-					const gchar* _tmp97_;
-					gboolean _tmp98_ = FALSE;
-					JsonObject* _tmp103_;
-					const gchar* _tmp104_;
-					JsonNode* _tmp105_ = NULL;
-					JsonNode* _tmp106_;
+					GeeMap* _tmp97_;
+					const gchar* _tmp98_;
+					gboolean _tmp99_ = FALSE;
+					JsonObject* _tmp104_;
+					const gchar* _tmp105_;
+					JsonNode* _tmp106_ = NULL;
 					JsonNode* _tmp107_;
-					JsonNodeType _tmp108_ = 0;
-					GeeMap* _tmp110_;
-					const gchar* _tmp111_;
-					gpointer _tmp112_ = NULL;
-					GeeMap* _tmp113_;
-					JsonNode* _tmp114_;
-					JsonObject* _tmp115_ = NULL;
-					_tmp96_ = self->priv->maps;
-					_tmp97_ = key;
-					_tmp98_ = gee_map_has_key (_tmp96_, _tmp97_);
-					if (!_tmp98_) {
-						GeeHashMap* _tmp99_;
+					JsonNode* _tmp108_;
+					JsonNodeType _tmp109_ = 0;
+					GeeMap* _tmp111_;
+					const gchar* _tmp112_;
+					gpointer _tmp113_ = NULL;
+					GeeMap* _tmp114_;
+					JsonNode* _tmp115_;
+					JsonObject* _tmp116_ = NULL;
+					_tmp97_ = self->priv->maps;
+					_tmp98_ = key;
+					_tmp99_ = gee_map_has_key (_tmp97_, _tmp98_);
+					if (!_tmp99_) {
+						GeeHashMap* _tmp100_;
 						GeeHashMap* map;
-						GeeMap* _tmp100_;
-						const gchar* _tmp101_;
-						GeeHashMap* _tmp102_;
-						_tmp99_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, json_node_get_type (), (GBoxedCopyFunc) _vala_JsonNode_copy, _vala_JsonNode_free, NULL, NULL, NULL);
-						map = _tmp99_;
-						_tmp100_ = self->priv->maps;
-						_tmp101_ = key;
-						_tmp102_ = map;
-						gee_map_set (_tmp100_, _tmp101_, (GeeMap*) _tmp102_);
+						GeeMap* _tmp101_;
+						const gchar* _tmp102_;
+						GeeHashMap* _tmp103_;
+						_tmp100_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, json_node_get_type (), (GBoxedCopyFunc) _vala_JsonNode_copy, _vala_JsonNode_free, NULL, NULL, NULL);
+						map = _tmp100_;
+						_tmp101_ = self->priv->maps;
+						_tmp102_ = key;
+						_tmp103_ = map;
+						gee_map_set (_tmp101_, _tmp102_, (GeeMap*) _tmp103_);
 						_g_object_unref0 (map);
 					}
-					_tmp103_ = define;
-					_tmp104_ = key;
-					_tmp105_ = json_object_get_member (_tmp103_, _tmp104_);
-					_tmp106_ = __vala_JsonNode_copy0 (_tmp105_);
+					_tmp104_ = define;
+					_tmp105_ = key;
+					_tmp106_ = json_object_get_member (_tmp104_, _tmp105_);
+					_tmp107_ = __vala_JsonNode_copy0 (_tmp106_);
 					__vala_JsonNode_free0 (member);
-					member = _tmp106_;
-					_tmp107_ = member;
-					_tmp108_ = json_node_get_node_type (_tmp107_);
-					if (_tmp108_ != JSON_NODE_OBJECT) {
-						GError* _tmp109_;
-						_tmp109_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "map element must be an object");
-						_inner_error_ = _tmp109_;
+					member = _tmp107_;
+					_tmp108_ = member;
+					_tmp109_ = json_node_get_node_type (_tmp108_);
+					if (_tmp109_ != JSON_NODE_OBJECT) {
+						GError* _tmp110_;
+						_tmp110_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "map element must be an object");
+						_inner_error_ = _tmp110_;
 						if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 							g_propagate_error (error, _inner_error_);
 							_g_list_free0 (keys);
@@ -851,14 +853,14 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 							return;
 						}
 					}
-					_tmp110_ = self->priv->maps;
-					_tmp111_ = key;
-					_tmp112_ = gee_map_get (_tmp110_, _tmp111_);
-					_tmp113_ = (GeeMap*) _tmp112_;
-					_tmp114_ = member;
-					_tmp115_ = json_node_get_object (_tmp114_);
-					skk_map_file_load_map (self, _tmp113_, _tmp115_);
-					_g_object_unref0 (_tmp113_);
+					_tmp111_ = self->priv->maps;
+					_tmp112_ = key;
+					_tmp113_ = gee_map_get (_tmp111_, _tmp112_);
+					_tmp114_ = (GeeMap*) _tmp113_;
+					_tmp115_ = member;
+					_tmp116_ = json_node_get_object (_tmp115_);
+					skk_map_file_load_map (self, _tmp114_, _tmp116_);
+					_g_object_unref0 (_tmp114_);
 				}
 			}
 		}

@@ -261,6 +261,8 @@ namespace Skk {
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
 	public class Context : GLib.Object {
+		public void add_dictionary (Skk.Dict dict);
+		public void remove_dictionary (Skk.Dict dict);
 		public Context (Skk.Dict[] dictionaries);
 		public bool process_key_events (string keyseq);
 		public bool process_key_event (Skk.KeyEvent key);
@@ -295,28 +297,67 @@ namespace Skk {
 		public string output { get; set; }
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
-	public class CandidateList : GLib.Object {
-		public new Skk.Candidate @get (int index = -1);
-		internal void clear ();
-		internal void add_candidates_start ();
-		internal void add_candidates (Skk.Candidate[] array);
-		internal void add_candidates_end ();
-		public CandidateList (uint page_start = 4, uint page_size = 7);
-		public bool cursor_up ();
-		public bool cursor_down ();
-		public bool page_up ();
-		public bool page_down ();
-		public bool next ();
-		public bool previous ();
-		public uint get_page_start_cursor_pos ();
-		public void select (int index = -1);
-		public int cursor_pos { get; set; }
-		public int size { get; }
-		public uint page_start { get; set; }
-		public uint page_size { get; set; }
-		public bool page_visible { get; }
+	public abstract class CandidateList : GLib.Object {
+		public abstract new Skk.Candidate @get (int index = -1);
+		internal abstract void clear ();
+		internal abstract void add_candidates (Skk.Candidate[] array);
+		internal abstract void add_candidates_end ();
+		public abstract bool cursor_up ();
+		public abstract bool cursor_down ();
+		public abstract bool page_up ();
+		public abstract bool page_down ();
+		public virtual bool next ();
+		public virtual bool previous ();
+		protected uint get_page_start_cursor_pos ();
+		public abstract bool select_at (uint index_in_page);
+		public abstract void select ();
+		public CandidateList ();
+		public abstract int cursor_pos { get; }
+		public abstract int size { get; }
+		public abstract uint page_start { get; set; }
+		public abstract uint page_size { get; set; }
+		public abstract bool page_visible { get; }
 		public signal void populated ();
 		public signal void selected (Skk.Candidate candidate);
+	}
+	[CCode (cheader_filename = "libskk/libskk-internals.h")]
+	internal class SimpleCandidateList : Skk.CandidateList {
+		public override Skk.Candidate @get (int index = -1);
+		internal override void clear ();
+		internal override void add_candidates (Skk.Candidate[] array);
+		internal override void add_candidates_end ();
+		public override bool select_at (uint index_in_page);
+		public override void select ();
+		public SimpleCandidateList (uint page_start = 4, uint page_size = 7);
+		public override bool cursor_up ();
+		public override bool cursor_down ();
+		public override bool page_up ();
+		public override bool page_down ();
+		public override int cursor_pos { get; }
+		public override int size { get; }
+		public override uint page_start { get; set; }
+		public override uint page_size { get; set; }
+		public override bool page_visible { get; }
+	}
+	[CCode (cheader_filename = "libskk/libskk-internals.h")]
+	internal class ProxyCandidateList : Skk.CandidateList {
+		public override Skk.Candidate @get (int index = -1);
+		internal override void clear ();
+		internal override void add_candidates (Skk.Candidate[] array);
+		internal override void add_candidates_end ();
+		public override bool select_at (uint index_in_page);
+		public override void select ();
+		public ProxyCandidateList (Skk.CandidateList candidates);
+		public override bool cursor_up ();
+		public override bool cursor_down ();
+		public override bool page_up ();
+		public override bool page_down ();
+		public Skk.CandidateList candidates { get; set; }
+		public override int cursor_pos { get; }
+		public override int size { get; }
+		public override uint page_start { get; set; }
+		public override uint page_size { get; set; }
+		public override bool page_visible { get; }
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
 	public class NicolaKeyEventFilter : Skk.KeyEventFilter {

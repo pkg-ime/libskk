@@ -235,11 +235,13 @@ namespace Skk {
          * {@inheritDoc}
          */
         public override string[] complete (string midasi) {
-            SortedSet<string> keys = new TreeSet<string> ();
             Gee.List<string> completion = new ArrayList<string> ();
+            Gee.List<string> keys = new ArrayList<string> ();
             keys.add_all (okuri_nasi_entries.keys);
-            if (!keys.is_empty) {
-                var iter = keys.iterator_at (keys.first ());
+            keys.sort ();
+            var iter = keys.iterator ();
+            if (iter.first ()) {
+                // find the first matching entry
                 do {
                     var key = iter.get ();
                     if (key.has_prefix (midasi)) {
@@ -250,6 +252,7 @@ namespace Skk {
                         break;
                     }
                 } while (iter.next ());
+                // loop until the last matching entry
                 while (iter.next ()) {
                     var key = iter.get ();
                     if (!key.has_prefix (midasi)) {
@@ -267,8 +270,7 @@ namespace Skk {
         /**
          * {@inheritDoc}
          */
-        public override bool select_candidate (Candidate candidate)
-        {
+        public override bool select_candidate (Candidate candidate) {
             int index;
 
             // update midasi history
@@ -302,7 +304,7 @@ namespace Skk {
             foreach (var c in candidates) {
                 if (c.text == candidate.text) {
                     if (index > 0) {
-                        var first = candidates[index];
+                        var first = candidates[0];
                         candidates[0] = candidates[index];
                         candidates[index] = first;
                         return true;

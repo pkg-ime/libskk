@@ -4,7 +4,7 @@
 static void
 context (void)
 {
-  SkkContext *context = create_context ();
+  SkkContext *context = create_context (TRUE, TRUE);
   gboolean retval;
   const gchar *output, *preedit;
 
@@ -84,7 +84,7 @@ input_mode (void)
     { SKK_INPUT_MODE_HIRAGANA, "w w q", "", "っ", SKK_INPUT_MODE_KATAKANA }
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -106,13 +106,13 @@ rom_kana (void)
     { SKK_INPUT_MODE_HIRAGANA, "z l", "", "→", SKK_INPUT_MODE_HIRAGANA },
     { SKK_INPUT_MODE_HIRAGANA, "m y C-g", "", "", SKK_INPUT_MODE_HIRAGANA },
     { SKK_INPUT_MODE_HIRAGANA, "m y a C-g", "", "みゃ", SKK_INPUT_MODE_HIRAGANA },
-    { SKK_INPUT_MODE_HIRAGANA, "A i q", "", "アイ", SKK_INPUT_MODE_KATAKANA },
-    { SKK_INPUT_MODE_KATAKANA, "A i q", "", "あい", SKK_INPUT_MODE_HIRAGANA },
+    { SKK_INPUT_MODE_HIRAGANA, "A i q", "", "アイ", SKK_INPUT_MODE_HIRAGANA },
+    { SKK_INPUT_MODE_KATAKANA, "A i q", "", "あい", SKK_INPUT_MODE_KATAKANA },
     { SKK_INPUT_MODE_HIRAGANA, "V u", "▽う゛", "", SKK_INPUT_MODE_HIRAGANA },
-    { SKK_INPUT_MODE_HIRAGANA, "V u q", "", "ヴ", SKK_INPUT_MODE_KATAKANA },
+    { SKK_INPUT_MODE_HIRAGANA, "V u q", "", "ヴ", SKK_INPUT_MODE_HIRAGANA },
     { SKK_INPUT_MODE_KATAKANA, "V u", "▽ヴ", "", SKK_INPUT_MODE_KATAKANA },
-    { SKK_INPUT_MODE_KATAKANA, "V u q", "", "う゛", SKK_INPUT_MODE_HIRAGANA },
-    { SKK_INPUT_MODE_HIRAGANA, "Q n q", "", "ン", SKK_INPUT_MODE_KATAKANA },
+    { SKK_INPUT_MODE_KATAKANA, "V u q", "", "う゛", SKK_INPUT_MODE_KATAKANA },
+    { SKK_INPUT_MODE_HIRAGANA, "Q n q", "", "ン", SKK_INPUT_MODE_HIRAGANA },
     { SKK_INPUT_MODE_HIRAGANA, "Q Q", "▽", "", SKK_INPUT_MODE_HIRAGANA },
     /* Issue#36 */
     { SKK_INPUT_MODE_HIRAGANA, "W o", "▽を", "", SKK_INPUT_MODE_HIRAGANA },
@@ -120,7 +120,7 @@ rom_kana (void)
     { SKK_INPUT_MODE_LATIN, "a \t", "", "a", SKK_INPUT_MODE_LATIN }
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -150,7 +150,7 @@ okuri_nasi (void)
     // { SKK_INPUT_MODE_HIRAGANA, "N A N a", "[DictEdit] な*な ", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -180,7 +180,7 @@ okuri_ari (void)
     { SKK_INPUT_MODE_HIRAGANA, "T y o u >", "▼超", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -199,7 +199,7 @@ _abort (void)
     { SKK_INPUT_MODE_HIRAGANA, "A o i O C-g", "▽あおいお", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -218,7 +218,7 @@ delete (void)
     { SKK_INPUT_MODE_HIRAGANA, "E B DEL r a B", "▽えら*b", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -231,7 +231,7 @@ hankaku_katakana (void)
     { SKK_INPUT_MODE_HIRAGANA, "C-q Z e n k a k u", "▽ｾﾞﾝｶｸ", "", SKK_INPUT_MODE_HANKAKU_KATAKANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -256,7 +256,7 @@ completion (void)
     { SKK_INPUT_MODE_HIRAGANA, "A p a \t", "▽あぱ", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -281,7 +281,7 @@ abbrev (void)
     { SKK_INPUT_MODE_HIRAGANA, "/ b s d 3 SPC", "▼BSD/3", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -307,12 +307,12 @@ dict_edit (void)
     { SKK_INPUT_MODE_HIRAGANA, "K a p a SPC X", "", "", SKK_INPUT_MODE_HIRAGANA },
     { SKK_INPUT_MODE_HIRAGANA, "K a p a SPC", "[DictEdit] かぱ ", "", SKK_INPUT_MODE_HIRAGANA },
     { SKK_INPUT_MODE_HIRAGANA, "K a n g a E SPC", "[DictEdit] かんが*え ", "", SKK_INPUT_MODE_HIRAGANA },
-    { SKK_INPUT_MODE_HIRAGANA, "K a t a k a n a SPC SPC K a t a k a n a q", "[DictEdit] かたかな カタカナ", "", SKK_INPUT_MODE_KATAKANA },
+    { SKK_INPUT_MODE_HIRAGANA, "K a t a k a n a SPC SPC K a t a k a n a q", "[DictEdit] かたかな カタカナ", "", SKK_INPUT_MODE_HIRAGANA },
     { SKK_INPUT_MODE_HIRAGANA, "K a t a k a n a SPC SPC K a t a k a n a q l n a", "[DictEdit] かたかな カタカナna", "", SKK_INPUT_MODE_LATIN },
     { SKK_INPUT_MODE_HIRAGANA, "K a t a k a n a SPC SPC K a t a k a n a q C-m", "", "カタカナ", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -330,7 +330,7 @@ kuten (void)
     { SKK_INPUT_MODE_WIDE_LATIN, "\\\\", "", "＼", SKK_INPUT_MODE_WIDE_LATIN },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -346,7 +346,7 @@ auto_conversion (void)
     { SKK_INPUT_MODE_HIRAGANA, "A i SPC \\(", "", "愛(", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -363,7 +363,7 @@ kzik (void)
     { SKK_INPUT_MODE_HIRAGANA, "d l", "", "どん", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   error = NULL;
   rule = skk_rule_new ("kzik", &error);
   g_assert_no_error (error);
@@ -386,7 +386,7 @@ candidate_list (void)
     { SKK_INPUT_MODE_HIRAGANA, "I SPC SPC SPC SPC SPC SPC SPC SPC SPC", "[DictEdit] い ", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -406,7 +406,7 @@ numeric (void)
     { SKK_INPUT_MODE_HIRAGANA, "Q 1 1 1 1 1 h i k i SPC", "▼一万千百十一匹", "", SKK_INPUT_MODE_HIRAGANA },
   };
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   check_transitions (context, transitions, G_N_ELEMENTS (transitions));
   g_object_unref (context);
 }
@@ -454,7 +454,7 @@ nicola (void)
   };
   GError *error;
 
-  context = create_context ();
+  context = create_context (TRUE, TRUE);
   error = NULL;
   rule = skk_rule_new ("nicola", &error);
   g_assert_no_error (error);

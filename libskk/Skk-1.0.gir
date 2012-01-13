@@ -849,6 +849,26 @@
 		<field name="priv">
 			<type name="ContextPrivate" c:type="SkkContextPrivate*"/>
 		</field>
+		<method name="add_dictionary" c:identifier="skk_context_add_dictionary">
+			<parameters>
+				<parameter name="dict" transfer-ownership="none">
+					<type name="Skk.Dict" c:type="SkkDict*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="remove_dictionary" c:identifier="skk_context_remove_dictionary">
+			<parameters>
+				<parameter name="dict" transfer-ownership="none">
+					<type name="Skk.Dict" c:type="SkkDict*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
 		<constructor name="new" c:identifier="skk_context_new">
 			<parameters>
 				<parameter name="dictionaries" transfer-ownership="none">
@@ -1048,7 +1068,7 @@
 		</field>
 	</record>
 	<record name="CandidatePrivate" c:type="SkkCandidatePrivate" disguised="1"/>
-	<class name="CandidateList" c:type="SkkCandidateList" glib:type-name="SkkCandidateList" glib:get-type="skk_candidate_list_get_type" glib:type-struct="CandidateListClass" parent="GObject.Object">
+	<class name="CandidateList" c:type="SkkCandidateList" glib:type-name="SkkCandidateList" glib:get-type="skk_candidate_list_get_type" glib:type-struct="CandidateListClass" parent="GObject.Object" abstract="1">
 		<field name="parent_instance">
 			<type name="GObject.Object" c:type="GObject"/>
 		</field>
@@ -1065,65 +1085,112 @@
 				<type name="Skk.Candidate" c:type="SkkCandidate*"/>
 			</return-value>
 		</method>
-		<constructor name="new" c:identifier="skk_candidate_list_new">
-			<parameters>
-				<parameter name="page_start" transfer-ownership="none">
-					<type name="guint" c:type="guint"/>
-				</parameter>
-				<parameter name="page_size" transfer-ownership="none">
-					<type name="guint" c:type="guint"/>
-				</parameter>
-			</parameters>
-			<return-value transfer-ownership="full">
-				<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
-			</return-value>
-		</constructor>
-		<method name="cursor_up" c:identifier="skk_candidate_list_cursor_up">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="cursor_down" c:identifier="skk_candidate_list_cursor_down">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="page_up" c:identifier="skk_candidate_list_page_up">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="page_down" c:identifier="skk_candidate_list_page_down">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="next" c:identifier="skk_candidate_list_next">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="previous" c:identifier="skk_candidate_list_previous">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="get_page_start_cursor_pos" c:identifier="skk_candidate_list_get_page_start_cursor_pos">
-			<return-value transfer-ownership="full">
-				<type name="guint" c:type="guint"/>
-			</return-value>
-		</method>
-		<method name="select" c:identifier="skk_candidate_list_select">
+		<virtual-method name="get" invoker="get">
 			<parameters>
 				<parameter name="index" transfer-ownership="none">
 					<type name="gint" c:type="gint"/>
 				</parameter>
 			</parameters>
 			<return-value transfer-ownership="full">
+				<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+			</return-value>
+		</virtual-method>
+		<method name="cursor_up" c:identifier="skk_candidate_list_cursor_up">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="cursor_up" invoker="cursor_up">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="cursor_down" c:identifier="skk_candidate_list_cursor_down">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="cursor_down" invoker="cursor_down">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="page_up" c:identifier="skk_candidate_list_page_up">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="page_up" invoker="page_up">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="page_down" c:identifier="skk_candidate_list_page_down">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="page_down" invoker="page_down">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="next" c:identifier="skk_candidate_list_next">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="next" invoker="next">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="previous" c:identifier="skk_candidate_list_previous">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="previous" invoker="previous">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="get_page_start_cursor_pos" c:identifier="skk_candidate_list_get_page_start_cursor_pos">
+			<return-value transfer-ownership="full">
+				<type name="guint" c:type="guint"/>
+			</return-value>
+		</method>
+		<method name="select_at" c:identifier="skk_candidate_list_select_at">
+			<parameters>
+				<parameter name="index_in_page" transfer-ownership="none">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="select_at" invoker="select_at">
+			<parameters>
+				<parameter name="index_in_page" transfer-ownership="none">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="select" c:identifier="skk_candidate_list_select">
+			<return-value transfer-ownership="full">
 				<type name="none"/>
 			</return-value>
 		</method>
-		<property name="cursor-pos" writable="1">
+		<virtual-method name="select" invoker="select">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</virtual-method>
+		<property name="cursor-pos">
 			<type name="gint" c:type="gint"/>
 		</property>
 		<property name="size">
@@ -1157,6 +1224,164 @@
 	<record name="CandidateListClass" c:type="SkkCandidateListClass" glib:is-gtype-struct-for="CandidateList">
 		<field name="parent_class">
 			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+				<field name="get">
+			<callback name="get" c:type="get">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+					<parameter name="index" transfer-ownership="none">
+						<type name="gint" c:type="gint"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="clear">
+			<callback name="clear" c:type="clear">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="add_candidates">
+			<callback name="add_candidates" c:type="add_candidates">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+					<parameter name="array" transfer-ownership="none">
+						<array length="2">
+							<type name="Skk.Candidate" c:type="SkkCandidate*"/>
+						</array>
+					</parameter>
+					<parameter name="array_length1" transfer-ownership="none">
+						<type name="gint" c:type="gint"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="add_candidates_end">
+			<callback name="add_candidates_end" c:type="add_candidates_end">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="cursor_up">
+			<callback name="cursor_up" c:type="cursor_up">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="cursor_down">
+			<callback name="cursor_down" c:type="cursor_down">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="page_up">
+			<callback name="page_up" c:type="page_up">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="page_down">
+			<callback name="page_down" c:type="page_down">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="next">
+			<callback name="next" c:type="next">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="previous">
+			<callback name="previous" c:type="previous">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="select_at">
+			<callback name="select_at" c:type="select_at">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+					<parameter name="index_in_page" transfer-ownership="none">
+						<type name="guint" c:type="guint"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+			</callback>
+		</field>
+				<field name="select">
+			<callback name="select" c:type="select">
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Skk.CandidateList" c:type="SkkCandidateList*"/>
+					</parameter>
+				</parameters>
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+			</callback>
 		</field>
 	</record>
 	<record name="CandidateListPrivate" c:type="SkkCandidateListPrivate" disguised="1"/>
