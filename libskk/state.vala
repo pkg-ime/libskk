@@ -1,7 +1,7 @@
 // -*- coding: utf-8 -*-
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ namespace Skk {
             }
         }
 
-        internal ArrayList<Dict> dictionaries;
+        internal Gee.List<Dict> dictionaries;
         internal CandidateList candidates;
 
         // These two RomKanaConverters are needed to track delete/undo
@@ -116,7 +116,7 @@ namespace Skk {
         Regex numeric_regex;
         Regex numeric_ref_regex;
 
-        internal State (ArrayList<Dict> dictionaries) {
+        internal State (Gee.List<Dict> dictionaries) {
             this.dictionaries = dictionaries;
             this.candidates = new SimpleCandidateList ();
             this.candidates.selected.connect (candidate_selected);
@@ -968,6 +968,7 @@ namespace Skk {
                 state.candidates.select ();
                 state.output.append (surrounding_after);
                 if (command == "special-midasi") {
+                    state.candidates.clear ();
                     state.handler_type = typeof (StartStateHandler);
                     return false;
                 }

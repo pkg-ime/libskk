@@ -35,6 +35,7 @@ Depends: libskk-common (= ${source:Version}),
 	 ${shlibs:Depends},
 	 ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
+Conflicts: ibus-skk (<< 1.4.0)
 Multi-Arch: same
 Description: library to deal with Japanese kana-kanji conversion method
  Library that provides GObject-based interface of Japanese

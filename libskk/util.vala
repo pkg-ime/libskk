@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,6 +176,7 @@ namespace Skk {
             return builder.str;
         }
 
+#if 0
         internal static string get_latin (string wide_latin) {
             StringBuilder builder = new StringBuilder ();
             int index = 0;
@@ -190,6 +191,7 @@ namespace Skk {
             }
             return builder.str;
         }
+#endif
 
         static unichar get_katakana_char (unichar uc) {
             if (_KatakanaTable.has_key (uc)) {
@@ -266,8 +268,10 @@ namespace Skk {
                 return get_katakana (str);
             case InputMode.HANKAKU_KATAKANA:
                 return get_hankaku_katakana (str);
+#if 0
             case InputMode.LATIN:
                 return get_latin (str);
+#endif
             case InputMode.WIDE_LATIN:
                 return get_wide_latin (str);
             default:

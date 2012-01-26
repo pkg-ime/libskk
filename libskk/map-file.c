@@ -2,8 +2,8 @@
  * generated from map-file.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -410,17 +410,17 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 		_tmp20_ = json_parser_load_from_file (_tmp18_, _tmp19_, &_inner_error_);
 		_tmp21_ = _tmp20_;
 		if (_inner_error_ != NULL) {
-			goto __catch24_g_error;
+			goto __catch25_g_error;
 		}
 		if (!_tmp21_) {
 			GError* _tmp22_;
 			_tmp22_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "");
 			_inner_error_ = _tmp22_;
-			goto __catch24_g_error;
+			goto __catch25_g_error;
 		}
 	}
-	goto __finally24;
-	__catch24_g_error:
+	goto __finally25;
+	__catch25_g_error:
 	{
 		GError* e = NULL;
 		const gchar* _tmp23_;
@@ -442,9 +442,9 @@ static void skk_map_file_load (SkkMapFile* self, const gchar* rule, const gchar*
 		_g_free0 (_tmp27_);
 		_inner_error_ = _tmp29_;
 		_g_error_free0 (e);
-		goto __finally24;
+		goto __finally25;
 	}
-	__finally24:
+	__finally25:
 	if (_inner_error_ != NULL) {
 		if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 			g_propagate_error (error, _inner_error_);

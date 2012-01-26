@@ -61,7 +61,7 @@
 		</constructor>
 		<method name="output_nn_if_any" c:identifier="skk_rom_kana_converter_output_nn_if_any">
 			<return-value transfer-ownership="full">
-				<type name="none"/>
+				<type name="gboolean" c:type="gboolean"/>
 			</return-value>
 		</method>
 		<method name="append_text" c:identifier="skk_rom_kana_converter_append_text">
@@ -636,7 +636,13 @@
 		</field>
 	</record>
 	<record name="SkkServPrivate" c:type="SkkSkkServPrivate" disguised="1"/>
-	<record name="KeyEvent">
+	<class name="KeyEvent" c:type="SkkKeyEvent" glib:type-name="SkkKeyEvent" glib:get-type="skk_key_event_get_type" glib:type-struct="KeyEventClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="KeyEventPrivate" c:type="SkkKeyEventPrivate*"/>
+		</field>
 		<constructor name="new" c:identifier="skk_key_event_new">
 			<parameters>
 				<parameter name="name" transfer-ownership="none" allow-none="1">
@@ -692,7 +698,13 @@
 		<property name="modifiers" writable="1">
 			<type name="Skk.ModifierType" c:type="SkkModifierType"/>
 		</property>
+	</class>
+	<record name="KeyEventClass" c:type="SkkKeyEventClass" glib:is-gtype-struct-for="KeyEvent">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
 	</record>
+	<record name="KeyEventPrivate" c:type="SkkKeyEventPrivate" disguised="1"/>
 	<class name="KeyEventFilter" c:type="SkkKeyEventFilter" glib:type-name="SkkKeyEventFilter" glib:get-type="skk_key_event_filter_get_type" glib:type-struct="KeyEventFilterClass" parent="GObject.Object" abstract="1">
 		<field name="parent_instance">
 			<type name="GObject.Object" c:type="GObject"/>
@@ -774,25 +786,6 @@
 		</field>
 	</record>
 	<record name="KeyEventFilterPrivate" c:type="SkkKeyEventFilterPrivate" disguised="1"/>
-	<class name="SimpleKeyEventFilter" c:type="SkkSimpleKeyEventFilter" glib:type-name="SkkSimpleKeyEventFilter" glib:get-type="skk_simple_key_event_filter_get_type" glib:type-struct="SimpleKeyEventFilterClass" parent="Skk.KeyEventFilter">
-		<field name="parent_instance">
-			<type name="Skk.KeyEventFilter" c:type="SkkKeyEventFilter"/>
-		</field>
-		<field name="priv">
-			<type name="SimpleKeyEventFilterPrivate" c:type="SkkSimpleKeyEventFilterPrivate*"/>
-		</field>
-		<constructor name="new" c:identifier="skk_simple_key_event_filter_new">
-			<return-value transfer-ownership="full">
-				<type name="Skk.SimpleKeyEventFilter" c:type="SkkSimpleKeyEventFilter*"/>
-			</return-value>
-		</constructor>
-	</class>
-	<record name="SimpleKeyEventFilterClass" c:type="SkkSimpleKeyEventFilterClass" glib:is-gtype-struct-for="SimpleKeyEventFilter">
-		<field name="parent_class">
-			<type name="Skk.KeyEventFilterClass" c:type="SkkKeyEventFilterClass"/>
-		</field>
-	</record>
-	<record name="SimpleKeyEventFilterPrivate" c:type="SkkSimpleKeyEventFilterPrivate" disguised="1"/>
 	<class name="Rule" c:type="SkkRule" glib:type-name="SkkRule" glib:get-type="skk_rule_get_type" glib:type-struct="RuleClass" parent="GObject.Object">
 		<field name="parent_instance">
 			<type name="GObject.Object" c:type="GObject"/>

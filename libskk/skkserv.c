@@ -2,8 +2,8 @@
  * generated from skkserv.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,6 @@ typedef struct _SkkEncodingConverter SkkEncodingConverter;
 typedef struct _SkkEncodingConverterClass SkkEncodingConverterClass;
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 #define _g_free0(var) (var = (g_free (var), NULL))
-#define _skk_encoding_converter_unref0(var) ((var == NULL) ? NULL : (var = (skk_encoding_converter_unref (var), NULL)))
 #define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 #define _g_string_free0(var) ((var == NULL) ? NULL : (var = (g_string_free (var, TRUE), NULL)))
 
@@ -118,18 +117,13 @@ GQuark skk_skk_serv_error_quark (void);
 GType skk_dict_get_type (void) G_GNUC_CONST;
 GType skk_candidate_get_type (void) G_GNUC_CONST;
 GType skk_skk_serv_get_type (void) G_GNUC_CONST;
-gpointer skk_encoding_converter_ref (gpointer instance);
-void skk_encoding_converter_unref (gpointer instance);
-GParamSpec* skk_param_spec_encoding_converter (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_encoding_converter (GValue* value, gpointer v_object);
-void skk_value_take_encoding_converter (GValue* value, gpointer v_object);
-gpointer skk_value_get_encoding_converter (const GValue* value);
 GType skk_encoding_converter_get_type (void) G_GNUC_CONST;
 #define SKK_SKK_SERV_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_SKK_SERV, SkkSkkServPrivate))
 enum  {
 	SKK_SKK_SERV_DUMMY_PROPERTY,
 	SKK_SKK_SERV_READ_ONLY
 };
+static void skk_skk_serv_close_connection (SkkSkkServ* self);
 static void skk_skk_serv_real_reload (SkkDict* base, GError** error);
 static gchar* skk_skk_serv_read_response (SkkSkkServ* self, GError** error);
 static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* midasi, gboolean okuri, int* result_length1);
@@ -154,6 +148,71 @@ GQuark skk_skk_serv_error_quark (void) {
 }
 
 
+static void skk_skk_serv_close_connection (SkkSkkServ* self) {
+	GSocketConnection* _tmp0_;
+	GError * _inner_error_ = NULL;
+	g_return_if_fail (self != NULL);
+	_tmp0_ = self->priv->connection;
+	if (_tmp0_ != NULL) {
+		{
+			guint8 _tmp1_;
+			gsize bytes_written = 0UL;
+			GSocketConnection* _tmp2_;
+			GOutputStream* _tmp3_;
+			GOutputStream* _tmp4_;
+			gsize _tmp5_ = 0UL;
+			GSocketConnection* _tmp6_;
+			GOutputStream* _tmp7_;
+			GOutputStream* _tmp8_;
+			GSocketConnection* _tmp9_;
+			self->priv->buffer[0] = (guint8) '0';
+			_tmp1_ = self->priv->buffer[0];
+			_tmp2_ = self->priv->connection;
+			_tmp3_ = g_io_stream_get_output_stream ((GIOStream*) _tmp2_);
+			_tmp4_ = _tmp3_;
+			g_output_stream_write_all (_tmp4_, self->priv->buffer + 0, (gsize) (1 - 0), &_tmp5_, NULL, &_inner_error_);
+			bytes_written = _tmp5_;
+			if (_inner_error_ != NULL) {
+				goto __catch15_g_error;
+			}
+			_tmp6_ = self->priv->connection;
+			_tmp7_ = g_io_stream_get_output_stream ((GIOStream*) _tmp6_);
+			_tmp8_ = _tmp7_;
+			g_output_stream_flush (_tmp8_, NULL, &_inner_error_);
+			if (_inner_error_ != NULL) {
+				goto __catch15_g_error;
+			}
+			_tmp9_ = self->priv->connection;
+			g_io_stream_close ((GIOStream*) _tmp9_, NULL, &_inner_error_);
+			if (_inner_error_ != NULL) {
+				goto __catch15_g_error;
+			}
+		}
+		goto __finally15;
+		__catch15_g_error:
+		{
+			GError* e = NULL;
+			GError* _tmp10_;
+			const gchar* _tmp11_;
+			e = _inner_error_;
+			_inner_error_ = NULL;
+			_tmp10_ = e;
+			_tmp11_ = _tmp10_->message;
+			g_warning ("skkserv.vala:43: can't close skkserv: %s", _tmp11_);
+			_g_error_free0 (e);
+		}
+		__finally15:
+		if (_inner_error_ != NULL) {
+			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+			g_clear_error (&_inner_error_);
+			return;
+		}
+		_g_object_unref0 (self->priv->connection);
+		self->priv->connection = NULL;
+	}
+}
+
+
 /**
          * {@inheritDoc}
          */
@@ -164,98 +223,100 @@ static gpointer _g_object_ref0 (gpointer self) {
 
 static void skk_skk_serv_real_reload (SkkDict* base, GError** error) {
 	SkkSkkServ * self;
-	GSocketConnection* _tmp0_;
 	GError * _inner_error_ = NULL;
 	self = (SkkSkkServ*) base;
-	_tmp0_ = self->priv->connection;
-	if (_tmp0_ != NULL) {
-		_g_object_unref0 (self->priv->connection);
-		self->priv->connection = NULL;
-	}
+	skk_skk_serv_close_connection (self);
 	{
-		GSocketClient* _tmp1_;
+		GSocketClient* _tmp0_;
 		GSocketClient* client;
-		GSocketClient* _tmp2_;
-		const gchar* _tmp3_;
-		guint16 _tmp4_;
-		GSocketConnection* _tmp5_ = NULL;
+		GSocketClient* _tmp1_;
+		const gchar* _tmp2_;
+		guint16 _tmp3_;
+		GSocketConnection* _tmp4_ = NULL;
+		GSocketConnection* _tmp5_;
 		GSocketConnection* _tmp6_;
-		GSocketConnection* _tmp7_;
-		guint8 _tmp8_;
+		guint8 _tmp7_;
 		gsize bytes_written = 0UL;
-		GSocketConnection* _tmp9_;
+		GSocketConnection* _tmp8_;
+		GOutputStream* _tmp9_;
 		GOutputStream* _tmp10_;
-		GOutputStream* _tmp11_;
-		gsize _tmp12_ = 0UL;
-		GSocketConnection* _tmp13_;
+		gsize _tmp11_ = 0UL;
+		GSocketConnection* _tmp12_;
+		GOutputStream* _tmp13_;
 		GOutputStream* _tmp14_;
-		GOutputStream* _tmp15_;
-		GSocketConnection* _tmp16_;
+		GSocketConnection* _tmp15_;
+		GInputStream* _tmp16_;
 		GInputStream* _tmp17_;
-		GInputStream* _tmp18_;
-		gssize _tmp19_ = 0L;
+		gssize _tmp18_ = 0L;
 		gssize len;
-		gssize _tmp20_;
-		_tmp1_ = g_socket_client_new ();
-		client = _tmp1_;
-		_tmp2_ = client;
-		_tmp3_ = self->priv->host;
-		_tmp4_ = self->priv->port;
-		_tmp5_ = g_socket_client_connect_to_host (_tmp2_, _tmp3_, _tmp4_, NULL, &_inner_error_);
-		_tmp6_ = _tmp5_;
+		gssize _tmp19_;
+		_tmp0_ = g_socket_client_new ();
+		client = _tmp0_;
+		_tmp1_ = client;
+		_tmp2_ = self->priv->host;
+		_tmp3_ = self->priv->port;
+		_tmp4_ = g_socket_client_connect_to_host (_tmp1_, _tmp2_, _tmp3_, NULL, &_inner_error_);
+		_tmp5_ = _tmp4_;
 		if (_inner_error_ != NULL) {
 			_g_object_unref0 (client);
-			goto __catch15_g_error;
+			goto __catch16_g_error;
 		}
-		_tmp7_ = _g_object_ref0 (_tmp6_);
+		_tmp6_ = _g_object_ref0 (_tmp5_);
 		_g_object_unref0 (self->priv->connection);
-		self->priv->connection = _tmp7_;
+		self->priv->connection = _tmp6_;
 		self->priv->buffer[0] = (guint8) '2';
-		_tmp8_ = self->priv->buffer[0];
-		_tmp9_ = self->priv->connection;
-		_tmp10_ = g_io_stream_get_output_stream ((GIOStream*) _tmp9_);
-		_tmp11_ = _tmp10_;
-		g_output_stream_write_all (_tmp11_, self->priv->buffer + 0, (gsize) (1 - 0), &_tmp12_, NULL, &_inner_error_);
-		bytes_written = _tmp12_;
+		_tmp7_ = self->priv->buffer[0];
+		_tmp8_ = self->priv->connection;
+		_tmp9_ = g_io_stream_get_output_stream ((GIOStream*) _tmp8_);
+		_tmp10_ = _tmp9_;
+		g_output_stream_write_all (_tmp10_, self->priv->buffer + 0, (gsize) (1 - 0), &_tmp11_, NULL, &_inner_error_);
+		bytes_written = _tmp11_;
 		if (_inner_error_ != NULL) {
 			_g_object_unref0 (client);
-			goto __catch15_g_error;
+			goto __catch16_g_error;
 		}
-		_tmp13_ = self->priv->connection;
-		_tmp14_ = g_io_stream_get_output_stream ((GIOStream*) _tmp13_);
-		_tmp15_ = _tmp14_;
-		g_output_stream_flush (_tmp15_, NULL, &_inner_error_);
+		_tmp12_ = self->priv->connection;
+		_tmp13_ = g_io_stream_get_output_stream ((GIOStream*) _tmp12_);
+		_tmp14_ = _tmp13_;
+		g_output_stream_flush (_tmp14_, NULL, &_inner_error_);
 		if (_inner_error_ != NULL) {
 			_g_object_unref0 (client);
-			goto __catch15_g_error;
+			goto __catch16_g_error;
 		}
-		_tmp16_ = self->priv->connection;
-		_tmp17_ = g_io_stream_get_input_stream ((GIOStream*) _tmp16_);
-		_tmp18_ = _tmp17_;
-		_tmp19_ = g_input_stream_read (_tmp18_, self->priv->buffer, (gsize) 4096, NULL, &_inner_error_);
-		len = _tmp19_;
+		_tmp15_ = self->priv->connection;
+		_tmp16_ = g_io_stream_get_input_stream ((GIOStream*) _tmp15_);
+		_tmp17_ = _tmp16_;
+		_tmp18_ = g_input_stream_read (_tmp17_, self->priv->buffer, (gsize) 4096, NULL, &_inner_error_);
+		len = _tmp18_;
 		if (_inner_error_ != NULL) {
 			_g_object_unref0 (client);
-			goto __catch15_g_error;
+			goto __catch16_g_error;
 		}
-		_tmp20_ = len;
-		if (_tmp20_ <= ((gssize) 0)) {
-			_g_object_unref0 (self->priv->connection);
-			self->priv->connection = NULL;
+		_tmp19_ = len;
+		if (_tmp19_ <= ((gssize) 0)) {
+			skk_skk_serv_close_connection (self);
 		}
 		_g_object_unref0 (client);
 	}
-	goto __finally15;
-	__catch15_g_error:
+	goto __finally16;
+	__catch16_g_error:
 	{
 		GError* e = NULL;
+		const gchar* _tmp20_;
+		guint16 _tmp21_;
+		GError* _tmp22_;
+		const gchar* _tmp23_;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_g_object_unref0 (self->priv->connection);
-		self->priv->connection = NULL;
+		_tmp20_ = self->priv->host;
+		_tmp21_ = self->priv->port;
+		_tmp22_ = e;
+		_tmp23_ = _tmp22_->message;
+		g_warning ("skkserv.vala:67: can't open skkserv at %s:%u: %s", _tmp20_, (guint) _tmp21_, _tmp23_);
+		skk_skk_serv_close_connection (self);
 		_g_error_free0 (e);
 	}
-	__finally15:
+	__finally16:
 	if (_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
@@ -584,13 +645,13 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		_tmp5_ = skk_encoding_converter_encode (_tmp3_, _tmp4_, &_inner_error_);
 		_tmp6_ = _tmp5_;
 		if (_inner_error_ != NULL) {
-			goto __catch16_g_error;
+			goto __catch17_g_error;
 		}
 		_g_free0 (_midasi);
 		_midasi = _tmp6_;
 	}
-	goto __finally16;
-	__catch16_g_error:
+	goto __finally17;
+	__catch17_g_error:
 	{
 		GError* e = NULL;
 		SkkCandidate** _tmp7_ = NULL;
@@ -609,7 +670,7 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		_g_free0 (_midasi);
 		return result;
 	}
-	__finally16:
+	__finally17:
 	if (_inner_error_ != NULL) {
 		_g_free0 (_midasi);
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -670,9 +731,9 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		_g_free0 (_tmp14_);
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch17_skk_skk_serv_error;
+				goto __catch18_skk_skk_serv_error;
 			}
-			goto __catch17_g_error;
+			goto __catch18_g_error;
 		}
 		_tmp18_ = self->priv->connection;
 		_tmp19_ = g_io_stream_get_output_stream ((GIOStream*) _tmp18_);
@@ -680,17 +741,17 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		g_output_stream_flush (_tmp20_, NULL, &_inner_error_);
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch17_skk_skk_serv_error;
+				goto __catch18_skk_skk_serv_error;
 			}
-			goto __catch17_g_error;
+			goto __catch18_g_error;
 		}
 		_tmp21_ = skk_skk_serv_read_response (self, &_inner_error_);
 		response = _tmp21_;
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch17_skk_skk_serv_error;
+				goto __catch18_skk_skk_serv_error;
 			}
-			goto __catch17_g_error;
+			goto __catch18_g_error;
 		}
 		_tmp22_ = response;
 		_tmp23_ = strlen (_tmp22_);
@@ -724,9 +785,9 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		if (_inner_error_ != NULL) {
 			_g_free0 (response);
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch17_skk_skk_serv_error;
+				goto __catch18_skk_skk_serv_error;
 			}
-			goto __catch17_g_error;
+			goto __catch18_g_error;
 		}
 		_tmp37_ = midasi;
 		_tmp38_ = okuri;
@@ -745,8 +806,8 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		_g_free0 (_midasi);
 		return result;
 	}
-	goto __finally17;
-	__catch17_skk_skk_serv_error:
+	goto __finally18;
+	__catch18_skk_skk_serv_error:
 	{
 		GError* e = NULL;
 		SkkCandidate** _tmp44_ = NULL;
@@ -765,8 +826,8 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		_g_free0 (_midasi);
 		return result;
 	}
-	goto __finally17;
-	__catch17_g_error:
+	goto __finally18;
+	__catch18_g_error:
 	{
 		GError* e = NULL;
 		SkkCandidate** _tmp46_ = NULL;
@@ -785,7 +846,7 @@ static SkkCandidate** skk_skk_serv_real_lookup (SkkDict* base, const gchar* mida
 		_g_free0 (_midasi);
 		return result;
 	}
-	__finally17:
+	__finally18:
 	_g_free0 (_midasi);
 	g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 	g_clear_error (&_inner_error_);
@@ -828,13 +889,13 @@ static gchar** skk_skk_serv_real_complete (SkkDict* base, const gchar* midasi, i
 		_tmp5_ = skk_encoding_converter_encode (_tmp3_, _tmp4_, &_inner_error_);
 		_tmp6_ = _tmp5_;
 		if (_inner_error_ != NULL) {
-			goto __catch18_g_error;
+			goto __catch19_g_error;
 		}
 		_g_free0 (_midasi);
 		_midasi = _tmp6_;
 	}
-	goto __finally18;
-	__catch18_g_error:
+	goto __finally19;
+	__catch19_g_error:
 	{
 		GError* e = NULL;
 		gchar** _tmp7_ = NULL;
@@ -853,7 +914,7 @@ static gchar** skk_skk_serv_real_complete (SkkDict* base, const gchar* midasi, i
 		_g_free0 (_midasi);
 		return result;
 	}
-	__finally18:
+	__finally19:
 	if (_inner_error_ != NULL) {
 		_g_free0 (_midasi);
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -883,21 +944,18 @@ static gchar** skk_skk_serv_real_complete (SkkDict* base, const gchar* midasi, i
 		gint _tmp24_;
 		SkkEncodingConverter* _tmp27_;
 		const gchar* _tmp28_;
-		const gchar* _tmp29_;
-		gint _tmp30_;
-		gint _tmp31_;
-		gchar* _tmp32_ = NULL;
+		gchar* _tmp29_ = NULL;
+		gchar* _tmp30_;
+		gchar* _tmp31_ = NULL;
+		gchar* _tmp32_;
 		gchar* _tmp33_;
-		gchar* _tmp34_ = NULL;
-		gchar* _tmp35_;
-		gchar* _tmp36_;
-		gchar* _tmp37_;
+		gchar* _tmp34_;
+		gchar** _tmp35_;
+		gchar** _tmp36_ = NULL;
+		gchar** _tmp37_;
+		gint _tmp37__length1;
 		gchar** _tmp38_;
-		gchar** _tmp39_ = NULL;
-		gchar** _tmp40_;
-		gint _tmp40__length1;
-		gchar** _tmp41_;
-		gint _tmp41__length1;
+		gint _tmp38__length1;
 		_tmp9_ = self->priv->connection;
 		_tmp10_ = g_io_stream_get_output_stream ((GIOStream*) _tmp9_);
 		_tmp11_ = _tmp10_;
@@ -912,9 +970,9 @@ static gchar** skk_skk_serv_real_complete (SkkDict* base, const gchar* midasi, i
 		_g_free0 (_tmp14_);
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch19_skk_skk_serv_error;
+				goto __catch20_skk_skk_serv_error;
 			}
-			goto __catch19_g_error;
+			goto __catch20_g_error;
 		}
 		_tmp18_ = self->priv->connection;
 		_tmp19_ = g_io_stream_get_output_stream ((GIOStream*) _tmp18_);
@@ -922,17 +980,17 @@ static gchar** skk_skk_serv_real_complete (SkkDict* base, const gchar* midasi, i
 		g_output_stream_flush (_tmp20_, NULL, &_inner_error_);
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch19_skk_skk_serv_error;
+				goto __catch20_skk_skk_serv_error;
 			}
-			goto __catch19_g_error;
+			goto __catch20_g_error;
 		}
 		_tmp21_ = skk_skk_serv_read_response (self, &_inner_error_);
 		response = _tmp21_;
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch19_skk_skk_serv_error;
+				goto __catch20_skk_skk_serv_error;
 			}
-			goto __catch19_g_error;
+			goto __catch20_g_error;
 		}
 		_tmp22_ = response;
 		_tmp23_ = strlen (_tmp22_);
@@ -954,88 +1012,85 @@ static gchar** skk_skk_serv_real_complete (SkkDict* base, const gchar* midasi, i
 		}
 		_tmp27_ = self->priv->converter;
 		_tmp28_ = response;
-		_tmp29_ = response;
-		_tmp30_ = strlen (_tmp29_);
-		_tmp31_ = _tmp30_;
-		_tmp32_ = string_slice (_tmp28_, (glong) 2, (glong) _tmp31_);
+		_tmp29_ = string_slice (_tmp28_, (glong) 2, (glong) (-1));
+		_tmp30_ = _tmp29_;
+		_tmp31_ = skk_encoding_converter_decode (_tmp27_, _tmp30_, &_inner_error_);
+		_tmp32_ = _tmp31_;
+		_g_free0 (_tmp30_);
 		_tmp33_ = _tmp32_;
-		_tmp34_ = skk_encoding_converter_decode (_tmp27_, _tmp33_, &_inner_error_);
-		_tmp35_ = _tmp34_;
-		_g_free0 (_tmp33_);
-		_tmp36_ = _tmp35_;
 		if (_inner_error_ != NULL) {
 			_g_free0 (response);
 			if (_inner_error_->domain == SKK_SKK_SERV_ERROR) {
-				goto __catch19_skk_skk_serv_error;
+				goto __catch20_skk_skk_serv_error;
 			}
-			goto __catch19_g_error;
+			goto __catch20_g_error;
 		}
+		_tmp34_ = _tmp33_;
+		_tmp36_ = _tmp35_ = g_strsplit (_tmp34_, "/", 0);
 		_tmp37_ = _tmp36_;
-		_tmp39_ = _tmp38_ = g_strsplit (_tmp37_, "/", 0);
-		_tmp40_ = _tmp39_;
-		_tmp40__length1 = _vala_array_length (_tmp38_);
-		_g_free0 (_tmp37_);
-		_tmp41_ = _tmp40_;
-		_tmp41__length1 = _tmp40__length1;
+		_tmp37__length1 = _vala_array_length (_tmp35_);
+		_g_free0 (_tmp34_);
+		_tmp38_ = _tmp37_;
+		_tmp38__length1 = _tmp37__length1;
 		if (result_length1) {
-			*result_length1 = _tmp41__length1;
+			*result_length1 = _tmp38__length1;
 		}
-		result = _tmp41_;
+		result = _tmp38_;
 		_g_free0 (response);
 		_g_free0 (_midasi);
 		return result;
 	}
-	goto __finally19;
-	__catch19_skk_skk_serv_error:
+	goto __finally20;
+	__catch20_skk_skk_serv_error:
 	{
 		GError* e = NULL;
-		GError* _tmp42_;
-		const gchar* _tmp43_;
-		gchar** _tmp44_ = NULL;
-		gchar** _tmp45_;
-		gint _tmp45__length1;
+		GError* _tmp39_;
+		const gchar* _tmp40_;
+		gchar** _tmp41_ = NULL;
+		gchar** _tmp42_;
+		gint _tmp42__length1;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp42_ = e;
-		_tmp43_ = _tmp42_->message;
-		g_warning ("skkserv.vala:142: server completion failed %s", _tmp43_);
-		_tmp44_ = g_new0 (gchar*, 0 + 1);
-		_tmp45_ = _tmp44_;
-		_tmp45__length1 = 0;
+		_tmp39_ = e;
+		_tmp40_ = _tmp39_->message;
+		g_warning ("skkserv.vala:158: server completion failed %s", _tmp40_);
+		_tmp41_ = g_new0 (gchar*, 0 + 1);
+		_tmp42_ = _tmp41_;
+		_tmp42__length1 = 0;
 		if (result_length1) {
-			*result_length1 = _tmp45__length1;
+			*result_length1 = _tmp42__length1;
 		}
-		result = _tmp45_;
+		result = _tmp42_;
 		_g_error_free0 (e);
 		_g_free0 (_midasi);
 		return result;
 	}
-	goto __finally19;
-	__catch19_g_error:
+	goto __finally20;
+	__catch20_g_error:
 	{
 		GError* e = NULL;
-		GError* _tmp46_;
-		const gchar* _tmp47_;
-		gchar** _tmp48_ = NULL;
-		gchar** _tmp49_;
-		gint _tmp49__length1;
+		GError* _tmp43_;
+		const gchar* _tmp44_;
+		gchar** _tmp45_ = NULL;
+		gchar** _tmp46_;
+		gint _tmp46__length1;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp46_ = e;
-		_tmp47_ = _tmp46_->message;
-		g_warning ("skkserv.vala:145: server completion failed %s", _tmp47_);
-		_tmp48_ = g_new0 (gchar*, 0 + 1);
-		_tmp49_ = _tmp48_;
-		_tmp49__length1 = 0;
+		_tmp43_ = e;
+		_tmp44_ = _tmp43_->message;
+		g_warning ("skkserv.vala:161: server completion failed %s", _tmp44_);
+		_tmp45_ = g_new0 (gchar*, 0 + 1);
+		_tmp46_ = _tmp45_;
+		_tmp46__length1 = 0;
 		if (result_length1) {
-			*result_length1 = _tmp49__length1;
+			*result_length1 = _tmp46__length1;
 		}
-		result = _tmp49_;
+		result = _tmp46_;
 		_g_error_free0 (e);
 		_g_free0 (_midasi);
 		return result;
 	}
-	__finally19:
+	__finally20:
 	_g_free0 (_midasi);
 	g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 	g_clear_error (&_inner_error_);
@@ -1079,7 +1134,7 @@ SkkSkkServ* skk_skk_serv_construct (GType object_type, const gchar* host, guint1
 		_g_object_unref0 (self);
 		return NULL;
 	}
-	_skk_encoding_converter_unref0 (self->priv->converter);
+	_g_object_unref0 (self->priv->converter);
 	self->priv->converter = _tmp5_;
 	skk_dict_reload ((SkkDict*) self, &_inner_error_);
 	if (_inner_error_ != NULL) {
@@ -1129,15 +1184,16 @@ static void skk_skk_serv_instance_init (SkkSkkServ * self) {
 static void skk_skk_serv_finalize (GObject* obj) {
 	SkkSkkServ * self;
 	self = SKK_SKK_SERV (obj);
+	skk_skk_serv_close_connection (self);
 	_g_object_unref0 (self->priv->connection);
 	_g_free0 (self->priv->host);
-	_skk_encoding_converter_unref0 (self->priv->converter);
+	_g_object_unref0 (self->priv->converter);
 	G_OBJECT_CLASS (skk_skk_serv_parent_class)->finalize (obj);
 }
 
 
 /**
-     * An implementation of Dict which talks the skkserv protocol.
+     * Network based Implementation of Dict.
      */
 GType skk_skk_serv_get_type (void) {
 	static volatile gsize skk_skk_serv_type_id__volatile = 0;

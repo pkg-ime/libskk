@@ -2,8 +2,8 @@
  * generated from keymap.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@ typedef struct _SkkKeymapPrivate SkkKeymapPrivate;
 typedef struct _SkkKeyEvent SkkKeyEvent;
 typedef struct _SkkKeyEventClass SkkKeyEventClass;
 #define _g_free0(var) (var = (g_free (var), NULL))
-#define _skk_key_event_unref0(var) ((var == NULL) ? NULL : (var = (skk_key_event_unref (var), NULL)))
 
 struct _SkkKeymap {
 	GObject parent_instance;
@@ -74,12 +73,6 @@ enum  {
 void skk_keymap_set (SkkKeymap* self, const gchar* key, const gchar* command);
 SkkKeyEvent* skk_key_event_new_from_string (const gchar* key);
 SkkKeyEvent* skk_key_event_construct_from_string (GType object_type, const gchar* key);
-gpointer skk_key_event_ref (gpointer instance);
-void skk_key_event_unref (gpointer instance);
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_key_event (GValue* value, gpointer v_object);
-void skk_value_take_key_event (GValue* value, gpointer v_object);
-gpointer skk_value_get_key_event (const GValue* value);
 GType skk_key_event_get_type (void) G_GNUC_CONST;
 gchar* skk_key_event_to_string (SkkKeyEvent* self);
 gchar* skk_keymap_lookup_key (SkkKeymap* self, SkkKeyEvent* key);
@@ -109,7 +102,7 @@ void skk_keymap_set (SkkKeymap* self, const gchar* key, const gchar* command) {
 	_tmp6_ = command;
 	gee_map_set (_tmp0_, _tmp5_, _tmp6_);
 	_g_free0 (_tmp5_);
-	_skk_key_event_unref0 (_tmp3_);
+	_g_object_unref0 (_tmp3_);
 }
 
 

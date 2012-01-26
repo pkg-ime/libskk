@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ namespace Skk {
     }
 
     /**
-     * An implementation of Dict which talks the skkserv protocol.
+     * Network based Implementation of Dict.
      */
     public class SkkServ : Dict {
         SocketConnection? connection;
@@ -30,13 +30,27 @@ namespace Skk {
         string host;
         uint16 port;
 
+        void close_connection () {
+            if (connection != null) {
+                try {
+                    buffer[0] = '0';
+                    size_t bytes_written;
+                    connection.output_stream.write_all (buffer[0:1],
+                                                        out bytes_written);
+                    connection.output_stream.flush ();
+                    connection.close ();
+                } catch (GLib.Error e) {
+                    warning ("can't close skkserv: %s", e.message);
+                }
+                connection = null;
+            }
+        }
+
         /**
          * {@inheritDoc}
          */
         public override void reload () {
-            // this will cause connection close
-            if (connection != null)
-                connection = null;
+            close_connection ();
             try {
                 var client = new SocketClient ();
                 connection = client.connect_to_host (host, port);
@@ -47,10 +61,12 @@ namespace Skk {
                 connection.output_stream.flush ();
                 ssize_t len = connection.input_stream.read (buffer);
                 if (len <= 0) {
-                    connection = null;
+                    close_connection ();
                 }
             } catch (GLib.Error e) {
-                connection = null;
+                warning ("can't open skkserv at %s:%u: %s",
+                         host, port, e.message);
+                close_connection ();
             }
         }
 
@@ -137,7 +153,7 @@ namespace Skk {
                 if (response.length < 2)
                     return new string[0];
                 return converter.decode (
-                    response[2:response.length]).split ("/");
+                    response[2:-1]).split ("/");
             } catch (SkkServError e) {
                 warning ("server completion failed %s", e.message);
                 return new string[0];
@@ -173,6 +189,10 @@ namespace Skk {
             this.port = port;
             this.converter = new EncodingConverter (encoding);
             reload ();
+        }
+
+        ~SkkServ () {
+            close_connection ();
         }
     }
 }

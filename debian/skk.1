@@ -1,60 +1,55 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
 .TH LIBSKK 1 "5 Jan 2012"
 .SH NAME
-skk \- program to emulate Japanese SKK input method
+skk \- program that emulates Japanese SKK input method
 .SH SYNOPSIS
 .B skk
 .RI [ options ]
 .br
 .SH DESCRIPTION
-This manual page documents briefly the
-.B skk
-command.
+\fBskk\fP is a tool that reads key sequences from the standard input
+and converts them to Japanese text according to a Japanese input
+method called SKK (Simple Kana to Kanji conversion program).
 .PP
-\fBskk\fP is a tool that reads key sequence from standard input and
-converts them to text according to SKK (Simple Kana Kanji) input
-method.
+More information about the SKK input method itself can be found at:
+\m[blue]\fB\%http://openlab.jp/skk/\fR\m[]\&
 .SH OPTIONS
-These programs follow the usual GNU command line syntax, with long
-options starting with two dashes (`-').
-A summary of options is included below.
-For a complete description, see the Info files.
+The \fBskk\fP command follows the usual GNU command line syntax, with
+long options starting with two dashes (`-').  A summary of options is
+included below.
 .TP
 .B \-h, \-\-help
 Show summary of options.
 .TP
-.B \-f, \-\-file-dict
+.B \-f, \-\-file-dict=\fIFILE\fR
 Specify path to a file dictionary.
 .TP
-.B \-u, \-\-user-dict
+.B \-u, \-\-user-dict=\fIFILE\fR
 Specify path to a user dictionary.
 .TP
-.B \-s, \-\-skkserv
-Specify host and port running skkserv (in HOST:PORT format).
+.B \-s, \-\-skkserv=\fIHOST\fR:\fIPORT\fR
+Specify host and port running skkserv.
 .TP
-.B \-r, \-\-rule
+.B \-r, \-\-rule=\fIRULE\fR
 Specify typing rule.
 .TP
 .B \-l, \-\-list-rules
 List typing rules.
 .SH EXAMPLE
 .TP
-.B echo "A i SPC" | skk
-Converts a capital letter A followed by lowercase letter i and a space.
+echo "A i SPC" | skk
+Converts a capital letter "A" followed by lowercase letter "i" and a space.
 .TP
-.B echo "K a p a SPC K a SPC" | skk
-Converts a capital letter K followed by lowercase letters a, p, a, and
-a space.  Then converts a capital letter K followed by a and a space.
+echo "K a p a SPC K a SPC" | skk
+Converts a capital letter "K" followed by lowercase letters "a", "p", "a", and
+a space.  Then converts a capital letter "K" followed by "a" and a space.
 .TP
-.B echo "r k" | skk -r tutcode
-Converts two lowercase letters r and k with TUT-Code typing rule.
+echo "r k" | skk \-r tutcode
+Converts two lowercase letters "r" and "k" with TUT-Code typing rule.
 .TP
-.B echo "a (usleep 50000) b (usleep 200000)" | skk -r nicola
-Converts two lowercase letters a and b typed with a 50000 micro
+echo "a (usleep 50000) b (usleep 200000)" | skk \-r nicola
+Converts two lowercase letters "a" and "b" typed with a 50000 micro
 seconds interval, and wait 200000 micro seconds, with NICOLA typing
 rule.
 .SH AUTHOR
 libskk was written by Daiki Ueno <ueno@unixuser.org>.
-.PP
-This manual page was written by Daiki Ueno <ueno@unixuser.org>,
-for the Debian project (and may be used by others).

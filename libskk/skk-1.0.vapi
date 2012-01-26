@@ -111,7 +111,7 @@ namespace Skk {
 		public KanaKanScoreMap (string path, Skk.KanaKanDict dict) throws GLib.Error, GLib.IOError;
 	}
 	[CCode (cheader_filename = "libskk/libskk.h")]
-	public class KeyEvent {
+	public class KeyEvent : GLib.Object {
 		public KeyEvent (string? name, unichar code, Skk.ModifierType modifiers);
 		public bool base_equal (Skk.KeyEvent key);
 		public Skk.KeyEvent copy ();
@@ -146,7 +146,7 @@ namespace Skk {
 		public void append_text (string text);
 		public bool can_consume (unichar uc, bool preedit_only = false, bool no_carryover = true);
 		public bool @delete ();
-		public void output_nn_if_any ();
+		public bool output_nn_if_any ();
 		public void reset ();
 		public Skk.KanaMode kana_mode { get; set; }
 		public string output { get; internal set; }
@@ -159,11 +159,6 @@ namespace Skk {
 		public static Skk.RuleMetadata? find_rule (string name);
 		public static Skk.RuleMetadata[] list ();
 		public Skk.RuleMetadata metadata { get; private set; }
-	}
-	[CCode (cheader_filename = "libskk/libskk.h")]
-	public class SimpleKeyEventFilter : Skk.KeyEventFilter {
-		public SimpleKeyEventFilter ();
-		public override Skk.KeyEvent? filter_key_event (Skk.KeyEvent key);
 	}
 	[CCode (cheader_filename = "libskk/libskk.h")]
 	public class SkkServ : Skk.Dict {

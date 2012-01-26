@@ -1,3 +1,10 @@
+libskk (0.0.9-1) unstable; urgency=low
+
+  * New upstream release
+  * Use symbol versioning
+
+ -- Daiki Ueno <ueno@unixuser.org>  Thu, 26 Jan 2012 14:13:33 +0900
+
 libskk (0.0.8-1) unstable; urgency=low
 
   * New upstream release

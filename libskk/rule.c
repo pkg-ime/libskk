@@ -2,8 +2,8 @@
  * generated from rule.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,6 @@ typedef struct _SkkRomKanaMapFilePrivate SkkRomKanaMapFilePrivate;
 
 typedef struct _SkkRomKanaNode SkkRomKanaNode;
 typedef struct _SkkRomKanaNodeClass SkkRomKanaNodeClass;
-#define _skk_rom_kana_node_unref0(var) ((var == NULL) ? NULL : (var = (skk_rom_kana_node_unref (var), NULL)))
 
 #define SKK_TYPE_ROM_KANA_ENTRY (skk_rom_kana_entry_get_type ())
 typedef struct _SkkRomKanaEntry SkkRomKanaEntry;
@@ -103,10 +102,6 @@ typedef struct _SkkRule SkkRule;
 typedef struct _SkkRuleClass SkkRuleClass;
 typedef struct _SkkRulePrivate SkkRulePrivate;
 
-#define SKK_TYPE_KANA_MODE (skk_kana_mode_get_type ())
-
-#define SKK_TYPE_INPUT_MODE (skk_input_mode_get_type ())
-
 #define SKK_TYPE_KEY_EVENT_FILTER (skk_key_event_filter_get_type ())
 #define SKK_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_KEY_EVENT_FILTER, SkkKeyEventFilter))
 #define SKK_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_KEY_EVENT_FILTER, SkkKeyEventFilterClass))
@@ -116,6 +111,10 @@ typedef struct _SkkRulePrivate SkkRulePrivate;
 
 typedef struct _SkkKeyEventFilter SkkKeyEventFilter;
 typedef struct _SkkKeyEventFilterClass SkkKeyEventFilterClass;
+
+#define SKK_TYPE_KANA_MODE (skk_kana_mode_get_type ())
+
+#define SKK_TYPE_INPUT_MODE (skk_input_mode_get_type ())
 
 #define SKK_TYPE_ENTRY (skk_entry_get_type ())
 typedef struct _SkkEntry SkkEntry;
@@ -208,6 +207,7 @@ struct _SkkRuleClass {
 
 struct _SkkRulePrivate {
 	SkkRuleMetadata _metadata;
+	SkkKeyEventFilter* filter;
 };
 
 typedef enum  {
@@ -242,8 +242,6 @@ static gint skk_rule_rules_path_length1 = 0;
 static gint _skk_rule_rules_path_size_ = 0;
 static GeeMap* skk_rule_filter_types;
 static GeeMap* skk_rule_filter_types = NULL;
-static GeeMap* skk_rule_filter_instances;
-static GeeMap* skk_rule_filter_instances = NULL;
 static GeeMap* skk_rule_rule_cache;
 static GeeMap* skk_rule_rule_cache = NULL;
 
@@ -265,12 +263,6 @@ void skk_keymap_set (SkkKeymap* self, const gchar* key, const gchar* command);
 static void _vala_JsonNode_free (JsonNode* self);
 static void skk_keymap_map_file_finalize (GObject* obj);
 GType skk_rom_kana_map_file_get_type (void) G_GNUC_CONST;
-gpointer skk_rom_kana_node_ref (gpointer instance);
-void skk_rom_kana_node_unref (gpointer instance);
-GParamSpec* skk_param_spec_rom_kana_node (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_rom_kana_node (GValue* value, gpointer v_object);
-void skk_value_take_rom_kana_node (GValue* value, gpointer v_object);
-gpointer skk_value_get_rom_kana_node (const GValue* value);
 GType skk_rom_kana_node_get_type (void) G_GNUC_CONST;
 enum  {
 	SKK_ROM_KANA_MAP_FILE_DUMMY_PROPERTY
@@ -297,14 +289,15 @@ void skk_rule_metadata_free (SkkRuleMetadata* self);
 void skk_rule_metadata_copy (const SkkRuleMetadata* self, SkkRuleMetadata* dest);
 void skk_rule_metadata_destroy (SkkRuleMetadata* self);
 GType skk_rule_get_type (void) G_GNUC_CONST;
+GType skk_key_event_filter_get_type (void) G_GNUC_CONST;
 #define SKK_RULE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_RULE, SkkRulePrivate))
 enum  {
 	SKK_RULE_DUMMY_PROPERTY,
 	SKK_RULE_METADATA
 };
+void skk_key_event_filter_reset (SkkKeyEventFilter* self);
 GType skk_kana_mode_get_type (void) G_GNUC_CONST;
 GType skk_input_mode_get_type (void) G_GNUC_CONST;
-GType skk_key_event_filter_get_type (void) G_GNUC_CONST;
 GType skk_entry_get_type (void) G_GNUC_CONST;
 SkkEntry* skk_entry_dup (const SkkEntry* self);
 void skk_entry_free (SkkEntry* self);
@@ -696,14 +689,14 @@ static SkkRomKanaNode* skk_rom_kana_map_file_parse_rule (SkkRomKanaMapFile* self
 						__vala_JsonNode_free0 (value);
 						_g_free0 (key);
 						_g_object_unref0 (_key_it);
-						_skk_rom_kana_node_unref0 (node);
+						_g_object_unref0 (node);
 						return NULL;
 					} else {
 						__vala_JsonArray_free0 (components);
 						__vala_JsonNode_free0 (value);
 						_g_free0 (key);
 						_g_object_unref0 (_key_it);
-						_skk_rom_kana_node_unref0 (node);
+						_g_object_unref0 (node);
 						g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 						g_clear_error (&_inner_error_);
 						return NULL;
@@ -719,13 +712,13 @@ static SkkRomKanaNode* skk_rom_kana_map_file_parse_rule (SkkRomKanaMapFile* self
 					__vala_JsonNode_free0 (value);
 					_g_free0 (key);
 					_g_object_unref0 (_key_it);
-					_skk_rom_kana_node_unref0 (node);
+					_g_object_unref0 (node);
 					return NULL;
 				} else {
 					__vala_JsonNode_free0 (value);
 					_g_free0 (key);
 					_g_object_unref0 (_key_it);
-					_skk_rom_kana_node_unref0 (node);
+					_g_object_unref0 (node);
 					g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 					g_clear_error (&_inner_error_);
 					return NULL;
@@ -784,7 +777,7 @@ SkkRomKanaMapFile* skk_rom_kana_map_file_construct (GType object_type, const gch
 				return NULL;
 			}
 		}
-		_skk_rom_kana_node_unref0 (self->root_node);
+		_g_object_unref0 (self->root_node);
 		self->root_node = _tmp6_;
 	} else {
 		GError* _tmp7_;
@@ -822,7 +815,7 @@ static void skk_rom_kana_map_file_instance_init (SkkRomKanaMapFile * self) {
 static void skk_rom_kana_map_file_finalize (GObject* obj) {
 	SkkRomKanaMapFile * self;
 	self = SKK_ROM_KANA_MAP_FILE (obj);
-	_skk_rom_kana_node_unref0 (self->root_node);
+	_g_object_unref0 (self->root_node);
 	G_OBJECT_CLASS (skk_rom_kana_map_file_parent_class)->finalize (obj);
 }
 
@@ -995,7 +988,7 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 		_tmp3_ = json_parser_load_from_file (_tmp1_, _tmp2_, &_inner_error_);
 		_tmp4_ = _tmp3_;
 		if (_inner_error_ != NULL) {
-			goto __catch20_g_error;
+			goto __catch21_g_error;
 		}
 		if (!_tmp4_) {
 			const gchar* _tmp5_;
@@ -1003,7 +996,7 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 			_tmp5_ = filename;
 			_tmp6_ = g_error_new (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "can't load %s", _tmp5_);
 			_inner_error_ = _tmp6_;
-			goto __catch20_g_error;
+			goto __catch21_g_error;
 		}
 		_tmp7_ = parser;
 		_tmp8_ = json_parser_get_root (_tmp7_);
@@ -1016,7 +1009,7 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 			_tmp12_ = g_error_new_literal (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "metadata must be a JSON object");
 			_inner_error_ = _tmp12_;
 			__vala_JsonNode_free0 (root);
-			goto __catch20_g_error;
+			goto __catch21_g_error;
 		}
 		_tmp13_ = root;
 		_tmp14_ = json_node_get_object (_tmp13_);
@@ -1031,7 +1024,7 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 			__vala_JsonNode_free0 (member);
 			__vala_JsonObject_free0 (object);
 			__vala_JsonNode_free0 (root);
-			goto __catch20_g_error;
+			goto __catch21_g_error;
 		}
 		_tmp19_ = object;
 		_tmp20_ = json_object_get_member (_tmp19_, "name");
@@ -1052,7 +1045,7 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 			__vala_JsonNode_free0 (member);
 			__vala_JsonObject_free0 (object);
 			__vala_JsonNode_free0 (root);
-			goto __catch20_g_error;
+			goto __catch21_g_error;
 		}
 		_tmp28_ = object;
 		_tmp29_ = json_object_get_member (_tmp28_, "description");
@@ -1100,7 +1093,7 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 				__vala_JsonNode_free0 (member);
 				__vala_JsonObject_free0 (object);
 				__vala_JsonNode_free0 (root);
-				goto __catch20_g_error;
+				goto __catch21_g_error;
 			}
 		} else {
 			gchar* _tmp47_;
@@ -1135,8 +1128,8 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 		_g_object_unref0 (parser);
 		return;
 	}
-	goto __finally20;
-	__catch20_g_error:
+	goto __finally21;
+	__catch21_g_error:
 	{
 		GError* e = NULL;
 		GError* _tmp57_;
@@ -1149,9 +1142,9 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 		_tmp59_ = g_error_new (SKK_RULE_PARSE_ERROR, SKK_RULE_PARSE_ERROR_FAILED, "can't load rule: %s", _tmp58_);
 		_inner_error_ = _tmp59_;
 		_g_error_free0 (e);
-		goto __finally20;
+		goto __finally21;
 	}
-	__finally20:
+	__finally21:
 	if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
 		g_propagate_error (error, _inner_error_);
 		_g_object_unref0 (parser);
@@ -1166,56 +1159,41 @@ static void skk_rule_load_metadata (const gchar* filename, SkkRuleMetadata* resu
 }
 
 
+static gpointer _g_object_ref0 (gpointer self) {
+	return self ? g_object_ref (self) : NULL;
+}
+
+
 SkkKeyEventFilter* skk_rule_get_filter (SkkRule* self) {
 	SkkKeyEventFilter* result = NULL;
-	GeeMap* _tmp0_;
-	SkkRuleMetadata _tmp1_;
-	const gchar* _tmp2_;
-	gboolean _tmp3_ = FALSE;
-	GeeMap* _tmp15_;
-	SkkRuleMetadata _tmp16_;
-	const gchar* _tmp17_;
-	gpointer _tmp18_ = NULL;
+	SkkKeyEventFilter* _tmp0_;
+	SkkKeyEventFilter* _tmp8_;
+	SkkKeyEventFilter* _tmp9_;
 	g_return_val_if_fail (self != NULL, NULL);
-	_tmp0_ = skk_rule_filter_instances;
-	_tmp1_ = self->priv->_metadata;
-	_tmp2_ = _tmp1_.filter;
-	_tmp3_ = gee_map_has_key (_tmp0_, _tmp2_);
-	if (!_tmp3_) {
-		GeeMap* _tmp4_;
-		SkkRuleMetadata _tmp5_;
-		const gchar* _tmp6_;
-		gpointer _tmp7_ = NULL;
+	_tmp0_ = self->priv->filter;
+	if (_tmp0_ == NULL) {
+		GeeMap* _tmp1_;
+		SkkRuleMetadata _tmp2_;
+		const gchar* _tmp3_;
+		gpointer _tmp4_ = NULL;
 		GType type;
-		GType _tmp8_;
-		GObject* _tmp9_ = NULL;
-		GObject* _tmp10_;
-		SkkKeyEventFilter* filter;
-		GeeMap* _tmp11_;
-		SkkRuleMetadata _tmp12_;
-		const gchar* _tmp13_;
-		SkkKeyEventFilter* _tmp14_;
-		_tmp4_ = skk_rule_filter_types;
-		_tmp5_ = self->priv->_metadata;
-		_tmp6_ = _tmp5_.filter;
-		_tmp7_ = gee_map_get (_tmp4_, _tmp6_);
-		type = GPOINTER_TO_INT (_tmp7_);
-		_tmp8_ = type;
-		_tmp9_ = g_object_new (_tmp8_, NULL);
-		_tmp10_ = G_IS_INITIALLY_UNOWNED (_tmp9_) ? g_object_ref_sink (_tmp9_) : _tmp9_;
-		filter = SKK_KEY_EVENT_FILTER (_tmp10_);
-		_tmp11_ = skk_rule_filter_instances;
-		_tmp12_ = self->priv->_metadata;
-		_tmp13_ = _tmp12_.filter;
-		_tmp14_ = filter;
-		gee_map_set (_tmp11_, _tmp13_, _tmp14_);
-		_g_object_unref0 (filter);
+		GType _tmp5_;
+		GObject* _tmp6_ = NULL;
+		GObject* _tmp7_;
+		_tmp1_ = skk_rule_filter_types;
+		_tmp2_ = self->priv->_metadata;
+		_tmp3_ = _tmp2_.filter;
+		_tmp4_ = gee_map_get (_tmp1_, _tmp3_);
+		type = GPOINTER_TO_INT (_tmp4_);
+		_tmp5_ = type;
+		_tmp6_ = g_object_new (_tmp5_, NULL);
+		_tmp7_ = G_IS_INITIALLY_UNOWNED (_tmp6_) ? g_object_ref_sink (_tmp6_) : _tmp6_;
+		_g_object_unref0 (self->priv->filter);
+		self->priv->filter = SKK_KEY_EVENT_FILTER (_tmp7_);
 	}
-	_tmp15_ = skk_rule_filter_instances;
-	_tmp16_ = self->priv->_metadata;
-	_tmp17_ = _tmp16_.filter;
-	_tmp18_ = gee_map_get (_tmp15_, _tmp17_);
-	result = (SkkKeyEventFilter*) _tmp18_;
+	_tmp8_ = self->priv->filter;
+	_tmp9_ = _g_object_ref0 (_tmp8_);
+	result = _tmp9_;
 	return result;
 }
 
@@ -1424,7 +1402,7 @@ SkkRuleMetadata* skk_rule_find_rule (const gchar* name) {
 						metadata = _tmp16_;
 						if (_inner_error_ != NULL) {
 							if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
-								goto __catch21_skk_rule_parse_error;
+								goto __catch22_skk_rule_parse_error;
 							}
 							_g_free0 (metadata_filename);
 							_g_free0 (base_dir_filename);
@@ -1447,8 +1425,8 @@ SkkRuleMetadata* skk_rule_find_rule (const gchar* name) {
 						_g_free0 (dir);
 						return result;
 					}
-					goto __finally21;
-					__catch21_skk_rule_parse_error:
+					goto __finally22;
+					__catch22_skk_rule_parse_error:
 					{
 						GError* e = NULL;
 						e = _inner_error_;
@@ -1459,7 +1437,7 @@ SkkRuleMetadata* skk_rule_find_rule (const gchar* name) {
 						_g_free0 (dir);
 						continue;
 					}
-					__finally21:
+					__finally22:
 					_g_free0 (metadata_filename);
 					_g_free0 (base_dir_filename);
 					_g_free0 (dir);
@@ -1547,13 +1525,13 @@ SkkRuleMetadata* skk_rule_list (int* result_length1) {
 					_tmp5_ = g_dir_open (_tmp4_, (guint) 0, &_inner_error_);
 					_tmp6_ = _tmp5_;
 					if (_inner_error_ != NULL) {
-						goto __catch22_g_error;
+						goto __catch23_g_error;
 					}
 					_g_dir_close0 (handle);
 					handle = _tmp6_;
 				}
-				goto __finally22;
-				__catch22_g_error:
+				goto __finally23;
+				__catch23_g_error:
 				{
 					GError* e = NULL;
 					e = _inner_error_;
@@ -1563,7 +1541,7 @@ SkkRuleMetadata* skk_rule_list (int* result_length1) {
 					_g_free0 (dir);
 					continue;
 				}
-				__finally22:
+				__finally23:
 				if (_inner_error_ != NULL) {
 					_g_dir_close0 (handle);
 					_g_free0 (dir);
@@ -1626,7 +1604,7 @@ SkkRuleMetadata* skk_rule_list (int* result_length1) {
 							metadata = _tmp20_;
 							if (_inner_error_ != NULL) {
 								if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
-									goto __catch23_skk_rule_parse_error;
+									goto __catch24_skk_rule_parse_error;
 								}
 								_g_free0 (metadata_filename);
 								_g_free0 (name);
@@ -1652,8 +1630,8 @@ SkkRuleMetadata* skk_rule_list (int* result_length1) {
 							_vala_array_add1 (&rules, &rules_length1, &_rules_size_, &_tmp27_);
 							skk_rule_metadata_destroy (&metadata);
 						}
-						goto __finally23;
-						__catch23_skk_rule_parse_error:
+						goto __finally24;
+						__catch24_skk_rule_parse_error:
 						{
 							GError* e = NULL;
 							const gchar* _tmp28_;
@@ -1664,10 +1642,10 @@ SkkRuleMetadata* skk_rule_list (int* result_length1) {
 							_tmp28_ = metadata_filename;
 							_tmp29_ = e;
 							_tmp30_ = _tmp29_->message;
-							g_warning ("rule.vala:307: can't load metadata %s: %s", _tmp28_, _tmp30_);
+							g_warning ("rule.vala:312: can't load metadata %s: %s", _tmp28_, _tmp30_);
 							_g_error_free0 (e);
 						}
-						__finally23:
+						__finally24:
 						if (_inner_error_ != NULL) {
 							_g_free0 (metadata_filename);
 							_g_free0 (name);
@@ -1723,11 +1701,10 @@ static void skk_rule_set_metadata (SkkRule* self, SkkRuleMetadata* value) {
 static void skk_rule_class_init (SkkRuleClass * klass) {
 	GeeHashMap* _tmp0_;
 	GeeHashMap* _tmp1_;
-	GeeHashMap* _tmp2_;
-	gint _tmp3_ = 0;
-	gchar** _tmp4_ = NULL;
+	gint _tmp2_ = 0;
+	gchar** _tmp3_ = NULL;
+	GeeMap* _tmp4_;
 	GeeMap* _tmp5_;
-	GeeMap* _tmp6_;
 	skk_rule_parent_class = g_type_class_peek_parent (klass);
 	g_type_class_add_private (klass, sizeof (SkkRulePrivate));
 	G_OBJECT_CLASS (klass)->get_property = _vala_skk_rule_get_property;
@@ -1739,19 +1716,17 @@ static void skk_rule_class_init (SkkRuleClass * klass) {
 	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_RULE_METADATA, g_param_spec_boxed ("metadata", "metadata", "metadata", SKK_TYPE_RULE_METADATA, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
 	_tmp0_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, G_TYPE_GTYPE, NULL, NULL, NULL, NULL, NULL);
 	skk_rule_filter_types = (GeeMap*) _tmp0_;
-	_tmp1_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, SKK_TYPE_KEY_EVENT_FILTER, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL, NULL, NULL);
-	skk_rule_filter_instances = (GeeMap*) _tmp1_;
-	_tmp2_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, SKK_TYPE_RULE_METADATA, (GBoxedCopyFunc) skk_rule_metadata_dup, skk_rule_metadata_free, NULL, NULL, NULL);
-	skk_rule_rule_cache = (GeeMap*) _tmp2_;
-	_tmp4_ = skk_util_build_data_path ("rules", &_tmp3_);
+	_tmp1_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, SKK_TYPE_RULE_METADATA, (GBoxedCopyFunc) skk_rule_metadata_dup, skk_rule_metadata_free, NULL, NULL, NULL);
+	skk_rule_rule_cache = (GeeMap*) _tmp1_;
+	_tmp3_ = skk_util_build_data_path ("rules", &_tmp2_);
 	skk_rule_rules_path = (_vala_array_free (skk_rule_rules_path, skk_rule_rules_path_length1, (GDestroyNotify) g_free), NULL);
-	skk_rule_rules_path = _tmp4_;
-	skk_rule_rules_path_length1 = _tmp3_;
+	skk_rule_rules_path = _tmp3_;
+	skk_rule_rules_path_length1 = _tmp2_;
 	_skk_rule_rules_path_size_ = skk_rule_rules_path_length1;
+	_tmp4_ = skk_rule_filter_types;
+	gee_map_set (_tmp4_, "simple", GINT_TO_POINTER (SKK_TYPE_SIMPLE_KEY_EVENT_FILTER));
 	_tmp5_ = skk_rule_filter_types;
-	gee_map_set (_tmp5_, "simple", GINT_TO_POINTER (SKK_TYPE_SIMPLE_KEY_EVENT_FILTER));
-	_tmp6_ = skk_rule_filter_types;
-	gee_map_set (_tmp6_, "nicola", GINT_TO_POINTER (SKK_TYPE_NICOLA_KEY_EVENT_FILTER));
+	gee_map_set (_tmp5_, "nicola", GINT_TO_POINTER (SKK_TYPE_NICOLA_KEY_EVENT_FILTER));
 }
 
 
@@ -1767,10 +1742,20 @@ static void skk_rule_instance_init (SkkRule * self) {
 
 static void skk_rule_finalize (GObject* obj) {
 	SkkRule * self;
+	SkkKeyEventFilter* _tmp0_;
 	self = SKK_RULE (obj);
+	_tmp0_ = self->priv->filter;
+	if (_tmp0_ != NULL) {
+		SkkKeyEventFilter* _tmp1_;
+		_tmp1_ = self->priv->filter;
+		skk_key_event_filter_reset (_tmp1_);
+		_g_object_unref0 (self->priv->filter);
+		self->priv->filter = NULL;
+	}
 	skk_rule_metadata_destroy (&self->priv->_metadata);
 	self->keymaps = (_vala_array_free (self->keymaps, self->keymaps_length1, (GDestroyNotify) g_object_unref), NULL);
 	_g_object_unref0 (self->rom_kana);
+	_g_object_unref0 (self->priv->filter);
 	G_OBJECT_CLASS (skk_rule_parent_class)->finalize (obj);
 }
 

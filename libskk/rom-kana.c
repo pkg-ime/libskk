@@ -3,8 +3,8 @@
 
 /* -*- coding: utf-8 -*-*/
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include <glib-object.h>
 #include <stdlib.h>
 #include <string.h>
-#include <gobject/gvaluecollector.h>
 
 
 #define SKK_TYPE_ROM_KANA_ENTRY (skk_rom_kana_entry_get_type ())
@@ -44,8 +43,7 @@ typedef struct _SkkRomKanaNode SkkRomKanaNode;
 typedef struct _SkkRomKanaNodeClass SkkRomKanaNodeClass;
 typedef struct _SkkRomKanaNodePrivate SkkRomKanaNodePrivate;
 #define _skk_rom_kana_entry_free0(var) ((var == NULL) ? NULL : (var = (skk_rom_kana_entry_free (var), NULL)))
-#define _skk_rom_kana_node_unref0(var) ((var == NULL) ? NULL : (var = (skk_rom_kana_node_unref (var), NULL)))
-typedef struct _SkkParamSpecRomKanaNode SkkParamSpecRomKanaNode;
+#define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 
 #define SKK_TYPE_PERIOD_STYLE (skk_period_style_get_type ())
 
@@ -79,7 +77,6 @@ typedef struct _SkkMapFileClass SkkMapFileClass;
 
 typedef struct _SkkRomKanaMapFile SkkRomKanaMapFile;
 typedef struct _SkkRomKanaMapFileClass SkkRomKanaMapFileClass;
-#define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 #define _g_string_free0(var) ((var == NULL) ? NULL : (var = (g_string_free (var, TRUE), NULL)))
 typedef struct _SkkMapFilePrivate SkkMapFilePrivate;
 typedef struct _SkkRomKanaMapFilePrivate SkkRomKanaMapFilePrivate;
@@ -100,8 +97,7 @@ typedef enum  {
 } SkkKanaMode;
 
 struct _SkkRomKanaNode {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
+	GObject parent_instance;
 	SkkRomKanaNodePrivate * priv;
 	SkkRomKanaEntry* entry;
 	SkkRomKanaNode* parent;
@@ -111,12 +107,7 @@ struct _SkkRomKanaNode {
 };
 
 struct _SkkRomKanaNodeClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkRomKanaNode *self);
-};
-
-struct _SkkParamSpecRomKanaNode {
-	GParamSpec parent_instance;
+	GObjectClass parent_class;
 };
 
 typedef enum  {
@@ -178,12 +169,6 @@ void skk_rom_kana_entry_copy (const SkkRomKanaEntry* self, SkkRomKanaEntry* dest
 void skk_rom_kana_entry_destroy (SkkRomKanaEntry* self);
 GType skk_kana_mode_get_type (void) G_GNUC_CONST;
 gchar* skk_rom_kana_entry_get_kana (SkkRomKanaEntry *self, SkkKanaMode kana_mode);
-gpointer skk_rom_kana_node_ref (gpointer instance);
-void skk_rom_kana_node_unref (gpointer instance);
-GParamSpec* skk_param_spec_rom_kana_node (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_rom_kana_node (GValue* value, gpointer v_object);
-void skk_value_take_rom_kana_node (GValue* value, gpointer v_object);
-gpointer skk_value_get_rom_kana_node (const GValue* value);
 GType skk_rom_kana_node_get_type (void) G_GNUC_CONST;
 enum  {
 	SKK_ROM_KANA_NODE_DUMMY_PROPERTY
@@ -191,11 +176,7 @@ enum  {
 SkkRomKanaNode* skk_rom_kana_node_new (SkkRomKanaEntry* entry);
 SkkRomKanaNode* skk_rom_kana_node_construct (GType object_type, SkkRomKanaEntry* entry);
 void skk_rom_kana_node_insert (SkkRomKanaNode* self, const gchar* key, SkkRomKanaEntry* entry);
-static SkkRomKanaNode* skk_rom_kana_node_lookup_node (SkkRomKanaNode* self, const gchar* key);
-SkkRomKanaEntry* skk_rom_kana_node_lookup (SkkRomKanaNode* self, const gchar* key);
-static void skk_rom_kana_node_remove_child (SkkRomKanaNode* self, SkkRomKanaNode* node);
-void skk_rom_kana_node_remove (SkkRomKanaNode* self, const gchar* key);
-static void skk_rom_kana_node_finalize (SkkRomKanaNode* obj);
+static void skk_rom_kana_node_finalize (GObject* obj);
 GType skk_period_style_get_type (void) G_GNUC_CONST;
 GType skk_rom_kana_converter_get_type (void) G_GNUC_CONST;
 GType skk_map_file_get_type (void) G_GNUC_CONST;
@@ -214,7 +195,7 @@ SkkRomKanaConverter* skk_rom_kana_converter_construct (GType object_type);
 GQuark skk_rule_parse_error_quark (void);
 SkkRomKanaMapFile* skk_rom_kana_map_file_new (const gchar* name, GError** error);
 SkkRomKanaMapFile* skk_rom_kana_map_file_construct (GType object_type, const gchar* name, GError** error);
-void skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
+gboolean skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
 SkkKanaMode skk_rom_kana_converter_get_kana_mode (SkkRomKanaConverter* self);
 void skk_rom_kana_converter_append_text (SkkRomKanaConverter* self, const gchar* text);
 gboolean skk_rom_kana_converter_append (SkkRomKanaConverter* self, gunichar uc);
@@ -353,10 +334,10 @@ static gpointer _skk_rom_kana_entry_dup0 (gpointer self) {
 
 
 SkkRomKanaNode* skk_rom_kana_node_construct (GType object_type, SkkRomKanaEntry* entry) {
-	SkkRomKanaNode* self = NULL;
+	SkkRomKanaNode * self = NULL;
 	SkkRomKanaEntry* _tmp0_;
 	SkkRomKanaEntry* _tmp1_;
-	self = (SkkRomKanaNode*) g_type_create_instance (object_type);
+	self = (SkkRomKanaNode*) g_object_new (object_type, NULL);
 	_tmp0_ = entry;
 	_tmp1_ = _skk_rom_kana_entry_dup0 (_tmp0_);
 	_skk_rom_kana_entry_free0 (self->entry);
@@ -384,7 +365,7 @@ SkkRomKanaNode* skk_rom_kana_node_construct (GType object_type, SkkRomKanaEntry*
 					break;
 				}
 				_tmp6_ = i;
-				_skk_rom_kana_node_unref0 (self->children[_tmp6_]);
+				_g_object_unref0 (self->children[_tmp6_]);
 				self->children[_tmp6_] = NULL;
 				_tmp7_ = self->children[_tmp6_];
 			}
@@ -399,8 +380,8 @@ SkkRomKanaNode* skk_rom_kana_node_new (SkkRomKanaEntry* entry) {
 }
 
 
-static gpointer _skk_rom_kana_node_ref0 (gpointer self) {
-	return self ? skk_rom_kana_node_ref (self) : NULL;
+static gpointer _g_object_ref0 (gpointer self) {
+	return self ? g_object_ref (self) : NULL;
 }
 
 
@@ -426,7 +407,7 @@ void skk_rom_kana_node_insert (SkkRomKanaNode* self, const gchar* key, SkkRomKan
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (key != NULL);
 	g_return_if_fail (entry != NULL);
-	_tmp0_ = _skk_rom_kana_node_ref0 (self);
+	_tmp0_ = _g_object_ref0 (self);
 	node = _tmp0_;
 	{
 		gint i;
@@ -488,15 +469,15 @@ void skk_rom_kana_node_insert (SkkRomKanaNode* self, const gchar* key, SkkRomKan
 					_tmp15_ = i;
 					_tmp16_ = string_get (_tmp14_, (glong) _tmp15_);
 					_tmp17_ = skk_rom_kana_node_new (NULL);
-					_skk_rom_kana_node_unref0 (_tmp13_->children[_tmp16_]);
+					_g_object_unref0 (_tmp13_->children[_tmp16_]);
 					_tmp13_->children[_tmp16_] = _tmp17_;
 					_tmp18_ = _tmp13_->children[_tmp16_];
-					_tmp19_ = _skk_rom_kana_node_ref0 (_tmp18_);
+					_tmp19_ = _g_object_ref0 (_tmp18_);
 					child = _tmp19_;
 					_tmp20_ = child;
 					_tmp21_ = node;
 					_tmp20_->parent = _tmp21_;
-					_skk_rom_kana_node_unref0 (child);
+					_g_object_unref0 (child);
 				}
 				_tmp22_ = node;
 				_tmp23_ = _tmp22_->n_children;
@@ -506,8 +487,8 @@ void skk_rom_kana_node_insert (SkkRomKanaNode* self, const gchar* key, SkkRomKan
 				_tmp26_ = i;
 				_tmp27_ = string_get (_tmp25_, (glong) _tmp26_);
 				_tmp28_ = _tmp24_->children[_tmp27_];
-				_tmp29_ = _skk_rom_kana_node_ref0 (_tmp28_);
-				_skk_rom_kana_node_unref0 (node);
+				_tmp29_ = _g_object_ref0 (_tmp28_);
+				_g_object_unref0 (node);
 				node = _tmp29_;
 			}
 		}
@@ -518,324 +499,39 @@ void skk_rom_kana_node_insert (SkkRomKanaNode* self, const gchar* key, SkkRomKan
 	_tmp33_ = _skk_rom_kana_entry_dup0 (&_tmp32_);
 	_skk_rom_kana_entry_free0 (_tmp30_->entry);
 	_tmp30_->entry = _tmp33_;
-	_skk_rom_kana_node_unref0 (node);
-}
-
-
-static SkkRomKanaNode* skk_rom_kana_node_lookup_node (SkkRomKanaNode* self, const gchar* key) {
-	SkkRomKanaNode* result = NULL;
-	SkkRomKanaNode* _tmp0_;
-	SkkRomKanaNode* node;
-	g_return_val_if_fail (self != NULL, NULL);
-	g_return_val_if_fail (key != NULL, NULL);
-	_tmp0_ = _skk_rom_kana_node_ref0 (self);
-	node = _tmp0_;
-	{
-		gint i;
-		i = 0;
-		{
-			gboolean _tmp1_;
-			_tmp1_ = TRUE;
-			while (TRUE) {
-				gboolean _tmp2_;
-				gint _tmp4_;
-				const gchar* _tmp5_;
-				gint _tmp6_;
-				gint _tmp7_;
-				SkkRomKanaNode* _tmp8_;
-				const gchar* _tmp9_;
-				gint _tmp10_;
-				gchar _tmp11_ = '\0';
-				SkkRomKanaNode* _tmp12_;
-				SkkRomKanaNode* _tmp13_;
-				SkkRomKanaNode* _tmp14_;
-				_tmp2_ = _tmp1_;
-				if (!_tmp2_) {
-					gint _tmp3_;
-					_tmp3_ = i;
-					i = _tmp3_ + 1;
-				}
-				_tmp1_ = FALSE;
-				_tmp4_ = i;
-				_tmp5_ = key;
-				_tmp6_ = strlen (_tmp5_);
-				_tmp7_ = _tmp6_;
-				if (!(_tmp4_ < _tmp7_)) {
-					break;
-				}
-				_tmp8_ = node;
-				_tmp9_ = key;
-				_tmp10_ = i;
-				_tmp11_ = string_get (_tmp9_, (glong) _tmp10_);
-				_tmp12_ = _tmp8_->children[_tmp11_];
-				_tmp13_ = _skk_rom_kana_node_ref0 (_tmp12_);
-				_skk_rom_kana_node_unref0 (node);
-				node = _tmp13_;
-				_tmp14_ = node;
-				if (_tmp14_ == NULL) {
-					result = NULL;
-					_skk_rom_kana_node_unref0 (node);
-					return result;
-				}
-			}
-		}
-	}
-	result = node;
-	return result;
-}
-
-
-SkkRomKanaEntry* skk_rom_kana_node_lookup (SkkRomKanaNode* self, const gchar* key) {
-	SkkRomKanaEntry* result = NULL;
-	const gchar* _tmp0_;
-	SkkRomKanaNode* _tmp1_ = NULL;
-	SkkRomKanaNode* node;
-	SkkRomKanaNode* _tmp2_;
-	SkkRomKanaNode* _tmp3_;
-	SkkRomKanaEntry* _tmp4_;
-	SkkRomKanaEntry* _tmp5_;
-	g_return_val_if_fail (self != NULL, NULL);
-	g_return_val_if_fail (key != NULL, NULL);
-	_tmp0_ = key;
-	_tmp1_ = skk_rom_kana_node_lookup_node (self, _tmp0_);
-	node = _tmp1_;
-	_tmp2_ = node;
-	if (_tmp2_ == NULL) {
-		result = NULL;
-		_skk_rom_kana_node_unref0 (node);
-		return result;
-	}
-	_tmp3_ = node;
-	_tmp4_ = _tmp3_->entry;
-	_tmp5_ = _skk_rom_kana_entry_dup0 (_tmp4_);
-	result = _tmp5_;
-	_skk_rom_kana_node_unref0 (node);
-	return result;
-}
-
-
-static void skk_rom_kana_node_remove_child (SkkRomKanaNode* self, SkkRomKanaNode* node) {
-	SkkRomKanaNode* _tmp0_;
-	gchar _tmp1_;
-	SkkRomKanaNode* _tmp2_;
-	gboolean _tmp3_ = FALSE;
-	guint _tmp4_;
-	guint _tmp5_;
-	gboolean _tmp7_;
-	g_return_if_fail (self != NULL);
-	g_return_if_fail (node != NULL);
-	_tmp0_ = node;
-	_tmp1_ = _tmp0_->c;
-	_skk_rom_kana_node_unref0 (self->children[_tmp1_]);
-	self->children[_tmp1_] = NULL;
-	_tmp2_ = self->children[_tmp1_];
-	_tmp4_ = self->n_children;
-	self->n_children = _tmp4_ - 1;
-	_tmp5_ = self->n_children;
-	if (_tmp5_ == ((guint) 0)) {
-		SkkRomKanaNode* _tmp6_;
-		_tmp6_ = self->parent;
-		_tmp3_ = _tmp6_ != NULL;
-	} else {
-		_tmp3_ = FALSE;
-	}
-	_tmp7_ = _tmp3_;
-	if (_tmp7_) {
-		SkkRomKanaNode* _tmp8_;
-		_tmp8_ = self->parent;
-		skk_rom_kana_node_remove_child (_tmp8_, self);
-	}
-}
-
-
-void skk_rom_kana_node_remove (SkkRomKanaNode* self, const gchar* key) {
-	const gchar* _tmp0_;
-	SkkRomKanaNode* _tmp1_ = NULL;
-	SkkRomKanaNode* node;
-	SkkRomKanaNode* _tmp2_;
-	g_return_if_fail (self != NULL);
-	g_return_if_fail (key != NULL);
-	_tmp0_ = key;
-	_tmp1_ = skk_rom_kana_node_lookup_node (self, _tmp0_);
-	node = _tmp1_;
-	_tmp2_ = node;
-	if (_tmp2_ != NULL) {
-		SkkRomKanaNode* _tmp3_;
-		SkkRomKanaNode* _tmp4_;
-		SkkRomKanaNode* _tmp5_;
-		SkkRomKanaNode* _tmp6_;
-		SkkRomKanaNode* _tmp7_;
-		_tmp3_ = node;
-		_tmp4_ = _tmp3_->parent;
-		g_return_if_fail (_tmp4_ != NULL);
-		_tmp5_ = node;
-		_tmp6_ = _tmp5_->parent;
-		_tmp7_ = node;
-		skk_rom_kana_node_remove_child (_tmp6_, _tmp7_);
-	}
-	_skk_rom_kana_node_unref0 (node);
-}
-
-
-static void skk_value_rom_kana_node_init (GValue* value) {
-	value->data[0].v_pointer = NULL;
-}
-
-
-static void skk_value_rom_kana_node_free_value (GValue* value) {
-	if (value->data[0].v_pointer) {
-		skk_rom_kana_node_unref (value->data[0].v_pointer);
-	}
-}
-
-
-static void skk_value_rom_kana_node_copy_value (const GValue* src_value, GValue* dest_value) {
-	if (src_value->data[0].v_pointer) {
-		dest_value->data[0].v_pointer = skk_rom_kana_node_ref (src_value->data[0].v_pointer);
-	} else {
-		dest_value->data[0].v_pointer = NULL;
-	}
-}
-
-
-static gpointer skk_value_rom_kana_node_peek_pointer (const GValue* value) {
-	return value->data[0].v_pointer;
-}
-
-
-static gchar* skk_value_rom_kana_node_collect_value (GValue* value, guint n_collect_values, GTypeCValue* collect_values, guint collect_flags) {
-	if (collect_values[0].v_pointer) {
-		SkkRomKanaNode* object;
-		object = collect_values[0].v_pointer;
-		if (object->parent_instance.g_class == NULL) {
-			return g_strconcat ("invalid unclassed object pointer for value type `", G_VALUE_TYPE_NAME (value), "'", NULL);
-		} else if (!g_value_type_compatible (G_TYPE_FROM_INSTANCE (object), G_VALUE_TYPE (value))) {
-			return g_strconcat ("invalid object type `", g_type_name (G_TYPE_FROM_INSTANCE (object)), "' for value type `", G_VALUE_TYPE_NAME (value), "'", NULL);
-		}
-		value->data[0].v_pointer = skk_rom_kana_node_ref (object);
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	return NULL;
-}
-
-
-static gchar* skk_value_rom_kana_node_lcopy_value (const GValue* value, guint n_collect_values, GTypeCValue* collect_values, guint collect_flags) {
-	SkkRomKanaNode** object_p;
-	object_p = collect_values[0].v_pointer;
-	if (!object_p) {
-		return g_strdup_printf ("value location for `%s' passed as NULL", G_VALUE_TYPE_NAME (value));
-	}
-	if (!value->data[0].v_pointer) {
-		*object_p = NULL;
-	} else if (collect_flags & G_VALUE_NOCOPY_CONTENTS) {
-		*object_p = value->data[0].v_pointer;
-	} else {
-		*object_p = skk_rom_kana_node_ref (value->data[0].v_pointer);
-	}
-	return NULL;
-}
-
-
-GParamSpec* skk_param_spec_rom_kana_node (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags) {
-	SkkParamSpecRomKanaNode* spec;
-	g_return_val_if_fail (g_type_is_a (object_type, SKK_TYPE_ROM_KANA_NODE), NULL);
-	spec = g_param_spec_internal (G_TYPE_PARAM_OBJECT, name, nick, blurb, flags);
-	G_PARAM_SPEC (spec)->value_type = object_type;
-	return G_PARAM_SPEC (spec);
-}
-
-
-gpointer skk_value_get_rom_kana_node (const GValue* value) {
-	g_return_val_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_ROM_KANA_NODE), NULL);
-	return value->data[0].v_pointer;
-}
-
-
-void skk_value_set_rom_kana_node (GValue* value, gpointer v_object) {
-	SkkRomKanaNode* old;
-	g_return_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_ROM_KANA_NODE));
-	old = value->data[0].v_pointer;
-	if (v_object) {
-		g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (v_object, SKK_TYPE_ROM_KANA_NODE));
-		g_return_if_fail (g_value_type_compatible (G_TYPE_FROM_INSTANCE (v_object), G_VALUE_TYPE (value)));
-		value->data[0].v_pointer = v_object;
-		skk_rom_kana_node_ref (value->data[0].v_pointer);
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	if (old) {
-		skk_rom_kana_node_unref (old);
-	}
-}
-
-
-void skk_value_take_rom_kana_node (GValue* value, gpointer v_object) {
-	SkkRomKanaNode* old;
-	g_return_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_ROM_KANA_NODE));
-	old = value->data[0].v_pointer;
-	if (v_object) {
-		g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (v_object, SKK_TYPE_ROM_KANA_NODE));
-		g_return_if_fail (g_value_type_compatible (G_TYPE_FROM_INSTANCE (v_object), G_VALUE_TYPE (value)));
-		value->data[0].v_pointer = v_object;
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	if (old) {
-		skk_rom_kana_node_unref (old);
-	}
+	_g_object_unref0 (node);
 }
 
 
 static void skk_rom_kana_node_class_init (SkkRomKanaNodeClass * klass) {
 	skk_rom_kana_node_parent_class = g_type_class_peek_parent (klass);
-	SKK_ROM_KANA_NODE_CLASS (klass)->finalize = skk_rom_kana_node_finalize;
+	G_OBJECT_CLASS (klass)->finalize = skk_rom_kana_node_finalize;
 }
 
 
 static void skk_rom_kana_node_instance_init (SkkRomKanaNode * self) {
 	self->n_children = (guint) 0;
-	self->ref_count = 1;
 }
 
 
-static void skk_rom_kana_node_finalize (SkkRomKanaNode* obj) {
+static void skk_rom_kana_node_finalize (GObject* obj) {
 	SkkRomKanaNode * self;
 	self = SKK_ROM_KANA_NODE (obj);
 	_skk_rom_kana_entry_free0 (self->entry);
-	_vala_array_destroy (self->children, 128, (GDestroyNotify) skk_rom_kana_node_unref);
+	_vala_array_destroy (self->children, 128, (GDestroyNotify) g_object_unref);
+	G_OBJECT_CLASS (skk_rom_kana_node_parent_class)->finalize (obj);
 }
 
 
 GType skk_rom_kana_node_get_type (void) {
 	static volatile gsize skk_rom_kana_node_type_id__volatile = 0;
 	if (g_once_init_enter (&skk_rom_kana_node_type_id__volatile)) {
-		static const GTypeValueTable g_define_type_value_table = { skk_value_rom_kana_node_init, skk_value_rom_kana_node_free_value, skk_value_rom_kana_node_copy_value, skk_value_rom_kana_node_peek_pointer, "p", skk_value_rom_kana_node_collect_value, "p", skk_value_rom_kana_node_lcopy_value };
-		static const GTypeInfo g_define_type_info = { sizeof (SkkRomKanaNodeClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_rom_kana_node_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkRomKanaNode), 0, (GInstanceInitFunc) skk_rom_kana_node_instance_init, &g_define_type_value_table };
-		static const GTypeFundamentalInfo g_define_type_fundamental_info = { (G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_INSTANTIATABLE | G_TYPE_FLAG_DERIVABLE | G_TYPE_FLAG_DEEP_DERIVABLE) };
+		static const GTypeInfo g_define_type_info = { sizeof (SkkRomKanaNodeClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_rom_kana_node_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkRomKanaNode), 0, (GInstanceInitFunc) skk_rom_kana_node_instance_init, NULL };
 		GType skk_rom_kana_node_type_id;
-		skk_rom_kana_node_type_id = g_type_register_fundamental (g_type_fundamental_next (), "SkkRomKanaNode", &g_define_type_info, &g_define_type_fundamental_info, 0);
+		skk_rom_kana_node_type_id = g_type_register_static (G_TYPE_OBJECT, "SkkRomKanaNode", &g_define_type_info, 0);
 		g_once_init_leave (&skk_rom_kana_node_type_id__volatile, skk_rom_kana_node_type_id);
 	}
 	return skk_rom_kana_node_type_id__volatile;
-}
-
-
-gpointer skk_rom_kana_node_ref (gpointer instance) {
-	SkkRomKanaNode* self;
-	self = instance;
-	g_atomic_int_inc (&self->ref_count);
-	return instance;
-}
-
-
-void skk_rom_kana_node_unref (gpointer instance) {
-	SkkRomKanaNode* self;
-	self = instance;
-	if (g_atomic_int_dec_and_test (&self->ref_count)) {
-		SKK_ROM_KANA_NODE_GET_CLASS (self)->finalize (self);
-		g_type_free_instance ((GTypeInstance *) self);
-	}
 }
 
 
@@ -893,8 +589,8 @@ SkkRomKanaConverter* skk_rom_kana_converter_construct (GType object_type) {
 		self->priv->_rule = _tmp1_;
 		_tmp2_ = self->priv->_rule;
 		_tmp3_ = _tmp2_->root_node;
-		_tmp4_ = _skk_rom_kana_node_ref0 (_tmp3_);
-		_skk_rom_kana_node_unref0 (self->priv->current_node);
+		_tmp4_ = _g_object_ref0 (_tmp3_);
+		_g_object_unref0 (self->priv->current_node);
 		self->priv->current_node = _tmp4_;
 	}
 	goto __finally0;
@@ -905,7 +601,7 @@ SkkRomKanaConverter* skk_rom_kana_converter_construct (GType object_type) {
 		e = _inner_error_;
 		_inner_error_ = NULL;
 		_tmp5_ = e->message;
-		g_warning ("rom-kana.vala:194: can't find default rom-kana rule: %s", _tmp5_);
+		g_warning ("rom-kana.vala:196: can't find default rom-kana rule: %s", _tmp5_);
 		g_assert_not_reached ();
 		_g_error_free0 (e);
 	}
@@ -927,11 +623,12 @@ SkkRomKanaConverter* skk_rom_kana_converter_new (void) {
 /**
          * Output "nn" if preedit ends with "n".
          */
-void skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self) {
+gboolean skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self) {
+	gboolean result = FALSE;
 	GString* _tmp0_;
 	const gchar* _tmp1_;
 	gboolean _tmp2_ = FALSE;
-	g_return_if_fail (self != NULL);
+	g_return_val_if_fail (self != NULL, FALSE);
 	_tmp0_ = self->priv->_preedit;
 	_tmp1_ = _tmp0_->str;
 	_tmp2_ = g_str_has_suffix (_tmp1_, "n");
@@ -950,7 +647,11 @@ void skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self) {
 		_tmp7_ = self->priv->_preedit;
 		_tmp8_ = _tmp7_->len;
 		g_string_truncate (_tmp6_, (gsize) (_tmp8_ - 1));
+		result = TRUE;
+		return result;
 	}
+	result = FALSE;
+	return result;
 }
 
 
@@ -1085,224 +786,227 @@ gboolean skk_rom_kana_converter_append (SkkRomKanaConverter* self, gunichar uc) 
 	_tmp0_ = self->priv->current_node;
 	_tmp1_ = uc;
 	_tmp2_ = _tmp0_->children[_tmp1_];
-	_tmp3_ = _skk_rom_kana_node_ref0 (_tmp2_);
+	_tmp3_ = _g_object_ref0 (_tmp2_);
 	child_node = _tmp3_;
 	_tmp4_ = child_node;
 	if (_tmp4_ == NULL) {
-		gint _tmp5_ = 0;
-		gunichar _tmp6_;
-		gint _tmp9_;
-		gint index;
+		gboolean _tmp5_ = FALSE;
+		gboolean retval;
+		gint _tmp6_ = 0;
+		gunichar _tmp7_;
 		gint _tmp10_;
-		skk_rom_kana_converter_output_nn_if_any (self);
-		_tmp6_ = uc;
-		if (_tmp6_ != ((gunichar) '\0')) {
-			gunichar _tmp7_;
-			gint _tmp8_ = 0;
-			_tmp7_ = uc;
-			_tmp8_ = string_index_of_char (".,", _tmp7_, 0);
-			_tmp5_ = _tmp8_;
+		gint index;
+		gint _tmp11_;
+		_tmp5_ = skk_rom_kana_converter_output_nn_if_any (self);
+		retval = _tmp5_;
+		_tmp7_ = uc;
+		if (_tmp7_ != ((gunichar) '\0')) {
+			gunichar _tmp8_;
+			gint _tmp9_ = 0;
+			_tmp8_ = uc;
+			_tmp9_ = string_index_of_char (".,", _tmp8_, 0);
+			_tmp6_ = _tmp9_;
 		} else {
-			_tmp5_ = -1;
+			_tmp6_ = -1;
 		}
-		_tmp9_ = _tmp5_;
-		index = _tmp9_;
-		_tmp10_ = index;
-		if (_tmp10_ >= 0) {
-			SkkPeriodStyle _tmp11_;
-			const gchar* _tmp12_;
-			gint _tmp13_;
-			gint _tmp14_ = 0;
-			SkkPeriodStyle _tmp15_;
-			const gchar* _tmp16_;
-			gint _tmp17_;
-			gunichar _tmp18_ = 0U;
+		_tmp10_ = _tmp6_;
+		index = _tmp10_;
+		_tmp11_ = index;
+		if (_tmp11_ >= 0) {
+			SkkPeriodStyle _tmp12_;
+			const gchar* _tmp13_;
+			gint _tmp14_;
+			gint _tmp15_ = 0;
+			SkkPeriodStyle _tmp16_;
+			const gchar* _tmp17_;
+			gint _tmp18_;
+			gunichar _tmp19_ = 0U;
 			gunichar period;
-			GString* _tmp19_;
-			gunichar _tmp20_;
-			GString* _tmp21_;
-			SkkRomKanaMapFile* _tmp22_;
+			GString* _tmp20_;
+			gunichar _tmp21_;
+			GString* _tmp22_;
 			SkkRomKanaMapFile* _tmp23_;
-			SkkRomKanaNode* _tmp24_;
+			SkkRomKanaMapFile* _tmp24_;
 			SkkRomKanaNode* _tmp25_;
-			_tmp11_ = self->priv->_period_style;
-			_tmp12_ = SKK_PERIOD_RULE[_tmp11_];
-			_tmp13_ = index;
-			_tmp14_ = string_index_of_nth_char (_tmp12_, (glong) _tmp13_);
-			index = _tmp14_;
-			_tmp15_ = self->priv->_period_style;
-			_tmp16_ = SKK_PERIOD_RULE[_tmp15_];
-			_tmp17_ = index;
-			_tmp18_ = string_get_char (_tmp16_, (glong) _tmp17_);
-			period = _tmp18_;
-			_tmp19_ = self->priv->_output;
-			_tmp20_ = period;
-			g_string_append_unichar (_tmp19_, _tmp20_);
-			_tmp21_ = self->priv->_preedit;
-			g_string_erase (_tmp21_, (gssize) 0, (gssize) (-1));
-			_tmp22_ = skk_rom_kana_converter_get_rule (self);
-			_tmp23_ = _tmp22_;
-			_tmp24_ = _tmp23_->root_node;
-			_tmp25_ = _skk_rom_kana_node_ref0 (_tmp24_);
-			_skk_rom_kana_node_unref0 (self->priv->current_node);
-			self->priv->current_node = _tmp25_;
+			SkkRomKanaNode* _tmp26_;
+			_tmp12_ = self->priv->_period_style;
+			_tmp13_ = SKK_PERIOD_RULE[_tmp12_];
+			_tmp14_ = index;
+			_tmp15_ = string_index_of_nth_char (_tmp13_, (glong) _tmp14_);
+			index = _tmp15_;
+			_tmp16_ = self->priv->_period_style;
+			_tmp17_ = SKK_PERIOD_RULE[_tmp16_];
+			_tmp18_ = index;
+			_tmp19_ = string_get_char (_tmp17_, (glong) _tmp18_);
+			period = _tmp19_;
+			_tmp20_ = self->priv->_output;
+			_tmp21_ = period;
+			g_string_append_unichar (_tmp20_, _tmp21_);
+			_tmp22_ = self->priv->_preedit;
+			g_string_erase (_tmp22_, (gssize) 0, (gssize) (-1));
+			_tmp23_ = skk_rom_kana_converter_get_rule (self);
+			_tmp24_ = _tmp23_;
+			_tmp25_ = _tmp24_->root_node;
+			_tmp26_ = _g_object_ref0 (_tmp25_);
+			_g_object_unref0 (self->priv->current_node);
+			self->priv->current_node = _tmp26_;
 			result = TRUE;
-			_skk_rom_kana_node_unref0 (child_node);
+			_g_object_unref0 (child_node);
 			return result;
 		} else {
-			SkkRomKanaMapFile* _tmp26_;
 			SkkRomKanaMapFile* _tmp27_;
-			SkkRomKanaNode* _tmp28_;
-			gunichar _tmp29_;
-			SkkRomKanaNode* _tmp30_;
-			_tmp26_ = skk_rom_kana_converter_get_rule (self);
-			_tmp27_ = _tmp26_;
-			_tmp28_ = _tmp27_->root_node;
-			_tmp29_ = uc;
-			_tmp30_ = _tmp28_->children[_tmp29_];
-			if (_tmp30_ == NULL) {
-				GString* _tmp31_;
-				gunichar _tmp32_;
-				GString* _tmp33_;
-				SkkRomKanaMapFile* _tmp34_;
+			SkkRomKanaMapFile* _tmp28_;
+			SkkRomKanaNode* _tmp29_;
+			gunichar _tmp30_;
+			SkkRomKanaNode* _tmp31_;
+			_tmp27_ = skk_rom_kana_converter_get_rule (self);
+			_tmp28_ = _tmp27_;
+			_tmp29_ = _tmp28_->root_node;
+			_tmp30_ = uc;
+			_tmp31_ = _tmp29_->children[_tmp30_];
+			if (_tmp31_ == NULL) {
+				GString* _tmp32_;
+				gunichar _tmp33_;
+				GString* _tmp34_;
 				SkkRomKanaMapFile* _tmp35_;
-				SkkRomKanaNode* _tmp36_;
+				SkkRomKanaMapFile* _tmp36_;
 				SkkRomKanaNode* _tmp37_;
-				_tmp31_ = self->priv->_output;
-				_tmp32_ = uc;
-				g_string_append_unichar (_tmp31_, _tmp32_);
-				_tmp33_ = self->priv->_preedit;
-				g_string_erase (_tmp33_, (gssize) 0, (gssize) (-1));
-				_tmp34_ = skk_rom_kana_converter_get_rule (self);
-				_tmp35_ = _tmp34_;
-				_tmp36_ = _tmp35_->root_node;
-				_tmp37_ = _skk_rom_kana_node_ref0 (_tmp36_);
-				_skk_rom_kana_node_unref0 (self->priv->current_node);
-				self->priv->current_node = _tmp37_;
-				result = FALSE;
-				_skk_rom_kana_node_unref0 (child_node);
+				SkkRomKanaNode* _tmp38_;
+				_tmp32_ = self->priv->_output;
+				_tmp33_ = uc;
+				g_string_append_unichar (_tmp32_, _tmp33_);
+				_tmp34_ = self->priv->_preedit;
+				g_string_erase (_tmp34_, (gssize) 0, (gssize) (-1));
+				_tmp35_ = skk_rom_kana_converter_get_rule (self);
+				_tmp36_ = _tmp35_;
+				_tmp37_ = _tmp36_->root_node;
+				_tmp38_ = _g_object_ref0 (_tmp37_);
+				_g_object_unref0 (self->priv->current_node);
+				self->priv->current_node = _tmp38_;
+				result = retval;
+				_g_object_unref0 (child_node);
 				return result;
 			} else {
-				GString* _tmp38_;
-				SkkRomKanaMapFile* _tmp39_;
+				GString* _tmp39_;
 				SkkRomKanaMapFile* _tmp40_;
-				SkkRomKanaNode* _tmp41_;
+				SkkRomKanaMapFile* _tmp41_;
 				SkkRomKanaNode* _tmp42_;
-				gunichar _tmp43_;
-				gboolean _tmp44_ = FALSE;
-				_tmp38_ = self->priv->_preedit;
-				g_string_erase (_tmp38_, (gssize) 0, (gssize) (-1));
-				_tmp39_ = skk_rom_kana_converter_get_rule (self);
-				_tmp40_ = _tmp39_;
-				_tmp41_ = _tmp40_->root_node;
-				_tmp42_ = _skk_rom_kana_node_ref0 (_tmp41_);
-				_skk_rom_kana_node_unref0 (self->priv->current_node);
-				self->priv->current_node = _tmp42_;
-				_tmp43_ = uc;
-				_tmp44_ = skk_rom_kana_converter_append (self, _tmp43_);
-				result = _tmp44_;
-				_skk_rom_kana_node_unref0 (child_node);
+				SkkRomKanaNode* _tmp43_;
+				gunichar _tmp44_;
+				gboolean _tmp45_ = FALSE;
+				_tmp39_ = self->priv->_preedit;
+				g_string_erase (_tmp39_, (gssize) 0, (gssize) (-1));
+				_tmp40_ = skk_rom_kana_converter_get_rule (self);
+				_tmp41_ = _tmp40_;
+				_tmp42_ = _tmp41_->root_node;
+				_tmp43_ = _g_object_ref0 (_tmp42_);
+				_g_object_unref0 (self->priv->current_node);
+				self->priv->current_node = _tmp43_;
+				_tmp44_ = uc;
+				_tmp45_ = skk_rom_kana_converter_append (self, _tmp44_);
+				result = _tmp45_;
+				_g_object_unref0 (child_node);
 				return result;
 			}
 		}
 	} else {
-		SkkRomKanaNode* _tmp45_;
-		SkkRomKanaEntry* _tmp46_;
-		_tmp45_ = child_node;
-		_tmp46_ = _tmp45_->entry;
-		if (_tmp46_ == NULL) {
-			GString* _tmp47_;
-			gunichar _tmp48_;
-			SkkRomKanaNode* _tmp49_;
+		SkkRomKanaNode* _tmp46_;
+		SkkRomKanaEntry* _tmp47_;
+		_tmp46_ = child_node;
+		_tmp47_ = _tmp46_->entry;
+		if (_tmp47_ == NULL) {
+			GString* _tmp48_;
+			gunichar _tmp49_;
 			SkkRomKanaNode* _tmp50_;
-			_tmp47_ = self->priv->_preedit;
-			_tmp48_ = uc;
-			g_string_append_unichar (_tmp47_, _tmp48_);
-			_tmp49_ = child_node;
-			_tmp50_ = _skk_rom_kana_node_ref0 (_tmp49_);
-			_skk_rom_kana_node_unref0 (self->priv->current_node);
-			self->priv->current_node = _tmp50_;
+			SkkRomKanaNode* _tmp51_;
+			_tmp48_ = self->priv->_preedit;
+			_tmp49_ = uc;
+			g_string_append_unichar (_tmp48_, _tmp49_);
+			_tmp50_ = child_node;
+			_tmp51_ = _g_object_ref0 (_tmp50_);
+			_g_object_unref0 (self->priv->current_node);
+			self->priv->current_node = _tmp51_;
 			result = TRUE;
-			_skk_rom_kana_node_unref0 (child_node);
+			_g_object_unref0 (child_node);
 			return result;
 		} else {
-			GString* _tmp51_;
-			SkkRomKanaNode* _tmp52_;
-			SkkRomKanaEntry* _tmp53_;
-			SkkKanaMode _tmp54_;
-			gchar* _tmp55_ = NULL;
-			gchar* _tmp56_;
-			GString* _tmp57_;
-			SkkRomKanaMapFile* _tmp58_;
+			GString* _tmp52_;
+			SkkRomKanaNode* _tmp53_;
+			SkkRomKanaEntry* _tmp54_;
+			SkkKanaMode _tmp55_;
+			gchar* _tmp56_ = NULL;
+			gchar* _tmp57_;
+			GString* _tmp58_;
 			SkkRomKanaMapFile* _tmp59_;
-			SkkRomKanaNode* _tmp60_;
+			SkkRomKanaMapFile* _tmp60_;
 			SkkRomKanaNode* _tmp61_;
-			_tmp51_ = self->priv->_output;
-			_tmp52_ = child_node;
-			_tmp53_ = _tmp52_->entry;
-			_tmp54_ = self->priv->_kana_mode;
-			_tmp55_ = skk_rom_kana_entry_get_kana (_tmp53_, _tmp54_);
-			_tmp56_ = _tmp55_;
-			g_string_append (_tmp51_, _tmp56_);
-			_g_free0 (_tmp56_);
-			_tmp57_ = self->priv->_preedit;
-			g_string_erase (_tmp57_, (gssize) 0, (gssize) (-1));
-			_tmp58_ = skk_rom_kana_converter_get_rule (self);
-			_tmp59_ = _tmp58_;
-			_tmp60_ = _tmp59_->root_node;
-			_tmp61_ = _skk_rom_kana_node_ref0 (_tmp60_);
-			_skk_rom_kana_node_unref0 (self->priv->current_node);
-			self->priv->current_node = _tmp61_;
+			SkkRomKanaNode* _tmp62_;
+			_tmp52_ = self->priv->_output;
+			_tmp53_ = child_node;
+			_tmp54_ = _tmp53_->entry;
+			_tmp55_ = self->priv->_kana_mode;
+			_tmp56_ = skk_rom_kana_entry_get_kana (_tmp54_, _tmp55_);
+			_tmp57_ = _tmp56_;
+			g_string_append (_tmp52_, _tmp57_);
+			_g_free0 (_tmp57_);
+			_tmp58_ = self->priv->_preedit;
+			g_string_erase (_tmp58_, (gssize) 0, (gssize) (-1));
+			_tmp59_ = skk_rom_kana_converter_get_rule (self);
+			_tmp60_ = _tmp59_;
+			_tmp61_ = _tmp60_->root_node;
+			_tmp62_ = _g_object_ref0 (_tmp61_);
+			_g_object_unref0 (self->priv->current_node);
+			self->priv->current_node = _tmp62_;
 			{
 				gint i;
 				i = 0;
 				{
-					gboolean _tmp62_;
-					_tmp62_ = TRUE;
+					gboolean _tmp63_;
+					_tmp63_ = TRUE;
 					while (TRUE) {
-						gboolean _tmp63_;
-						gint _tmp65_;
-						SkkRomKanaNode* _tmp66_;
-						SkkRomKanaEntry* _tmp67_;
-						const gchar* _tmp68_;
-						gint _tmp69_;
+						gboolean _tmp64_;
+						gint _tmp66_;
+						SkkRomKanaNode* _tmp67_;
+						SkkRomKanaEntry* _tmp68_;
+						const gchar* _tmp69_;
 						gint _tmp70_;
-						SkkRomKanaNode* _tmp71_;
-						SkkRomKanaEntry* _tmp72_;
-						const gchar* _tmp73_;
-						gint _tmp74_;
-						gchar _tmp75_ = '\0';
-						_tmp63_ = _tmp62_;
-						if (!_tmp63_) {
-							gint _tmp64_;
-							_tmp64_ = i;
-							i = _tmp64_ + 1;
+						gint _tmp71_;
+						SkkRomKanaNode* _tmp72_;
+						SkkRomKanaEntry* _tmp73_;
+						const gchar* _tmp74_;
+						gint _tmp75_;
+						gchar _tmp76_ = '\0';
+						_tmp64_ = _tmp63_;
+						if (!_tmp64_) {
+							gint _tmp65_;
+							_tmp65_ = i;
+							i = _tmp65_ + 1;
 						}
-						_tmp62_ = FALSE;
-						_tmp65_ = i;
-						_tmp66_ = child_node;
-						_tmp67_ = _tmp66_->entry;
-						_tmp68_ = (*_tmp67_).carryover;
-						_tmp69_ = strlen (_tmp68_);
-						_tmp70_ = _tmp69_;
-						if (!(_tmp65_ < _tmp70_)) {
+						_tmp63_ = FALSE;
+						_tmp66_ = i;
+						_tmp67_ = child_node;
+						_tmp68_ = _tmp67_->entry;
+						_tmp69_ = (*_tmp68_).carryover;
+						_tmp70_ = strlen (_tmp69_);
+						_tmp71_ = _tmp70_;
+						if (!(_tmp66_ < _tmp71_)) {
 							break;
 						}
-						_tmp71_ = child_node;
-						_tmp72_ = _tmp71_->entry;
-						_tmp73_ = (*_tmp72_).carryover;
-						_tmp74_ = i;
-						_tmp75_ = string_get (_tmp73_, (glong) _tmp74_);
-						skk_rom_kana_converter_append (self, (gunichar) _tmp75_);
+						_tmp72_ = child_node;
+						_tmp73_ = _tmp72_->entry;
+						_tmp74_ = (*_tmp73_).carryover;
+						_tmp75_ = i;
+						_tmp76_ = string_get (_tmp74_, (glong) _tmp75_);
+						skk_rom_kana_converter_append (self, (gunichar) _tmp76_);
 					}
 				}
 			}
 			result = TRUE;
-			_skk_rom_kana_node_unref0 (child_node);
+			_g_object_unref0 (child_node);
 			return result;
 		}
 	}
-	_skk_rom_kana_node_unref0 (child_node);
+	_g_object_unref0 (child_node);
 }
 
 
@@ -1349,12 +1053,12 @@ gboolean skk_rom_kana_converter_can_consume (SkkRomKanaConverter* self, gunichar
 	_tmp5_ = self->priv->current_node;
 	_tmp6_ = uc;
 	_tmp7_ = _tmp5_->children[_tmp6_];
-	_tmp8_ = _skk_rom_kana_node_ref0 (_tmp7_);
+	_tmp8_ = _g_object_ref0 (_tmp7_);
 	child_node = _tmp8_;
 	_tmp9_ = child_node;
 	if (_tmp9_ == NULL) {
 		result = FALSE;
-		_skk_rom_kana_node_unref0 (child_node);
+		_g_object_unref0 (child_node);
 		return result;
 	}
 	_tmp12_ = no_carryover;
@@ -1382,11 +1086,11 @@ gboolean skk_rom_kana_converter_can_consume (SkkRomKanaConverter* self, gunichar
 	_tmp19_ = _tmp10_;
 	if (_tmp19_) {
 		result = FALSE;
-		_skk_rom_kana_node_unref0 (child_node);
+		_g_object_unref0 (child_node);
 		return result;
 	}
 	result = TRUE;
-	_skk_rom_kana_node_unref0 (child_node);
+	_g_object_unref0 (child_node);
 	return result;
 }
 
@@ -1409,8 +1113,8 @@ void skk_rom_kana_converter_reset (SkkRomKanaConverter* self) {
 	_tmp2_ = skk_rom_kana_converter_get_rule (self);
 	_tmp3_ = _tmp2_;
 	_tmp4_ = _tmp3_->root_node;
-	_tmp5_ = _skk_rom_kana_node_ref0 (_tmp4_);
-	_skk_rom_kana_node_unref0 (self->priv->current_node);
+	_tmp5_ = _g_object_ref0 (_tmp4_);
+	_g_object_unref0 (self->priv->current_node);
 	self->priv->current_node = _tmp5_;
 }
 
@@ -1443,8 +1147,8 @@ gboolean skk_rom_kana_converter_delete (SkkRomKanaConverter* self) {
 		gint _tmp16_ = 0;
 		_tmp2_ = self->priv->current_node;
 		_tmp3_ = _tmp2_->parent;
-		_tmp4_ = _skk_rom_kana_node_ref0 (_tmp3_);
-		_skk_rom_kana_node_unref0 (self->priv->current_node);
+		_tmp4_ = _g_object_ref0 (_tmp3_);
+		_g_object_unref0 (self->priv->current_node);
 		self->priv->current_node = _tmp4_;
 		_tmp5_ = self->priv->current_node;
 		if (_tmp5_ == NULL) {
@@ -1455,8 +1159,8 @@ gboolean skk_rom_kana_converter_delete (SkkRomKanaConverter* self) {
 			_tmp6_ = skk_rom_kana_converter_get_rule (self);
 			_tmp7_ = _tmp6_;
 			_tmp8_ = _tmp7_->root_node;
-			_tmp9_ = _skk_rom_kana_node_ref0 (_tmp8_);
-			_skk_rom_kana_node_unref0 (self->priv->current_node);
+			_tmp9_ = _g_object_ref0 (_tmp8_);
+			_g_object_unref0 (self->priv->current_node);
 			self->priv->current_node = _tmp9_;
 		}
 		_tmp10_ = self->priv->_preedit;
@@ -1506,11 +1210,6 @@ SkkRomKanaMapFile* skk_rom_kana_converter_get_rule (SkkRomKanaConverter* self) {
 }
 
 
-static gpointer _g_object_ref0 (gpointer self) {
-	return self ? g_object_ref (self) : NULL;
-}
-
-
 void skk_rom_kana_converter_set_rule (SkkRomKanaConverter* self, SkkRomKanaMapFile* value) {
 	SkkRomKanaMapFile* _tmp0_;
 	SkkRomKanaMapFile* _tmp1_;
@@ -1524,8 +1223,8 @@ void skk_rom_kana_converter_set_rule (SkkRomKanaConverter* self, SkkRomKanaMapFi
 	self->priv->_rule = _tmp1_;
 	_tmp2_ = self->priv->_rule;
 	_tmp3_ = _tmp2_->root_node;
-	_tmp4_ = _skk_rom_kana_node_ref0 (_tmp3_);
-	_skk_rom_kana_node_unref0 (self->priv->current_node);
+	_tmp4_ = _g_object_ref0 (_tmp3_);
+	_g_object_unref0 (self->priv->current_node);
 	self->priv->current_node = _tmp4_;
 	g_object_notify ((GObject *) self, "rule");
 }
@@ -1635,7 +1334,7 @@ static void skk_rom_kana_converter_finalize (GObject* obj) {
 	SkkRomKanaConverter * self;
 	self = SKK_ROM_KANA_CONVERTER (obj);
 	_g_object_unref0 (self->priv->_rule);
-	_skk_rom_kana_node_unref0 (self->priv->current_node);
+	_g_object_unref0 (self->priv->current_node);
 	_g_string_free0 (self->priv->_output);
 	_g_string_free0 (self->priv->_preedit);
 	G_OBJECT_CLASS (skk_rom_kana_converter_parent_class)->finalize (obj);

@@ -2,8 +2,8 @@
  * generated from context.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,8 +103,17 @@ typedef struct _SkkStateClass SkkStateClass;
 typedef struct _SkkStateHandler SkkStateHandler;
 typedef struct _SkkStateHandlerClass SkkStateHandlerClass;
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
-#define __g_slist_free__g_object_unref0_0(var) ((var == NULL) ? NULL : (var = (_g_slist_free__g_object_unref0_ (var), NULL)))
 #define _g_free0(var) (var = (g_free (var), NULL))
+
+#define SKK_TYPE_KEY_EVENT (skk_key_event_get_type ())
+#define SKK_KEY_EVENT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_KEY_EVENT, SkkKeyEvent))
+#define SKK_KEY_EVENT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_KEY_EVENT, SkkKeyEventClass))
+#define SKK_IS_KEY_EVENT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_KEY_EVENT))
+#define SKK_IS_KEY_EVENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_KEY_EVENT))
+#define SKK_KEY_EVENT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_KEY_EVENT, SkkKeyEventClass))
+
+typedef struct _SkkKeyEvent SkkKeyEvent;
+typedef struct _SkkKeyEventClass SkkKeyEventClass;
 
 #define SKK_TYPE_NONE_STATE_HANDLER (skk_none_state_handler_get_type ())
 #define SKK_NONE_STATE_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_NONE_STATE_HANDLER, SkkNoneStateHandler))
@@ -199,17 +208,6 @@ typedef struct _SkkCandidateClass SkkCandidateClass;
 #define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 #define _g_string_free0(var) ((var == NULL) ? NULL : (var = (g_string_free (var, TRUE), NULL)))
 
-#define SKK_TYPE_KEY_EVENT (skk_key_event_get_type ())
-#define SKK_KEY_EVENT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_KEY_EVENT, SkkKeyEvent))
-#define SKK_KEY_EVENT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_KEY_EVENT, SkkKeyEventClass))
-#define SKK_IS_KEY_EVENT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_KEY_EVENT))
-#define SKK_IS_KEY_EVENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_KEY_EVENT))
-#define SKK_KEY_EVENT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_KEY_EVENT, SkkKeyEventClass))
-
-typedef struct _SkkKeyEvent SkkKeyEvent;
-typedef struct _SkkKeyEventClass SkkKeyEventClass;
-#define _skk_key_event_unref0(var) ((var == NULL) ? NULL : (var = (skk_key_event_unref (var), NULL)))
-
 #define SKK_TYPE_KEY_EVENT_FILTER (skk_key_event_filter_get_type ())
 #define SKK_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_KEY_EVENT_FILTER, SkkKeyEventFilter))
 #define SKK_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_KEY_EVENT_FILTER, SkkKeyEventFilterClass))
@@ -248,10 +246,10 @@ struct _SkkContextClass {
 };
 
 struct _SkkContextPrivate {
-	GeeArrayList* _dictionaries;
+	GeeList* _dictionaries;
 	SkkCandidateList* _candidates;
-	GSList* state_stack;
-	GeeHashMap* handlers;
+	GeeLinkedList* state_stack;
+	GeeMap* handlers;
 	gchar* _preedit;
 	guint preedit_underline_offset;
 	guint preedit_underline_nchars;
@@ -261,7 +259,7 @@ struct _SkkState {
 	GObject parent_instance;
 	SkkStatePrivate * priv;
 	GType handler_type;
-	GeeArrayList* dictionaries;
+	GeeList* dictionaries;
 	SkkCandidateList* candidates;
 	SkkRomKanaConverter* rom_kana_converter;
 	SkkRomKanaConverter* okuri_rom_kana_converter;
@@ -316,10 +314,11 @@ enum  {
 	SKK_CONTEXT_KEY_EVENT_FILTER,
 	SKK_CONTEXT_PREEDIT
 };
-static void _g_object_unref0_ (gpointer var);
-static void _g_slist_free__g_object_unref0_ (GSList* self);
 void skk_context_add_dictionary (SkkContext* self, SkkDict* dict);
 void skk_context_remove_dictionary (SkkContext* self, SkkDict* dict);
+GType skk_key_event_get_type (void) G_GNUC_CONST;
+static void skk_context_filter_forwarded_cb (SkkContext* self, SkkKeyEvent* key);
+static gboolean skk_context_process_key_event_internal (SkkContext* self, SkkKeyEvent* key);
 SkkContext* skk_context_new (SkkDict** dictionaries, int dictionaries_length1);
 SkkContext* skk_context_construct (GType object_type, SkkDict** dictionaries, int dictionaries_length1);
 GType skk_none_state_handler_get_type (void) G_GNUC_CONST;
@@ -337,14 +336,14 @@ SkkAbbrevStateHandler* skk_abbrev_state_handler_construct (GType object_type);
 GType skk_kuten_state_handler_get_type (void) G_GNUC_CONST;
 SkkKutenStateHandler* skk_kuten_state_handler_new (void);
 SkkKutenStateHandler* skk_kuten_state_handler_construct (GType object_type);
-SkkState* skk_state_new (GeeArrayList* dictionaries);
-SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries);
-static void skk_context_connect_state_signals (SkkContext* self, SkkState* state);
+SkkState* skk_state_new (GeeList* dictionaries);
+SkkState* skk_state_construct (GType object_type, GeeList* dictionaries);
 GType skk_rom_kana_converter_get_type (void) G_GNUC_CONST;
 GType skk_unicode_string_get_type (void) G_GNUC_CONST;
 SkkProxyCandidateList* skk_proxy_candidate_list_new (SkkCandidateList* candidates);
 SkkProxyCandidateList* skk_proxy_candidate_list_construct (GType object_type, SkkCandidateList* candidates);
 GType skk_proxy_candidate_list_get_type (void) G_GNUC_CONST;
+static void skk_context_push_state (SkkContext* self, SkkState* state);
 static void __lambda3_ (SkkContext* self);
 gint skk_candidate_list_get_cursor_pos (SkkCandidateList* self);
 static void skk_context_update_preedit (SkkContext* self);
@@ -357,6 +356,7 @@ static void ___lambda4__skk_candidate_list_selected (SkkCandidateList* _sender, 
 static void skk_context_notify_input_mode_cb (SkkContext* self, GObject* s, GParamSpec* p);
 static gboolean skk_context_retrieve_surrounding_text_cb (SkkContext* self, gchar** text, guint* cursor_pos);
 static gboolean skk_context_delete_surrounding_text_cb (SkkContext* self, gint offset, guint nchars);
+static void skk_context_connect_state_signals (SkkContext* self, SkkState* state);
 static void skk_context_start_dict_edit (SkkContext* self, const gchar* midasi, gboolean okuri);
 static void _skk_context_start_dict_edit_skk_state_recursive_edit_start (SkkState* _sender, const gchar* midasi, gboolean okuri, gpointer self);
 static gboolean skk_context_end_dict_edit (SkkContext* self, const gchar* text);
@@ -371,7 +371,9 @@ SkkDict** skk_context_get_dictionaries (SkkContext* self, int* result_length1);
 gboolean skk_dict_get_read_only (SkkDict* self);
 gboolean skk_dict_select_candidate (SkkDict* self, SkkCandidate* candidate);
 static guint skk_context_dict_edit_level (SkkContext* self);
+SkkCandidateList* skk_proxy_candidate_list_get_candidates (SkkProxyCandidateList* self);
 void skk_proxy_candidate_list_set_candidates (SkkProxyCandidateList* self, SkkCandidateList* value);
+static void skk_context_pop_state (SkkContext* self);
 static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, gboolean** okuri);
 SkkCandidate* skk_candidate_new (const gchar* midasi, gboolean okuri, const gchar* text, const gchar* annotation, const gchar* output);
 SkkCandidate* skk_candidate_construct (GType object_type, const gchar* midasi, gboolean okuri, const gchar* text, const gchar* annotation, const gchar* output);
@@ -381,18 +383,10 @@ void skk_state_cancel_okuri (SkkState* self);
 gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq);
 SkkKeyEvent* skk_key_event_new_from_string (const gchar* key);
 SkkKeyEvent* skk_key_event_construct_from_string (GType object_type, const gchar* key);
-gpointer skk_key_event_ref (gpointer instance);
-void skk_key_event_unref (gpointer instance);
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_key_event (GValue* value, gpointer v_object);
-void skk_value_take_key_event (GValue* value, gpointer v_object);
-gpointer skk_value_get_key_event (const GValue* value);
-GType skk_key_event_get_type (void) G_GNUC_CONST;
 gboolean skk_context_process_key_event (SkkContext* self, SkkKeyEvent* key);
 GType skk_key_event_filter_get_type (void) G_GNUC_CONST;
 SkkKeyEventFilter* skk_context_get_key_event_filter (SkkContext* self);
 SkkKeyEvent* skk_key_event_filter_filter_key_event (SkkKeyEventFilter* self, SkkKeyEvent* key);
-static gboolean skk_context_process_key_event_internal (SkkContext* self, SkkKeyEvent* key);
 SkkKeyEvent* skk_key_event_copy (SkkKeyEvent* self);
 gboolean skk_state_handler_process_key_event (SkkStateHandler* self, SkkState* state, SkkKeyEvent** key);
 void skk_context_reset (SkkContext* self);
@@ -427,10 +421,9 @@ void skk_state_set_period_style (SkkState* self, SkkPeriodStyle value);
 SkkRule* skk_context_get_typing_rule (SkkContext* self);
 SkkRule* skk_state_get_typing_rule (SkkState* self);
 void skk_context_set_typing_rule (SkkContext* self, SkkRule* value);
-void skk_state_set_typing_rule (SkkState* self, SkkRule* value);
 SkkKeyEventFilter* skk_rule_get_filter (SkkRule* self);
-static void _skk_context_typing_rule___lambda5_ (SkkContext* self, SkkKeyEvent* key);
-static void __skk_context_typing_rule___lambda5__skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self);
+static void _skk_context_filter_forwarded_cb_skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self);
+void skk_state_set_typing_rule (SkkState* self, SkkRule* value);
 static void g_cclosure_user_marshal_BOOLEAN__POINTER_POINTER (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data);
 static void g_cclosure_user_marshal_BOOLEAN__INT_UINT (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data);
 static void skk_context_finalize (GObject* obj);
@@ -474,17 +467,6 @@ GType skk_input_mode_get_type (void) {
 }
 
 
-static void _g_object_unref0_ (gpointer var) {
-	(var == NULL) ? NULL : (var = (g_object_unref (var), NULL));
-}
-
-
-static void _g_slist_free__g_object_unref0_ (GSList* self) {
-	g_slist_foreach (self, (GFunc) _g_object_unref0_, NULL);
-	g_slist_free (self);
-}
-
-
 /**
          * Register dictionary.
          *
@@ -492,13 +474,13 @@ static void _g_slist_free__g_object_unref0_ (GSList* self) {
          * @since 0.0.8
          */
 void skk_context_add_dictionary (SkkContext* self, SkkDict* dict) {
-	GeeArrayList* _tmp0_;
+	GeeList* _tmp0_;
 	SkkDict* _tmp1_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (dict != NULL);
 	_tmp0_ = self->priv->_dictionaries;
 	_tmp1_ = dict;
-	gee_abstract_collection_add ((GeeAbstractCollection*) _tmp0_, _tmp1_);
+	gee_collection_add ((GeeCollection*) _tmp0_, _tmp1_);
 }
 
 
@@ -509,13 +491,22 @@ void skk_context_add_dictionary (SkkContext* self, SkkDict* dict) {
          * @since 0.0.8
          */
 void skk_context_remove_dictionary (SkkContext* self, SkkDict* dict) {
-	GeeArrayList* _tmp0_;
+	GeeList* _tmp0_;
 	SkkDict* _tmp1_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (dict != NULL);
 	_tmp0_ = self->priv->_dictionaries;
 	_tmp1_ = dict;
-	gee_abstract_collection_remove ((GeeAbstractCollection*) _tmp0_, _tmp1_);
+	gee_collection_remove ((GeeCollection*) _tmp0_, _tmp1_);
+}
+
+
+static void skk_context_filter_forwarded_cb (SkkContext* self, SkkKeyEvent* key) {
+	SkkKeyEvent* _tmp0_;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (key != NULL);
+	_tmp0_ = key;
+	skk_context_process_key_event_internal (self, _tmp0_);
 }
 
 
@@ -560,11 +551,11 @@ static void __lambda4_ (SkkContext* self, SkkCandidate* candidate) {
 		{
 			skk_context_save_dictionaries (self, &_inner_error_);
 			if (_inner_error_ != NULL) {
-				goto __catch32_g_error;
+				goto __catch33_g_error;
 			}
 		}
-		goto __finally32;
-		__catch32_g_error:
+		goto __finally33;
+		__catch33_g_error:
 		{
 			GError* e = NULL;
 			GError* _tmp2_;
@@ -573,10 +564,10 @@ static void __lambda4_ (SkkContext* self, SkkCandidate* candidate) {
 			_inner_error_ = NULL;
 			_tmp2_ = e;
 			_tmp3_ = _tmp2_->message;
-			g_warning ("context.vala:237: error saving dictionaries %s", _tmp3_);
+			g_warning ("context.vala:242: error saving dictionaries %s", _tmp3_);
 			_g_error_free0 (e);
 		}
-		__finally32:
+		__finally33:
 		if (_inner_error_ != NULL) {
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 			g_clear_error (&_inner_error_);
@@ -596,31 +587,28 @@ SkkContext* skk_context_construct (GType object_type, SkkDict** dictionaries, in
 	SkkContext * self = NULL;
 	SkkDict** _tmp0_;
 	gint _tmp0__length1;
-	GeeHashMap* _tmp3_;
+	GeeMap* _tmp3_;
 	SkkNoneStateHandler* _tmp4_;
 	SkkNoneStateHandler* _tmp5_;
-	GeeHashMap* _tmp6_;
+	GeeMap* _tmp6_;
 	SkkStartStateHandler* _tmp7_;
 	SkkStartStateHandler* _tmp8_;
-	GeeHashMap* _tmp9_;
+	GeeMap* _tmp9_;
 	SkkSelectStateHandler* _tmp10_;
 	SkkSelectStateHandler* _tmp11_;
-	GeeHashMap* _tmp12_;
+	GeeMap* _tmp12_;
 	SkkAbbrevStateHandler* _tmp13_;
 	SkkAbbrevStateHandler* _tmp14_;
-	GeeHashMap* _tmp15_;
+	GeeMap* _tmp15_;
 	SkkKutenStateHandler* _tmp16_;
 	SkkKutenStateHandler* _tmp17_;
-	GeeArrayList* _tmp18_;
+	GeeList* _tmp18_;
 	SkkState* _tmp19_;
-	GSList* _tmp20_;
-	gconstpointer _tmp21_;
-	GSList* _tmp22_;
-	gconstpointer _tmp23_;
-	SkkCandidateList* _tmp24_;
-	SkkProxyCandidateList* _tmp25_;
-	SkkCandidateList* _tmp26_;
-	SkkCandidateList* _tmp27_;
+	SkkState* state;
+	SkkCandidateList* _tmp20_;
+	SkkProxyCandidateList* _tmp21_;
+	SkkCandidateList* _tmp22_;
+	SkkCandidateList* _tmp23_;
 	self = (SkkContext*) g_object_new (object_type, NULL);
 	_tmp0_ = dictionaries;
 	_tmp0__length1 = dictionaries_length1;
@@ -647,44 +635,41 @@ SkkContext* skk_context_construct (GType object_type, SkkDict** dictionaries, in
 	_tmp3_ = self->priv->handlers;
 	_tmp4_ = skk_none_state_handler_new ();
 	_tmp5_ = _tmp4_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp3_, GINT_TO_POINTER (SKK_TYPE_NONE_STATE_HANDLER), (SkkStateHandler*) _tmp5_);
+	gee_map_set (_tmp3_, GINT_TO_POINTER (SKK_TYPE_NONE_STATE_HANDLER), (SkkStateHandler*) _tmp5_);
 	_g_object_unref0 (_tmp5_);
 	_tmp6_ = self->priv->handlers;
 	_tmp7_ = skk_start_state_handler_new ();
 	_tmp8_ = _tmp7_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp6_, GINT_TO_POINTER (SKK_TYPE_START_STATE_HANDLER), (SkkStateHandler*) _tmp8_);
+	gee_map_set (_tmp6_, GINT_TO_POINTER (SKK_TYPE_START_STATE_HANDLER), (SkkStateHandler*) _tmp8_);
 	_g_object_unref0 (_tmp8_);
 	_tmp9_ = self->priv->handlers;
 	_tmp10_ = skk_select_state_handler_new ();
 	_tmp11_ = _tmp10_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp9_, GINT_TO_POINTER (SKK_TYPE_SELECT_STATE_HANDLER), (SkkStateHandler*) _tmp11_);
+	gee_map_set (_tmp9_, GINT_TO_POINTER (SKK_TYPE_SELECT_STATE_HANDLER), (SkkStateHandler*) _tmp11_);
 	_g_object_unref0 (_tmp11_);
 	_tmp12_ = self->priv->handlers;
 	_tmp13_ = skk_abbrev_state_handler_new ();
 	_tmp14_ = _tmp13_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp12_, GINT_TO_POINTER (SKK_TYPE_ABBREV_STATE_HANDLER), (SkkStateHandler*) _tmp14_);
+	gee_map_set (_tmp12_, GINT_TO_POINTER (SKK_TYPE_ABBREV_STATE_HANDLER), (SkkStateHandler*) _tmp14_);
 	_g_object_unref0 (_tmp14_);
 	_tmp15_ = self->priv->handlers;
 	_tmp16_ = skk_kuten_state_handler_new ();
 	_tmp17_ = _tmp16_;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp15_, GINT_TO_POINTER (SKK_TYPE_KUTEN_STATE_HANDLER), (SkkStateHandler*) _tmp17_);
+	gee_map_set (_tmp15_, GINT_TO_POINTER (SKK_TYPE_KUTEN_STATE_HANDLER), (SkkStateHandler*) _tmp17_);
 	_g_object_unref0 (_tmp17_);
 	_tmp18_ = self->priv->_dictionaries;
 	_tmp19_ = skk_state_new (_tmp18_);
-	self->priv->state_stack = g_slist_prepend (self->priv->state_stack, _tmp19_);
-	_tmp20_ = self->priv->state_stack;
-	_tmp21_ = _tmp20_->data;
-	skk_context_connect_state_signals (self, (SkkState*) _tmp21_);
-	_tmp22_ = self->priv->state_stack;
-	_tmp23_ = _tmp22_->data;
-	_tmp24_ = ((SkkState*) _tmp23_)->candidates;
-	_tmp25_ = skk_proxy_candidate_list_new (_tmp24_);
+	state = _tmp19_;
+	_tmp20_ = state->candidates;
+	_tmp21_ = skk_proxy_candidate_list_new (_tmp20_);
 	_g_object_unref0 (self->priv->_candidates);
-	self->priv->_candidates = (SkkCandidateList*) _tmp25_;
-	_tmp26_ = self->priv->_candidates;
-	g_signal_connect_object ((GObject*) _tmp26_, "notify::cursor-pos", (GCallback) ___lambda3__g_object_notify, self, 0);
-	_tmp27_ = self->priv->_candidates;
-	g_signal_connect_object (_tmp27_, "selected", (GCallback) ___lambda4__skk_candidate_list_selected, self, 0);
+	self->priv->_candidates = (SkkCandidateList*) _tmp21_;
+	skk_context_push_state (self, state);
+	_tmp22_ = self->priv->_candidates;
+	g_signal_connect_object ((GObject*) _tmp22_, "notify::cursor-pos", (GCallback) ___lambda3__g_object_notify, self, 0);
+	_tmp23_ = self->priv->_candidates;
+	g_signal_connect_object (_tmp23_, "selected", (GCallback) ___lambda4__skk_candidate_list_selected, self, 0);
+	_g_object_unref0 (state);
 	return self;
 }
 
@@ -900,32 +885,145 @@ static gboolean skk_context_select_candidate_in_dictionaries (SkkContext* self, 
 
 static guint skk_context_dict_edit_level (SkkContext* self) {
 	guint result = 0U;
-	GSList* _tmp0_;
-	guint _tmp1_ = 0U;
+	GeeLinkedList* _tmp0_;
+	gint _tmp1_;
+	gint _tmp2_;
 	g_return_val_if_fail (self != NULL, 0U);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = g_slist_length (_tmp0_);
-	result = _tmp1_ - 1;
+	_tmp1_ = gee_collection_get_size ((GeeCollection*) _tmp0_);
+	_tmp2_ = _tmp1_;
+	result = (guint) (_tmp2_ - 1);
 	return result;
 }
 
 
+static void skk_context_push_state (SkkContext* self, SkkState* state) {
+	GeeLinkedList* _tmp0_;
+	gboolean _tmp1_;
+	gboolean _tmp2_;
+	GeeLinkedList* _tmp6_;
+	SkkState* _tmp7_;
+	SkkState* _tmp8_;
+	SkkCandidateList* _tmp9_;
+	SkkProxyCandidateList* _tmp10_;
+	SkkProxyCandidateList* pcandidates;
+	SkkProxyCandidateList* _tmp11_;
+	SkkCandidateList* _tmp12_;
+	SkkCandidateList* _tmp13_;
+	SkkState* _tmp14_;
+	SkkCandidateList* _tmp15_;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (state != NULL);
+	_tmp0_ = self->priv->state_stack;
+	_tmp1_ = gee_abstract_collection_get_is_empty ((GeeAbstractCollection*) _tmp0_);
+	_tmp2_ = _tmp1_;
+	if (!_tmp2_) {
+		GeeLinkedList* _tmp3_;
+		gpointer _tmp4_ = NULL;
+		SkkState* _tmp5_;
+		_tmp3_ = self->priv->state_stack;
+		_tmp4_ = gee_deque_peek_head ((GeeDeque*) _tmp3_);
+		_tmp5_ = (SkkState*) _tmp4_;
+		skk_context_disconnect_state_signals (self, _tmp5_);
+		_g_object_unref0 (_tmp5_);
+	}
+	_tmp6_ = self->priv->state_stack;
+	_tmp7_ = state;
+	gee_deque_offer_head ((GeeDeque*) _tmp6_, _tmp7_);
+	_tmp8_ = state;
+	skk_context_connect_state_signals (self, _tmp8_);
+	_tmp9_ = self->priv->_candidates;
+	_tmp10_ = _g_object_ref0 (SKK_PROXY_CANDIDATE_LIST (_tmp9_));
+	pcandidates = _tmp10_;
+	_tmp11_ = pcandidates;
+	_tmp12_ = skk_proxy_candidate_list_get_candidates (_tmp11_);
+	_tmp13_ = _tmp12_;
+	_tmp14_ = state;
+	_tmp15_ = _tmp14_->candidates;
+	if (_tmp13_ != _tmp15_) {
+		SkkProxyCandidateList* _tmp16_;
+		SkkState* _tmp17_;
+		SkkCandidateList* _tmp18_;
+		_tmp16_ = pcandidates;
+		_tmp17_ = state;
+		_tmp18_ = _tmp17_->candidates;
+		skk_proxy_candidate_list_set_candidates (_tmp16_, _tmp18_);
+	}
+	_g_object_unref0 (pcandidates);
+}
+
+
+static void skk_context_pop_state (SkkContext* self) {
+	GeeLinkedList* _tmp0_;
+	gboolean _tmp1_;
+	gboolean _tmp2_;
+	GeeLinkedList* _tmp3_;
+	gpointer _tmp4_ = NULL;
+	SkkState* _tmp5_;
+	GeeLinkedList* _tmp6_;
+	gboolean _tmp7_;
+	gboolean _tmp8_;
+	g_return_if_fail (self != NULL);
+	_tmp0_ = self->priv->state_stack;
+	_tmp1_ = gee_abstract_collection_get_is_empty ((GeeAbstractCollection*) _tmp0_);
+	_tmp2_ = _tmp1_;
+	g_assert (!_tmp2_);
+	_tmp3_ = self->priv->state_stack;
+	_tmp4_ = gee_deque_poll_head ((GeeDeque*) _tmp3_);
+	_tmp5_ = (SkkState*) _tmp4_;
+	skk_context_disconnect_state_signals (self, _tmp5_);
+	_g_object_unref0 (_tmp5_);
+	_tmp6_ = self->priv->state_stack;
+	_tmp7_ = gee_abstract_collection_get_is_empty ((GeeAbstractCollection*) _tmp6_);
+	_tmp8_ = _tmp7_;
+	if (!_tmp8_) {
+		GeeLinkedList* _tmp9_;
+		gpointer _tmp10_ = NULL;
+		SkkState* state;
+		SkkState* _tmp11_;
+		SkkCandidateList* _tmp12_;
+		SkkProxyCandidateList* _tmp13_;
+		SkkProxyCandidateList* pcandidates;
+		SkkProxyCandidateList* _tmp14_;
+		SkkCandidateList* _tmp15_;
+		SkkCandidateList* _tmp16_;
+		SkkState* _tmp17_;
+		SkkCandidateList* _tmp18_;
+		_tmp9_ = self->priv->state_stack;
+		_tmp10_ = gee_deque_peek_head ((GeeDeque*) _tmp9_);
+		state = (SkkState*) _tmp10_;
+		_tmp11_ = state;
+		skk_context_connect_state_signals (self, _tmp11_);
+		_tmp12_ = self->priv->_candidates;
+		_tmp13_ = _g_object_ref0 (SKK_PROXY_CANDIDATE_LIST (_tmp12_));
+		pcandidates = _tmp13_;
+		_tmp14_ = pcandidates;
+		_tmp15_ = skk_proxy_candidate_list_get_candidates (_tmp14_);
+		_tmp16_ = _tmp15_;
+		_tmp17_ = state;
+		_tmp18_ = _tmp17_->candidates;
+		if (_tmp16_ != _tmp18_) {
+			SkkProxyCandidateList* _tmp19_;
+			SkkState* _tmp20_;
+			SkkCandidateList* _tmp21_;
+			_tmp19_ = pcandidates;
+			_tmp20_ = state;
+			_tmp21_ = _tmp20_->candidates;
+			skk_proxy_candidate_list_set_candidates (_tmp19_, _tmp21_);
+		}
+		_g_object_unref0 (pcandidates);
+		_g_object_unref0 (state);
+	}
+}
+
+
 static void skk_context_start_dict_edit (SkkContext* self, const gchar* midasi, gboolean okuri) {
-	GeeArrayList* _tmp0_;
+	GeeList* _tmp0_;
 	SkkState* _tmp1_;
 	SkkState* state;
 	const gchar* _tmp2_;
 	gchar* _tmp3_;
 	gboolean _tmp4_;
-	GSList* _tmp5_;
-	gconstpointer _tmp6_;
-	SkkState* _tmp7_;
-	GSList* _tmp8_;
-	gconstpointer _tmp9_;
-	SkkCandidateList* _tmp10_;
-	GSList* _tmp11_;
-	gconstpointer _tmp12_;
-	SkkCandidateList* _tmp13_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (midasi != NULL);
 	_tmp0_ = self->priv->_dictionaries;
@@ -937,20 +1035,8 @@ static void skk_context_start_dict_edit (SkkContext* self, const gchar* midasi, 
 	state->midasi = _tmp3_;
 	_tmp4_ = okuri;
 	state->okuri = _tmp4_;
-	_tmp5_ = self->priv->state_stack;
-	_tmp6_ = _tmp5_->data;
-	skk_context_disconnect_state_signals (self, (SkkState*) _tmp6_);
-	_tmp7_ = _g_object_ref0 (state);
-	self->priv->state_stack = g_slist_prepend (self->priv->state_stack, _tmp7_);
-	_tmp8_ = self->priv->state_stack;
-	_tmp9_ = _tmp8_->data;
-	skk_context_connect_state_signals (self, (SkkState*) _tmp9_);
+	skk_context_push_state (self, state);
 	skk_context_update_preedit (self);
-	_tmp10_ = self->priv->_candidates;
-	_tmp11_ = self->priv->state_stack;
-	_tmp12_ = _tmp11_->data;
-	_tmp13_ = ((SkkState*) _tmp12_)->candidates;
-	skk_proxy_candidate_list_set_candidates (SKK_PROXY_CANDIDATE_LIST (_tmp10_), _tmp13_);
 	_g_object_unref0 (state);
 }
 
@@ -978,10 +1064,11 @@ static gboolean skk_context_end_dict_edit (SkkContext* self, const gchar* text) 
 		SkkCandidate* candidate;
 		SkkCandidate* _tmp7_;
 		gboolean _tmp8_ = FALSE;
-		GSList* _tmp11_;
-		gconstpointer _tmp12_;
-		GSList* _tmp13_;
-		gconstpointer _tmp14_;
+		GeeLinkedList* _tmp11_;
+		gpointer _tmp12_ = NULL;
+		SkkState* state;
+		SkkState* _tmp13_;
+		SkkState* _tmp14_;
 		GString* _tmp15_;
 		const gchar* _tmp16_;
 		_tmp3_ = midasi;
@@ -995,11 +1082,11 @@ static gboolean skk_context_end_dict_edit (SkkContext* self, const gchar* text) 
 			{
 				skk_context_save_dictionaries (self, &_inner_error_);
 				if (_inner_error_ != NULL) {
-					goto __catch33_g_error;
+					goto __catch34_g_error;
 				}
 			}
-			goto __finally33;
-			__catch33_g_error:
+			goto __finally34;
+			__catch34_g_error:
 			{
 				GError* e = NULL;
 				GError* _tmp9_;
@@ -1008,10 +1095,10 @@ static gboolean skk_context_end_dict_edit (SkkContext* self, const gchar* text) 
 				_inner_error_ = NULL;
 				_tmp9_ = e;
 				_tmp10_ = _tmp9_->message;
-				g_warning ("context.vala:343: error saving dictionaries %s", _tmp10_);
+				g_warning ("context.vala:369: error saving dictionaries %s", _tmp10_);
 				_g_error_free0 (e);
 			}
-			__finally33:
+			__finally34:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (candidate);
 				_g_free0 (okuri);
@@ -1022,15 +1109,17 @@ static gboolean skk_context_end_dict_edit (SkkContext* self, const gchar* text) 
 			}
 		}
 		_tmp11_ = self->priv->state_stack;
-		_tmp12_ = _tmp11_->data;
-		skk_state_reset ((SkkState*) _tmp12_);
-		_tmp13_ = self->priv->state_stack;
-		_tmp14_ = _tmp13_->data;
-		_tmp15_ = ((SkkState*) _tmp14_)->output;
+		_tmp12_ = gee_deque_peek_head ((GeeDeque*) _tmp11_);
+		state = (SkkState*) _tmp12_;
+		_tmp13_ = state;
+		skk_state_reset (_tmp13_);
+		_tmp14_ = state;
+		_tmp15_ = _tmp14_->output;
 		_tmp16_ = text;
 		g_string_assign (_tmp15_, _tmp16_);
 		skk_context_update_preedit (self);
 		result = TRUE;
+		_g_object_unref0 (state);
 		_g_object_unref0 (candidate);
 		_g_free0 (okuri);
 		_g_free0 (midasi);
@@ -1061,59 +1150,45 @@ static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, g
 	gboolean* _vala_okuri = FALSE;
 	gboolean result = FALSE;
 	guint _tmp0_ = 0U;
-	gboolean _tmp20_;
-	gboolean* _tmp21_;
+	gboolean _tmp12_;
+	gboolean* _tmp13_;
 	g_return_val_if_fail (self != NULL, FALSE);
 	_tmp0_ = skk_context_dict_edit_level (self);
 	if (_tmp0_ > ((guint) 0)) {
-		GSList* _tmp1_;
-		gconstpointer _tmp2_;
-		const gchar* _tmp3_;
-		gchar* _tmp4_;
-		GSList* _tmp5_;
-		gconstpointer _tmp6_;
+		GeeLinkedList* _tmp1_;
+		gpointer _tmp2_ = NULL;
+		SkkState* state;
+		SkkState* _tmp3_;
+		const gchar* _tmp4_;
+		gchar* _tmp5_;
+		SkkState* _tmp6_;
 		gboolean _tmp7_;
 		gboolean* _tmp8_;
-		GSList* _tmp9_;
-		gconstpointer _tmp10_;
-		GSList* _tmp11_;
-		GSList* _tmp12_;
-		gconstpointer _tmp13_;
-		GSList* _tmp14_;
-		gconstpointer _tmp15_;
-		SkkCandidateList* _tmp16_;
-		GSList* _tmp17_;
-		gconstpointer _tmp18_;
-		SkkCandidateList* _tmp19_;
+		GeeLinkedList* _tmp9_;
+		gpointer _tmp10_ = NULL;
+		SkkState* _tmp11_;
 		_tmp1_ = self->priv->state_stack;
-		_tmp2_ = _tmp1_->data;
-		_tmp3_ = ((SkkState*) _tmp2_)->midasi;
-		_tmp4_ = g_strdup (_tmp3_);
+		_tmp2_ = gee_deque_peek_head ((GeeDeque*) _tmp1_);
+		state = (SkkState*) _tmp2_;
+		_tmp3_ = state;
+		_tmp4_ = _tmp3_->midasi;
+		_tmp5_ = g_strdup (_tmp4_);
 		_g_free0 (_vala_midasi);
-		_vala_midasi = _tmp4_;
-		_tmp5_ = self->priv->state_stack;
-		_tmp6_ = _tmp5_->data;
-		_tmp7_ = ((SkkState*) _tmp6_)->okuri;
+		_vala_midasi = _tmp5_;
+		_tmp6_ = state;
+		_tmp7_ = _tmp6_->okuri;
 		_tmp8_ = __bool_dup0 (&_tmp7_);
 		_g_free0 (_vala_okuri);
 		_vala_okuri = _tmp8_;
+		skk_context_pop_state (self);
 		_tmp9_ = self->priv->state_stack;
-		_tmp10_ = _tmp9_->data;
-		skk_context_disconnect_state_signals (self, (SkkState*) _tmp10_);
-		_tmp11_ = self->priv->state_stack;
-		self->priv->state_stack = g_slist_delete_link (self->priv->state_stack, _tmp11_);
-		_tmp12_ = self->priv->state_stack;
-		_tmp13_ = _tmp12_->data;
-		skk_context_connect_state_signals (self, (SkkState*) _tmp13_);
-		_tmp14_ = self->priv->state_stack;
-		_tmp15_ = _tmp14_->data;
-		skk_state_cancel_okuri ((SkkState*) _tmp15_);
-		_tmp16_ = self->priv->_candidates;
-		_tmp17_ = self->priv->state_stack;
-		_tmp18_ = _tmp17_->data;
-		_tmp19_ = ((SkkState*) _tmp18_)->candidates;
-		skk_proxy_candidate_list_set_candidates (SKK_PROXY_CANDIDATE_LIST (_tmp16_), _tmp19_);
+		_tmp10_ = gee_deque_peek_head ((GeeDeque*) _tmp9_);
+		_g_object_unref0 (state);
+		state = (SkkState*) _tmp10_;
+		_tmp11_ = state;
+		skk_state_cancel_okuri (_tmp11_);
 		result = TRUE;
+		_g_object_unref0 (state);
 		if (midasi) {
 			*midasi = _vala_midasi;
 		} else {
@@ -1128,10 +1203,10 @@ static gboolean skk_context_leave_dict_edit (SkkContext* self, gchar** midasi, g
 	}
 	_g_free0 (_vala_midasi);
 	_vala_midasi = NULL;
-	_tmp20_ = FALSE;
-	_tmp21_ = __bool_dup0 (&_tmp20_);
+	_tmp12_ = FALSE;
+	_tmp13_ = __bool_dup0 (&_tmp12_);
 	_g_free0 (_vala_okuri);
-	_vala_okuri = _tmp21_;
+	_vala_okuri = _tmp13_;
 	result = FALSE;
 	if (midasi) {
 		*midasi = _vala_midasi;
@@ -1221,7 +1296,7 @@ static gboolean string_get_next_char (const gchar* self, gint* index, gunichar* 
 gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) {
 	gboolean result = FALSE;
 	GeeArrayList* _tmp0_;
-	GeeArrayList* keys;
+	GeeList* keys;
 	GString* _tmp1_;
 	GString* builder;
 	gboolean complex;
@@ -1235,7 +1310,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 	g_return_val_if_fail (self != NULL, FALSE);
 	g_return_val_if_fail (keyseq != NULL, FALSE);
 	_tmp0_ = gee_array_list_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, NULL);
-	keys = _tmp0_;
+	keys = (GeeList*) _tmp0_;
 	_tmp1_ = g_string_new ("");
 	builder = _tmp1_;
 	complex = FALSE;
@@ -1277,7 +1352,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 				gunichar _tmp11_;
 				_tmp9_ = complex;
 				if (_tmp9_) {
-					g_warning ("context.vala:409: bare '(' is not allowed in complex keyseq");
+					g_warning ("context.vala:434: bare '(' is not allowed in complex keyseq");
 					result = FALSE;
 					_g_string_free0 (builder);
 					_g_object_unref0 (keys);
@@ -1294,13 +1369,13 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 				gboolean _tmp12_;
 				GString* _tmp13_;
 				gunichar _tmp14_;
-				GeeArrayList* _tmp15_;
+				GeeList* _tmp15_;
 				GString* _tmp16_;
 				const gchar* _tmp17_;
 				GString* _tmp18_;
 				_tmp12_ = complex;
 				if (!_tmp12_) {
-					g_warning ("context.vala:417: bare ')' is not allowed in simple keyseq");
+					g_warning ("context.vala:442: bare ')' is not allowed in simple keyseq");
 					result = FALSE;
 					_g_string_free0 (builder);
 					_g_object_unref0 (keys);
@@ -1313,7 +1388,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 				_tmp15_ = keys;
 				_tmp16_ = builder;
 				_tmp17_ = _tmp16_->str;
-				gee_abstract_collection_add ((GeeAbstractCollection*) _tmp15_, _tmp17_);
+				gee_collection_add ((GeeCollection*) _tmp15_, _tmp17_);
 				_tmp18_ = builder;
 				g_string_erase (_tmp18_, (gssize) 0, (gssize) (-1));
 				break;
@@ -1334,14 +1409,14 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 					_tmp22_ = builder;
 					_tmp23_ = _tmp22_->len;
 					if (_tmp23_ > ((gssize) 0)) {
-						GeeArrayList* _tmp24_;
+						GeeList* _tmp24_;
 						GString* _tmp25_;
 						const gchar* _tmp26_;
 						GString* _tmp27_;
 						_tmp24_ = keys;
 						_tmp25_ = builder;
 						_tmp26_ = _tmp25_->str;
-						gee_abstract_collection_add ((GeeAbstractCollection*) _tmp24_, _tmp26_);
+						gee_collection_add ((GeeCollection*) _tmp24_, _tmp26_);
 						_tmp27_ = builder;
 						g_string_erase (_tmp27_, (gssize) 0, (gssize) (-1));
 					}
@@ -1361,7 +1436,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 	}
 	_tmp30_ = complex;
 	if (_tmp30_) {
-		g_warning ("context.vala:440: premature end of key events");
+		g_warning ("context.vala:465: premature end of key events");
 		result = FALSE;
 		_g_string_free0 (builder);
 		_g_object_unref0 (keys);
@@ -1370,20 +1445,20 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 	_tmp31_ = builder;
 	_tmp32_ = _tmp31_->len;
 	if (_tmp32_ > ((gssize) 0)) {
-		GeeArrayList* _tmp33_;
+		GeeList* _tmp33_;
 		GString* _tmp34_;
 		const gchar* _tmp35_;
 		_tmp33_ = keys;
 		_tmp34_ = builder;
 		_tmp35_ = _tmp34_->str;
-		gee_abstract_collection_add ((GeeAbstractCollection*) _tmp33_, _tmp35_);
+		gee_collection_add ((GeeCollection*) _tmp33_, _tmp35_);
 	}
 	retval = FALSE;
 	{
-		GeeArrayList* _tmp36_;
-		GeeArrayList* _tmp37_;
-		GeeArrayList* _key_list;
-		GeeArrayList* _tmp38_;
+		GeeList* _tmp36_;
+		GeeList* _tmp37_;
+		GeeList* _key_list;
+		GeeList* _tmp38_;
 		gint _tmp39_;
 		gint _tmp40_;
 		gint _key_size;
@@ -1400,7 +1475,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 			gint _tmp41_;
 			gint _tmp42_;
 			gint _tmp43_;
-			GeeArrayList* _tmp44_;
+			GeeList* _tmp44_;
 			gint _tmp45_;
 			gpointer _tmp46_ = NULL;
 			gchar* key;
@@ -1421,7 +1496,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 			}
 			_tmp44_ = _key_list;
 			_tmp45_ = _key_index;
-			_tmp46_ = gee_abstract_list_get ((GeeAbstractList*) _tmp44_, _tmp45_);
+			_tmp46_ = gee_list_get (_tmp44_, _tmp45_);
 			key = (gchar*) _tmp46_;
 			_tmp47_ = key;
 			if (g_strcmp0 (_tmp47_, "SPC") == 0) {
@@ -1473,7 +1548,7 @@ gboolean skk_context_process_key_events (SkkContext* self, const gchar* keyseq) 
 			if (_tmp61_) {
 				retval = TRUE;
 			}
-			_skk_key_event_unref0 (ev);
+			_g_object_unref0 (ev);
 			_g_free0 (key);
 		}
 		_g_object_unref0 (_key_list);
@@ -1517,13 +1592,13 @@ gboolean skk_context_process_key_event (SkkContext* self, SkkKeyEvent* key) {
 	_tmp6_ = _key;
 	if (_tmp6_ == NULL) {
 		result = TRUE;
-		_skk_key_event_unref0 (_key);
+		_g_object_unref0 (_key);
 		return result;
 	}
 	_tmp7_ = _key;
 	_tmp8_ = skk_context_process_key_event_internal (self, _tmp7_);
 	result = _tmp8_;
-	_skk_key_event_unref0 (_key);
+	_g_object_unref0 (_key);
 	return result;
 }
 
@@ -1533,9 +1608,8 @@ static gboolean skk_context_process_key_event_internal (SkkContext* self, SkkKey
 	SkkKeyEvent* _tmp0_;
 	SkkKeyEvent* _tmp1_ = NULL;
 	SkkKeyEvent* _key;
-	GSList* _tmp2_;
-	gconstpointer _tmp3_;
-	SkkState* _tmp4_;
+	GeeLinkedList* _tmp2_;
+	gpointer _tmp3_ = NULL;
 	SkkState* state;
 	g_return_val_if_fail (self != NULL, FALSE);
 	g_return_val_if_fail (key != NULL, FALSE);
@@ -1543,57 +1617,56 @@ static gboolean skk_context_process_key_event_internal (SkkContext* self, SkkKey
 	_tmp1_ = skk_key_event_copy (_tmp0_);
 	_key = _tmp1_;
 	_tmp2_ = self->priv->state_stack;
-	_tmp3_ = _tmp2_->data;
-	_tmp4_ = _g_object_ref0 ((SkkState*) _tmp3_);
-	state = _tmp4_;
+	_tmp3_ = gee_deque_peek_head ((GeeDeque*) _tmp2_);
+	state = (SkkState*) _tmp3_;
 	while (TRUE) {
-		SkkState* _tmp5_;
-		GType _tmp6_;
+		SkkState* _tmp4_;
+		GType _tmp5_;
 		GType handler_type;
-		GeeHashMap* _tmp7_;
-		GType _tmp8_;
-		gpointer _tmp9_ = NULL;
+		GeeMap* _tmp6_;
+		GType _tmp7_;
+		gpointer _tmp8_ = NULL;
 		SkkStateHandler* handler;
-		SkkStateHandler* _tmp10_;
-		SkkState* _tmp11_;
-		gboolean _tmp12_ = FALSE;
-		GType _tmp13_;
-		SkkState* _tmp14_;
-		GType _tmp15_;
-		_tmp5_ = state;
-		_tmp6_ = _tmp5_->handler_type;
-		handler_type = _tmp6_;
-		_tmp7_ = self->priv->handlers;
-		_tmp8_ = handler_type;
-		_tmp9_ = gee_abstract_map_get ((GeeAbstractMap*) _tmp7_, GINT_TO_POINTER (_tmp8_));
-		handler = (SkkStateHandler*) _tmp9_;
-		_tmp10_ = handler;
-		_tmp11_ = state;
-		_tmp12_ = skk_state_handler_process_key_event (_tmp10_, _tmp11_, &_key);
-		if (_tmp12_) {
+		SkkStateHandler* _tmp9_;
+		SkkState* _tmp10_;
+		gboolean _tmp11_ = FALSE;
+		GType _tmp12_;
+		SkkState* _tmp13_;
+		GType _tmp14_;
+		_tmp4_ = state;
+		_tmp5_ = _tmp4_->handler_type;
+		handler_type = _tmp5_;
+		_tmp6_ = self->priv->handlers;
+		_tmp7_ = handler_type;
+		_tmp8_ = gee_map_get (_tmp6_, GINT_TO_POINTER (_tmp7_));
+		handler = (SkkStateHandler*) _tmp8_;
+		_tmp9_ = handler;
+		_tmp10_ = state;
+		_tmp11_ = skk_state_handler_process_key_event (_tmp9_, _tmp10_, &_key);
+		if (_tmp11_) {
 			skk_context_update_preedit (self);
 			result = TRUE;
 			_g_object_unref0 (handler);
 			_g_object_unref0 (state);
-			_skk_key_event_unref0 (_key);
+			_g_object_unref0 (_key);
 			return result;
 		}
-		_tmp13_ = handler_type;
-		_tmp14_ = state;
-		_tmp15_ = _tmp14_->handler_type;
-		if (_tmp13_ == _tmp15_) {
-			guint _tmp16_ = 0U;
-			_tmp16_ = skk_context_dict_edit_level (self);
-			result = _tmp16_ > ((guint) 0);
+		_tmp12_ = handler_type;
+		_tmp13_ = state;
+		_tmp14_ = _tmp13_->handler_type;
+		if (_tmp12_ == _tmp14_) {
+			guint _tmp15_ = 0U;
+			_tmp15_ = skk_context_dict_edit_level (self);
+			result = _tmp15_ > ((guint) 0);
 			_g_object_unref0 (handler);
 			_g_object_unref0 (state);
-			_skk_key_event_unref0 (_key);
+			_g_object_unref0 (_key);
 			return result;
 		}
 		_g_object_unref0 (handler);
 	}
 	_g_object_unref0 (state);
-	_skk_key_event_unref0 (_key);
+	_g_object_unref0 (_key);
 }
 
 
@@ -1601,51 +1674,37 @@ static gboolean skk_context_process_key_event_internal (SkkContext* self, SkkKey
          * Reset the context.
          */
 void skk_context_reset (SkkContext* self) {
-	GSList* _tmp8_;
-	gconstpointer _tmp9_;
-	GSList* _tmp10_;
-	gconstpointer _tmp11_;
-	SkkCandidateList* _tmp12_;
-	GSList* _tmp13_;
-	gconstpointer _tmp14_;
-	SkkCandidateList* _tmp15_;
+	GeeLinkedList* _tmp4_;
+	gpointer _tmp5_ = NULL;
+	SkkState* state;
+	SkkCandidateList* _tmp6_;
+	SkkCandidateList* _tmp7_;
 	g_return_if_fail (self != NULL);
 	while (TRUE) {
 		guint _tmp0_ = 0U;
-		GSList* _tmp1_;
-		gconstpointer _tmp2_;
-		GSList* _tmp3_;
-		GSList* _tmp4_;
-		gconstpointer _tmp5_;
-		GSList* _tmp6_;
-		gconstpointer _tmp7_;
+		GeeLinkedList* _tmp1_;
+		gpointer _tmp2_ = NULL;
+		SkkState* _tmp3_;
 		_tmp0_ = skk_context_dict_edit_level (self);
 		if (!(_tmp0_ > ((guint) 0))) {
 			break;
 		}
+		skk_context_pop_state (self);
 		_tmp1_ = self->priv->state_stack;
-		_tmp2_ = _tmp1_->data;
-		skk_context_disconnect_state_signals (self, (SkkState*) _tmp2_);
-		_tmp3_ = self->priv->state_stack;
-		self->priv->state_stack = g_slist_delete_link (self->priv->state_stack, _tmp3_);
-		_tmp4_ = self->priv->state_stack;
-		_tmp5_ = _tmp4_->data;
-		skk_context_connect_state_signals (self, (SkkState*) _tmp5_);
-		_tmp6_ = self->priv->state_stack;
-		_tmp7_ = _tmp6_->data;
-		skk_state_cancel_okuri ((SkkState*) _tmp7_);
+		_tmp2_ = gee_deque_peek_head ((GeeDeque*) _tmp1_);
+		_tmp3_ = (SkkState*) _tmp2_;
+		skk_state_cancel_okuri (_tmp3_);
+		_g_object_unref0 (_tmp3_);
 	}
-	_tmp8_ = self->priv->state_stack;
-	_tmp9_ = _tmp8_->data;
-	skk_state_output_surrounding_text ((SkkState*) _tmp9_);
-	_tmp10_ = self->priv->state_stack;
-	_tmp11_ = _tmp10_->data;
-	skk_state_reset ((SkkState*) _tmp11_);
-	_tmp12_ = self->priv->_candidates;
-	_tmp13_ = self->priv->state_stack;
-	_tmp14_ = _tmp13_->data;
-	_tmp15_ = ((SkkState*) _tmp14_)->candidates;
-	skk_proxy_candidate_list_set_candidates (SKK_PROXY_CANDIDATE_LIST (_tmp12_), _tmp15_);
+	_tmp4_ = self->priv->state_stack;
+	_tmp5_ = gee_deque_peek_head ((GeeDeque*) _tmp4_);
+	state = (SkkState*) _tmp5_;
+	skk_state_output_surrounding_text (state);
+	skk_state_reset (state);
+	_tmp6_ = self->priv->_candidates;
+	_tmp7_ = state->candidates;
+	skk_proxy_candidate_list_set_candidates (SKK_PROXY_CANDIDATE_LIST (_tmp6_), _tmp7_);
+	_g_object_unref0 (state);
 }
 
 
@@ -1667,51 +1726,49 @@ gchar* skk_context_get_output (SkkContext* self) {
 
 static gchar* skk_context_retrieve_output (SkkContext* self, gboolean clear) {
 	gchar* result = NULL;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkState* _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
 	SkkState* state;
-	GeeHashMap* _tmp3_;
-	SkkState* _tmp4_;
-	GType _tmp5_;
-	gpointer _tmp6_ = NULL;
+	GeeMap* _tmp2_;
+	SkkState* _tmp3_;
+	GType _tmp4_;
+	gpointer _tmp5_ = NULL;
 	SkkStateHandler* handler;
-	guint _tmp7_ = 0U;
+	guint _tmp6_ = 0U;
 	g_return_val_if_fail (self != NULL, NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = _g_object_ref0 ((SkkState*) _tmp1_);
-	state = _tmp2_;
-	_tmp3_ = self->priv->handlers;
-	_tmp4_ = state;
-	_tmp5_ = _tmp4_->handler_type;
-	_tmp6_ = gee_abstract_map_get ((GeeAbstractMap*) _tmp3_, GINT_TO_POINTER (_tmp5_));
-	handler = (SkkStateHandler*) _tmp6_;
-	_tmp7_ = skk_context_dict_edit_level (self);
-	if (_tmp7_ > ((guint) 0)) {
-		gchar* _tmp8_;
-		_tmp8_ = g_strdup ("");
-		result = _tmp8_;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	state = (SkkState*) _tmp1_;
+	_tmp2_ = self->priv->handlers;
+	_tmp3_ = state;
+	_tmp4_ = _tmp3_->handler_type;
+	_tmp5_ = gee_map_get (_tmp2_, GINT_TO_POINTER (_tmp4_));
+	handler = (SkkStateHandler*) _tmp5_;
+	_tmp6_ = skk_context_dict_edit_level (self);
+	if (_tmp6_ > ((guint) 0)) {
+		gchar* _tmp7_;
+		_tmp7_ = g_strdup ("");
+		result = _tmp7_;
 		_g_object_unref0 (handler);
 		_g_object_unref0 (state);
 		return result;
 	} else {
-		SkkStateHandler* _tmp9_;
-		SkkState* _tmp10_;
-		gchar* _tmp11_ = NULL;
+		SkkStateHandler* _tmp8_;
+		SkkState* _tmp9_;
+		gchar* _tmp10_ = NULL;
 		gchar* output;
-		gboolean _tmp12_;
-		_tmp9_ = handler;
-		_tmp10_ = state;
-		_tmp11_ = skk_state_handler_get_output (_tmp9_, _tmp10_);
-		output = _tmp11_;
-		_tmp12_ = clear;
-		if (_tmp12_) {
-			SkkState* _tmp13_;
-			GString* _tmp14_;
-			_tmp13_ = state;
-			_tmp14_ = _tmp13_->output;
-			g_string_erase (_tmp14_, (gssize) 0, (gssize) (-1));
+		gboolean _tmp11_;
+		_tmp8_ = handler;
+		_tmp9_ = state;
+		_tmp10_ = skk_state_handler_get_output (_tmp8_, _tmp9_);
+		output = _tmp10_;
+		_tmp11_ = clear;
+		if (_tmp11_) {
+			SkkState* _tmp12_;
+			GString* _tmp13_;
+			_tmp12_ = state;
+			_tmp13_ = _tmp12_->output;
+			g_string_erase (_tmp13_, (gssize) 0, (gssize) (-1));
 		}
 		result = output;
 		_g_object_unref0 (handler);
@@ -1761,208 +1818,207 @@ gchar* skk_context_poll_output (SkkContext* self) {
          * @since 0.0.6
          */
 void skk_context_clear_output (SkkContext* self) {
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	GString* _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
+	GString* _tmp3_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = ((SkkState*) _tmp1_)->output;
-	g_string_erase (_tmp2_, (gssize) 0, (gssize) (-1));
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = _tmp2_->output;
+	g_string_erase (_tmp3_, (gssize) 0, (gssize) (-1));
+	_g_object_unref0 (_tmp2_);
 }
 
 
 static void skk_context_update_preedit (SkkContext* self) {
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkState* _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
 	SkkState* state;
-	GeeHashMap* _tmp3_;
-	SkkState* _tmp4_;
-	GType _tmp5_;
-	gpointer _tmp6_ = NULL;
+	GeeMap* _tmp2_;
+	SkkState* _tmp3_;
+	GType _tmp4_;
+	gpointer _tmp5_ = NULL;
 	SkkStateHandler* handler;
-	GString* _tmp7_;
+	GString* _tmp6_;
 	GString* builder;
-	guint _tmp8_ = 0U;
+	guint _tmp7_ = 0U;
 	guint offset = 0U;
 	guint nchars = 0U;
-	GString* _tmp35_;
-	SkkStateHandler* _tmp36_;
-	SkkState* _tmp37_;
-	guint _tmp38_ = 0U;
-	guint _tmp39_ = 0U;
-	gchar* _tmp40_ = NULL;
-	gchar* _tmp41_;
-	guint _tmp42_;
-	GString* _tmp43_;
-	const gchar* _tmp44_;
-	gint _tmp45_ = 0;
+	GString* _tmp33_;
+	SkkStateHandler* _tmp34_;
+	SkkState* _tmp35_;
+	guint _tmp36_ = 0U;
+	guint _tmp37_ = 0U;
+	gchar* _tmp38_ = NULL;
+	gchar* _tmp39_;
+	guint _tmp40_;
+	GString* _tmp41_;
+	const gchar* _tmp42_;
+	gint _tmp43_ = 0;
 	gboolean changed;
+	const gchar* _tmp44_;
+	GString* _tmp45_;
 	const gchar* _tmp46_;
-	GString* _tmp47_;
-	const gchar* _tmp48_;
-	gboolean _tmp51_ = FALSE;
-	guint _tmp52_;
-	guint _tmp53_;
-	gboolean _tmp56_;
-	gboolean _tmp59_;
+	gboolean _tmp49_ = FALSE;
+	guint _tmp50_;
+	guint _tmp51_;
+	gboolean _tmp54_;
+	gboolean _tmp57_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = _g_object_ref0 ((SkkState*) _tmp1_);
-	state = _tmp2_;
-	_tmp3_ = self->priv->handlers;
-	_tmp4_ = state;
-	_tmp5_ = _tmp4_->handler_type;
-	_tmp6_ = gee_abstract_map_get ((GeeAbstractMap*) _tmp3_, GINT_TO_POINTER (_tmp5_));
-	handler = (SkkStateHandler*) _tmp6_;
-	_tmp7_ = g_string_new ("");
-	builder = _tmp7_;
-	_tmp8_ = skk_context_dict_edit_level (self);
-	if (_tmp8_ > ((guint) 0)) {
-		guint _tmp9_ = 0U;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	state = (SkkState*) _tmp1_;
+	_tmp2_ = self->priv->handlers;
+	_tmp3_ = state;
+	_tmp4_ = _tmp3_->handler_type;
+	_tmp5_ = gee_map_get (_tmp2_, GINT_TO_POINTER (_tmp4_));
+	handler = (SkkStateHandler*) _tmp5_;
+	_tmp6_ = g_string_new ("");
+	builder = _tmp6_;
+	_tmp7_ = skk_context_dict_edit_level (self);
+	if (_tmp7_ > ((guint) 0)) {
+		guint _tmp8_ = 0U;
 		guint level;
-		GString* _tmp16_;
-		const gchar* _tmp17_ = NULL;
+		GString* _tmp15_;
+		const gchar* _tmp16_ = NULL;
+		GString* _tmp23_;
 		GString* _tmp24_;
-		GString* _tmp25_;
-		GSList* _tmp26_;
-		gconstpointer _tmp27_;
-		const gchar* _tmp28_;
-		GString* _tmp29_;
-		GString* _tmp30_;
-		SkkStateHandler* _tmp31_;
-		SkkState* _tmp32_;
-		gchar* _tmp33_ = NULL;
-		gchar* _tmp34_;
-		_tmp9_ = skk_context_dict_edit_level (self);
-		level = _tmp9_;
+		SkkState* _tmp25_;
+		const gchar* _tmp26_;
+		GString* _tmp27_;
+		GString* _tmp28_;
+		SkkStateHandler* _tmp29_;
+		SkkState* _tmp30_;
+		gchar* _tmp31_ = NULL;
+		gchar* _tmp32_;
+		_tmp8_ = skk_context_dict_edit_level (self);
+		level = _tmp8_;
 		{
 			gint i;
 			i = 0;
 			{
-				gboolean _tmp10_;
-				_tmp10_ = TRUE;
+				gboolean _tmp9_;
+				_tmp9_ = TRUE;
 				while (TRUE) {
-					gboolean _tmp11_;
-					gint _tmp13_;
-					guint _tmp14_;
-					GString* _tmp15_;
-					_tmp11_ = _tmp10_;
-					if (!_tmp11_) {
-						gint _tmp12_;
-						_tmp12_ = i;
-						i = _tmp12_ + 1;
+					gboolean _tmp10_;
+					gint _tmp12_;
+					guint _tmp13_;
+					GString* _tmp14_;
+					_tmp10_ = _tmp9_;
+					if (!_tmp10_) {
+						gint _tmp11_;
+						_tmp11_ = i;
+						i = _tmp11_ + 1;
 					}
-					_tmp10_ = FALSE;
-					_tmp13_ = i;
-					_tmp14_ = level;
-					if (!(((guint) _tmp13_) < _tmp14_)) {
+					_tmp9_ = FALSE;
+					_tmp12_ = i;
+					_tmp13_ = level;
+					if (!(((guint) _tmp12_) < _tmp13_)) {
 						break;
 					}
-					_tmp15_ = builder;
-					g_string_append_c (_tmp15_, '[');
+					_tmp14_ = builder;
+					g_string_append_c (_tmp14_, '[');
 				}
 			}
 		}
-		_tmp16_ = builder;
-		_tmp17_ = _ ("DictEdit");
-		g_string_append (_tmp16_, _tmp17_);
+		_tmp15_ = builder;
+		_tmp16_ = _ ("DictEdit");
+		g_string_append (_tmp15_, _tmp16_);
 		{
 			gint i;
 			i = 0;
 			{
-				gboolean _tmp18_;
-				_tmp18_ = TRUE;
+				gboolean _tmp17_;
+				_tmp17_ = TRUE;
 				while (TRUE) {
-					gboolean _tmp19_;
-					gint _tmp21_;
-					guint _tmp22_;
-					GString* _tmp23_;
-					_tmp19_ = _tmp18_;
-					if (!_tmp19_) {
-						gint _tmp20_;
-						_tmp20_ = i;
-						i = _tmp20_ + 1;
+					gboolean _tmp18_;
+					gint _tmp20_;
+					guint _tmp21_;
+					GString* _tmp22_;
+					_tmp18_ = _tmp17_;
+					if (!_tmp18_) {
+						gint _tmp19_;
+						_tmp19_ = i;
+						i = _tmp19_ + 1;
 					}
-					_tmp18_ = FALSE;
-					_tmp21_ = i;
-					_tmp22_ = level;
-					if (!(((guint) _tmp21_) < _tmp22_)) {
+					_tmp17_ = FALSE;
+					_tmp20_ = i;
+					_tmp21_ = level;
+					if (!(((guint) _tmp20_) < _tmp21_)) {
 						break;
 					}
-					_tmp23_ = builder;
-					g_string_append_c (_tmp23_, ']');
+					_tmp22_ = builder;
+					g_string_append_c (_tmp22_, ']');
 				}
 			}
 		}
+		_tmp23_ = builder;
+		g_string_append (_tmp23_, " ");
 		_tmp24_ = builder;
-		g_string_append (_tmp24_, " ");
-		_tmp25_ = builder;
-		_tmp26_ = self->priv->state_stack;
-		_tmp27_ = _tmp26_->data;
-		_tmp28_ = ((SkkState*) _tmp27_)->midasi;
-		g_string_append (_tmp25_, _tmp28_);
-		_tmp29_ = builder;
-		g_string_append (_tmp29_, " ");
-		_tmp30_ = builder;
-		_tmp31_ = handler;
-		_tmp32_ = state;
-		_tmp33_ = skk_state_handler_get_output (_tmp31_, _tmp32_);
-		_tmp34_ = _tmp33_;
-		g_string_append (_tmp30_, _tmp34_);
-		_g_free0 (_tmp34_);
+		_tmp25_ = state;
+		_tmp26_ = _tmp25_->midasi;
+		g_string_append (_tmp24_, _tmp26_);
+		_tmp27_ = builder;
+		g_string_append (_tmp27_, " ");
+		_tmp28_ = builder;
+		_tmp29_ = handler;
+		_tmp30_ = state;
+		_tmp31_ = skk_state_handler_get_output (_tmp29_, _tmp30_);
+		_tmp32_ = _tmp31_;
+		g_string_append (_tmp28_, _tmp32_);
+		_g_free0 (_tmp32_);
 	}
-	_tmp35_ = builder;
-	_tmp36_ = handler;
-	_tmp37_ = state;
-	_tmp40_ = skk_state_handler_get_preedit (_tmp36_, _tmp37_, &_tmp38_, &_tmp39_);
-	offset = _tmp38_;
-	nchars = _tmp39_;
-	_tmp41_ = _tmp40_;
-	g_string_append (_tmp35_, _tmp41_);
-	_g_free0 (_tmp41_);
-	_tmp42_ = offset;
-	_tmp43_ = builder;
-	_tmp44_ = _tmp43_->str;
-	_tmp45_ = g_utf8_strlen (_tmp44_, (gssize) (-1));
-	offset = _tmp42_ + ((guint) _tmp45_);
+	_tmp33_ = builder;
+	_tmp34_ = handler;
+	_tmp35_ = state;
+	_tmp38_ = skk_state_handler_get_preedit (_tmp34_, _tmp35_, &_tmp36_, &_tmp37_);
+	offset = _tmp36_;
+	nchars = _tmp37_;
+	_tmp39_ = _tmp38_;
+	g_string_append (_tmp33_, _tmp39_);
+	_g_free0 (_tmp39_);
+	_tmp40_ = offset;
+	_tmp41_ = builder;
+	_tmp42_ = _tmp41_->str;
+	_tmp43_ = g_utf8_strlen (_tmp42_, (gssize) (-1));
+	offset = _tmp40_ + ((guint) _tmp43_);
 	changed = FALSE;
-	_tmp46_ = self->priv->_preedit;
-	_tmp47_ = builder;
-	_tmp48_ = _tmp47_->str;
-	if (g_strcmp0 (_tmp46_, _tmp48_) != 0) {
-		GString* _tmp49_;
-		const gchar* _tmp50_;
-		_tmp49_ = builder;
-		_tmp50_ = _tmp49_->str;
-		skk_context_set_preedit (self, _tmp50_);
+	_tmp44_ = self->priv->_preedit;
+	_tmp45_ = builder;
+	_tmp46_ = _tmp45_->str;
+	if (g_strcmp0 (_tmp44_, _tmp46_) != 0) {
+		GString* _tmp47_;
+		const gchar* _tmp48_;
+		_tmp47_ = builder;
+		_tmp48_ = _tmp47_->str;
+		skk_context_set_preedit (self, _tmp48_);
 		changed = TRUE;
 	}
-	_tmp52_ = self->priv->preedit_underline_offset;
-	_tmp53_ = offset;
-	if (_tmp52_ != _tmp53_) {
-		_tmp51_ = TRUE;
+	_tmp50_ = self->priv->preedit_underline_offset;
+	_tmp51_ = offset;
+	if (_tmp50_ != _tmp51_) {
+		_tmp49_ = TRUE;
 	} else {
-		guint _tmp54_;
-		guint _tmp55_;
-		_tmp54_ = self->priv->preedit_underline_nchars;
-		_tmp55_ = nchars;
-		_tmp51_ = _tmp54_ != _tmp55_;
+		guint _tmp52_;
+		guint _tmp53_;
+		_tmp52_ = self->priv->preedit_underline_nchars;
+		_tmp53_ = nchars;
+		_tmp49_ = _tmp52_ != _tmp53_;
 	}
-	_tmp56_ = _tmp51_;
-	if (_tmp56_) {
-		guint _tmp57_;
-		guint _tmp58_;
-		_tmp57_ = offset;
-		self->priv->preedit_underline_offset = _tmp57_;
-		_tmp58_ = nchars;
-		self->priv->preedit_underline_nchars = _tmp58_;
+	_tmp54_ = _tmp49_;
+	if (_tmp54_) {
+		guint _tmp55_;
+		guint _tmp56_;
+		_tmp55_ = offset;
+		self->priv->preedit_underline_offset = _tmp55_;
+		_tmp56_ = nchars;
+		self->priv->preedit_underline_nchars = _tmp56_;
 		changed = TRUE;
 	}
-	_tmp59_ = changed;
-	if (_tmp59_) {
+	_tmp57_ = changed;
+	if (_tmp57_) {
 		g_object_notify ((GObject*) self, "preedit");
 	}
 	_g_string_free0 (builder);
@@ -2050,14 +2106,14 @@ void skk_context_save_dictionaries (SkkContext* self, GError** error) {
 
 SkkDict** skk_context_get_dictionaries (SkkContext* self, int* result_length1) {
 	SkkDict** result;
-	GeeArrayList* _tmp0_;
+	GeeList* _tmp0_;
 	gint _tmp1_ = 0;
 	gpointer* _tmp2_ = NULL;
 	SkkDict** _tmp3_;
 	gint _tmp3__length1;
 	g_return_val_if_fail (self != NULL, NULL);
 	_tmp0_ = self->priv->_dictionaries;
-	_tmp2_ = gee_abstract_collection_to_array ((GeeAbstractCollection*) _tmp0_, &_tmp1_);
+	_tmp2_ = gee_collection_to_array ((GeeCollection*) _tmp0_, &_tmp1_);
 	_tmp3_ = _tmp2_;
 	_tmp3__length1 = _tmp1_;
 	if (result_length1) {
@@ -2069,12 +2125,12 @@ SkkDict** skk_context_get_dictionaries (SkkContext* self, int* result_length1) {
 
 
 void skk_context_set_dictionaries (SkkContext* self, SkkDict** value, int value_length1) {
-	GeeArrayList* _tmp0_;
+	GeeList* _tmp0_;
 	SkkDict** _tmp1_;
 	gint _tmp1__length1;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->_dictionaries;
-	gee_abstract_collection_clear ((GeeAbstractCollection*) _tmp0_);
+	gee_collection_clear ((GeeCollection*) _tmp0_);
 	_tmp1_ = value;
 	_tmp1__length1 = value_length1;
 	{
@@ -2090,11 +2146,11 @@ void skk_context_set_dictionaries (SkkContext* self, SkkDict** value, int value_
 			_tmp2_ = _g_object_ref0 (dict_collection[dict_it]);
 			dict = _tmp2_;
 			{
-				GeeArrayList* _tmp3_;
+				GeeList* _tmp3_;
 				SkkDict* _tmp4_;
 				_tmp3_ = self->priv->_dictionaries;
 				_tmp4_ = dict;
-				gee_abstract_collection_add ((GeeAbstractCollection*) _tmp3_, _tmp4_);
+				gee_collection_add ((GeeCollection*) _tmp3_, _tmp4_);
 				_g_object_unref0 (dict);
 			}
 		}
@@ -2114,52 +2170,67 @@ SkkCandidateList* skk_context_get_candidates (SkkContext* self) {
 
 SkkInputMode skk_context_get_input_mode (SkkContext* self) {
 	SkkInputMode result;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkInputMode _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
 	SkkInputMode _tmp3_;
+	SkkInputMode _tmp4_;
+	SkkInputMode _tmp5_;
 	g_return_val_if_fail (self != NULL, 0);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = skk_state_get_input_mode ((SkkState*) _tmp1_);
-	_tmp3_ = _tmp2_;
-	result = _tmp3_;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = skk_state_get_input_mode (_tmp2_);
+	_tmp4_ = _tmp3_;
+	_tmp5_ = _tmp4_;
+	_g_object_unref0 (_tmp2_);
+	result = _tmp5_;
 	return result;
 }
 
 
 void skk_context_set_input_mode (SkkContext* self, SkkInputMode value) {
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkInputMode _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
+	SkkInputMode _tmp3_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = value;
-	skk_state_set_input_mode ((SkkState*) _tmp1_, _tmp2_);
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = value;
+	skk_state_set_input_mode (_tmp2_, _tmp3_);
+	_g_object_unref0 (_tmp2_);
 	g_object_notify ((GObject *) self, "input-mode");
 }
 
 
 gchar** skk_context_get_auto_start_henkan_keywords (SkkContext* self, int* result_length1) {
 	gchar** result;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	gchar** _tmp2_;
-	gint _tmp2__length1;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
 	gchar** _tmp3_;
 	gint _tmp3__length1;
+	gchar** _tmp4_;
+	gint _tmp4__length1;
+	gchar** _tmp5_;
+	gint _tmp5__length1;
 	g_return_val_if_fail (self != NULL, NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = ((SkkState*) _tmp1_)->auto_start_henkan_keywords;
-	_tmp2__length1 = ((SkkState*) _tmp1_)->auto_start_henkan_keywords_length1;
-	_tmp3_ = _tmp2_;
-	_tmp3__length1 = _tmp2__length1;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = _tmp2_->auto_start_henkan_keywords;
+	_tmp3__length1 = _tmp2_->auto_start_henkan_keywords_length1;
+	_tmp4_ = _tmp3_;
+	_tmp4__length1 = _tmp3__length1;
+	_g_object_unref0 (_tmp2_);
+	_tmp5_ = _tmp4_;
+	_tmp5__length1 = _tmp4__length1;
 	if (result_length1) {
-		*result_length1 = _tmp3__length1;
+		*result_length1 = _tmp5__length1;
 	}
-	result = _tmp3_;
+	result = _tmp5_;
 	return result;
 }
 
@@ -2178,150 +2249,185 @@ static gchar** _vala_array_dup4 (gchar** self, int length) {
 
 
 void skk_context_set_auto_start_henkan_keywords (SkkContext* self, gchar** value, int value_length1) {
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	gchar** _tmp2_;
-	gint _tmp2__length1;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
 	gchar** _tmp3_;
 	gint _tmp3__length1;
+	gchar** _tmp4_;
+	gint _tmp4__length1;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = value;
-	_tmp2__length1 = value_length1;
-	_tmp3_ = (_tmp2_ != NULL) ? _vala_array_dup4 (_tmp2_, _tmp2__length1) : ((gpointer) _tmp2_);
-	_tmp3__length1 = _tmp2__length1;
-	((SkkState*) _tmp1_)->auto_start_henkan_keywords = (_vala_array_free (((SkkState*) _tmp1_)->auto_start_henkan_keywords, ((SkkState*) _tmp1_)->auto_start_henkan_keywords_length1, (GDestroyNotify) g_free), NULL);
-	((SkkState*) _tmp1_)->auto_start_henkan_keywords = _tmp3_;
-	((SkkState*) _tmp1_)->auto_start_henkan_keywords_length1 = _tmp3__length1;
-	((SkkState*) _tmp1_)->_auto_start_henkan_keywords_size_ = ((SkkState*) _tmp1_)->auto_start_henkan_keywords_length1;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = value;
+	_tmp3__length1 = value_length1;
+	_tmp4_ = (_tmp3_ != NULL) ? _vala_array_dup4 (_tmp3_, _tmp3__length1) : ((gpointer) _tmp3_);
+	_tmp4__length1 = _tmp3__length1;
+	_tmp2_->auto_start_henkan_keywords = (_vala_array_free (_tmp2_->auto_start_henkan_keywords, _tmp2_->auto_start_henkan_keywords_length1, (GDestroyNotify) g_free), NULL);
+	_tmp2_->auto_start_henkan_keywords = _tmp4_;
+	_tmp2_->auto_start_henkan_keywords_length1 = _tmp4__length1;
+	_tmp2_->_auto_start_henkan_keywords_size_ = _tmp2_->auto_start_henkan_keywords_length1;
+	_g_object_unref0 (_tmp2_);
 	g_object_notify ((GObject *) self, "auto-start-henkan-keywords");
 }
 
 
 gboolean skk_context_get_egg_like_newline (SkkContext* self) {
 	gboolean result;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	gboolean _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
+	gboolean _tmp3_;
+	gboolean _tmp4_;
 	g_return_val_if_fail (self != NULL, FALSE);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = ((SkkState*) _tmp1_)->egg_like_newline;
-	result = _tmp2_;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = _tmp2_->egg_like_newline;
+	_tmp4_ = _tmp3_;
+	_g_object_unref0 (_tmp2_);
+	result = _tmp4_;
 	return result;
 }
 
 
 void skk_context_set_egg_like_newline (SkkContext* self, gboolean value) {
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	gboolean _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
+	gboolean _tmp3_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = value;
-	((SkkState*) _tmp1_)->egg_like_newline = _tmp2_;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = value;
+	_tmp2_->egg_like_newline = _tmp3_;
+	_g_object_unref0 (_tmp2_);
 	g_object_notify ((GObject *) self, "egg-like-newline");
 }
 
 
 SkkPeriodStyle skk_context_get_period_style (SkkContext* self) {
 	SkkPeriodStyle result;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkPeriodStyle _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
 	SkkPeriodStyle _tmp3_;
+	SkkPeriodStyle _tmp4_;
+	SkkPeriodStyle _tmp5_;
 	g_return_val_if_fail (self != NULL, 0);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = skk_state_get_period_style ((SkkState*) _tmp1_);
-	_tmp3_ = _tmp2_;
-	result = _tmp3_;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = skk_state_get_period_style (_tmp2_);
+	_tmp4_ = _tmp3_;
+	_tmp5_ = _tmp4_;
+	_g_object_unref0 (_tmp2_);
+	result = _tmp5_;
 	return result;
 }
 
 
 void skk_context_set_period_style (SkkContext* self, SkkPeriodStyle value) {
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkPeriodStyle _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
+	SkkPeriodStyle _tmp3_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = value;
-	skk_state_set_period_style ((SkkState*) _tmp1_, _tmp2_);
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = value;
+	skk_state_set_period_style (_tmp2_, _tmp3_);
+	_g_object_unref0 (_tmp2_);
 	g_object_notify ((GObject *) self, "period-style");
 }
 
 
 SkkRule* skk_context_get_typing_rule (SkkContext* self) {
 	SkkRule* result;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkRule* _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
 	SkkRule* _tmp3_;
+	SkkRule* _tmp4_;
+	SkkRule* _tmp5_;
 	g_return_val_if_fail (self != NULL, NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = skk_state_get_typing_rule ((SkkState*) _tmp1_);
-	_tmp3_ = _tmp2_;
-	result = _tmp3_;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = skk_state_get_typing_rule (_tmp2_);
+	_tmp4_ = _tmp3_;
+	_tmp5_ = _tmp4_;
+	_g_object_unref0 (_tmp2_);
+	result = _tmp5_;
 	return result;
 }
 
 
-static void _skk_context_typing_rule___lambda5_ (SkkContext* self, SkkKeyEvent* key) {
-	SkkKeyEvent* _tmp0_;
-	g_return_if_fail (key != NULL);
-	_tmp0_ = key;
-	skk_context_process_key_event_internal (self, _tmp0_);
-}
-
-
-static void __skk_context_typing_rule___lambda5__skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self) {
-	_skk_context_typing_rule___lambda5_ (self, key);
+static void _skk_context_filter_forwarded_cb_skk_key_event_filter_forwarded (SkkKeyEventFilter* _sender, SkkKeyEvent* key, gpointer self) {
+	skk_context_filter_forwarded_cb (self, key);
 }
 
 
 void skk_context_set_typing_rule (SkkContext* self, SkkRule* value) {
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* state;
 	SkkRule* _tmp2_;
 	SkkRule* _tmp3_;
-	SkkRule* rule;
 	SkkKeyEventFilter* _tmp4_ = NULL;
-	SkkKeyEventFilter* filter;
+	SkkKeyEventFilter* _tmp5_;
+	guint _tmp6_ = 0U;
+	SkkRule* _tmp7_;
+	SkkRule* _tmp8_;
+	SkkRule* _tmp9_;
+	SkkKeyEventFilter* _tmp10_ = NULL;
+	SkkKeyEventFilter* _tmp11_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = value;
-	skk_state_set_typing_rule ((SkkState*) _tmp1_, _tmp2_);
-	_tmp3_ = _g_object_ref0 (_tmp2_);
-	rule = _tmp3_;
-	_tmp4_ = skk_rule_get_filter (rule);
-	filter = _tmp4_;
-	g_signal_connect_object (filter, "forwarded", (GCallback) __skk_context_typing_rule___lambda5__skk_key_event_filter_forwarded, self, 0);
-	_g_object_unref0 (filter);
-	_g_object_unref0 (rule);
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	state = (SkkState*) _tmp1_;
+	_tmp2_ = skk_state_get_typing_rule (state);
+	_tmp3_ = _tmp2_;
+	_tmp4_ = skk_rule_get_filter (_tmp3_);
+	_tmp5_ = _tmp4_;
+	g_signal_parse_name ("forwarded", SKK_TYPE_KEY_EVENT_FILTER, &_tmp6_, NULL, FALSE);
+	g_signal_handlers_disconnect_matched (_tmp5_, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, _tmp6_, 0, NULL, (GCallback) _skk_context_filter_forwarded_cb_skk_key_event_filter_forwarded, self);
+	_g_object_unref0 (_tmp5_);
+	_tmp7_ = value;
+	skk_state_set_typing_rule (state, _tmp7_);
+	_tmp8_ = skk_state_get_typing_rule (state);
+	_tmp9_ = _tmp8_;
+	_tmp10_ = skk_rule_get_filter (_tmp9_);
+	_tmp11_ = _tmp10_;
+	g_signal_connect_object (_tmp11_, "forwarded", (GCallback) _skk_context_filter_forwarded_cb_skk_key_event_filter_forwarded, self, 0);
+	_g_object_unref0 (_tmp11_);
+	_g_object_unref0 (state);
 	g_object_notify ((GObject *) self, "typing-rule");
 }
 
 
 SkkKeyEventFilter* skk_context_get_key_event_filter (SkkContext* self) {
 	SkkKeyEventFilter* result;
-	GSList* _tmp0_;
-	gconstpointer _tmp1_;
-	SkkRule* _tmp2_;
+	GeeLinkedList* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	SkkState* _tmp2_;
 	SkkRule* _tmp3_;
-	SkkKeyEventFilter* _tmp4_ = NULL;
+	SkkRule* _tmp4_;
+	SkkKeyEventFilter* _tmp5_ = NULL;
+	SkkKeyEventFilter* _tmp6_;
 	g_return_val_if_fail (self != NULL, NULL);
 	_tmp0_ = self->priv->state_stack;
-	_tmp1_ = _tmp0_->data;
-	_tmp2_ = skk_state_get_typing_rule ((SkkState*) _tmp1_);
-	_tmp3_ = _tmp2_;
-	_tmp4_ = skk_rule_get_filter (_tmp3_);
-	result = _tmp4_;
+	_tmp1_ = gee_deque_peek_head ((GeeDeque*) _tmp0_);
+	_tmp2_ = (SkkState*) _tmp1_;
+	_tmp3_ = skk_state_get_typing_rule (_tmp2_);
+	_tmp4_ = _tmp3_;
+	_tmp5_ = skk_rule_get_filter (_tmp4_);
+	_tmp6_ = _tmp5_;
+	_g_object_unref0 (_tmp2_);
+	result = _tmp6_;
 	return result;
 }
 
@@ -2458,15 +2564,18 @@ static void skk_context_class_init (SkkContextClass * klass) {
 
 static void skk_context_instance_init (SkkContext * self) {
 	GeeArrayList* _tmp0_;
-	GeeHashMap* _tmp1_;
-	gchar* _tmp2_;
+	GeeLinkedList* _tmp1_;
+	GeeHashMap* _tmp2_;
+	gchar* _tmp3_;
 	self->priv = SKK_CONTEXT_GET_PRIVATE (self);
 	_tmp0_ = gee_array_list_new (SKK_TYPE_DICT, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL);
-	self->priv->_dictionaries = _tmp0_;
-	_tmp1_ = gee_hash_map_new (G_TYPE_GTYPE, NULL, NULL, SKK_TYPE_STATE_HANDLER, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL, NULL, NULL);
-	self->priv->handlers = _tmp1_;
-	_tmp2_ = g_strdup ("");
-	self->priv->_preedit = _tmp2_;
+	self->priv->_dictionaries = (GeeList*) _tmp0_;
+	_tmp1_ = gee_linked_list_new (SKK_TYPE_STATE, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL);
+	self->priv->state_stack = _tmp1_;
+	_tmp2_ = gee_hash_map_new (G_TYPE_GTYPE, NULL, NULL, SKK_TYPE_STATE_HANDLER, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL, NULL, NULL);
+	self->priv->handlers = (GeeMap*) _tmp2_;
+	_tmp3_ = g_strdup ("");
+	self->priv->_preedit = _tmp3_;
 	self->priv->preedit_underline_offset = (guint) 0;
 	self->priv->preedit_underline_nchars = (guint) 0;
 }
@@ -2474,13 +2583,13 @@ static void skk_context_instance_init (SkkContext * self) {
 
 static void skk_context_finalize (GObject* obj) {
 	SkkContext * self;
-	GeeArrayList* _tmp0_;
+	GeeList* _tmp0_;
 	self = SKK_CONTEXT (obj);
 	_tmp0_ = self->priv->_dictionaries;
-	gee_abstract_collection_clear ((GeeAbstractCollection*) _tmp0_);
+	gee_collection_clear ((GeeCollection*) _tmp0_);
 	_g_object_unref0 (self->priv->_dictionaries);
 	_g_object_unref0 (self->priv->_candidates);
-	__g_slist_free__g_object_unref0_0 (self->priv->state_stack);
+	_g_object_unref0 (self->priv->state_stack);
 	_g_object_unref0 (self->priv->handlers);
 	_g_free0 (self->priv->_preedit);
 	G_OBJECT_CLASS (skk_context_parent_class)->finalize (obj);
@@ -2488,7 +2597,7 @@ static void skk_context_finalize (GObject* obj) {
 
 
 /**
-     * The main entry point of libskk.
+     * Main entry point of libskk.
      *
      * Context represents an input context with support for SKK
      * kana-kanji conversion method.

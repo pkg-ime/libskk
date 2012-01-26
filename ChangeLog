@@ -1,0 +1,2718 @@
+commit 7cbf39bc44b19f11944b76985c31acfd0106ffd6
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 25 17:10:12 2012 +0900
+
+    Bump version to 0.0.9.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit a4cbcaa7f0e7b723d5ef0ff0f1ef5feb7d1830f1
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 25 17:09:06 2012 +0900
+
+    Request server to close skkserv connection before closing local port.
+
+ libskk/skkserv.vala |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 566dd9732c58c070dce57570484b91907dcf7143
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 25 17:06:56 2012 +0900
+
+    Delete ChangeLog on make distclean when off the tree build.
+
+ Makefile.am |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 77d60c6cd6bba2f58fd4d79c4f5d995e4c34d5fb
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 17 17:52:08 2012 +0900
+
+    Consume any key when "ん" is produced in rom-kana conversion
+    (Issue#9).
+
+ libskk/rom-kana.vala |    9 ++++++---
+ tests/basic.c        |    2 ++
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+commit 1a16bb57857efbcbd454fd7c335335bee0d3f37d
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 16 12:41:10 2012 +0900
+
+    Generate ChangeLog from git log.
+
+ Makefile.am |   17 +++++++++++++++++
+ 1 files changed, 17 insertions(+), 0 deletions(-)
+
+commit 3bac7b90023ff50dce464c0a45315c3fa96d3d61
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 16 11:56:08 2012 +0900
+
+    Add license to README.rules.
+
+ rules/README.rules |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+commit 396035a9de5a1d3880f6eb7ad698603c5bc1ee95
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 16 11:40:58 2012 +0900
+
+    Revert Skk.init coverage hack.
+
+ libskk/context.vala |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 1ee72f95ae7c95b1a61432781fa5cc5d26f07ba2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 16 11:40:32 2012 +0900
+
+    Factor out socket closing code in skkserv.vala.
+
+ libskk/candidate-list.vala |   23 +++++++++++++----------
+ libskk/skkserv.vala        |   26 +++++++++++++++++---------
+ 2 files changed, 30 insertions(+), 19 deletions(-)
+
+commit d7f20a8015f26c4d8a1d4c2708c62ab49662568a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 16 11:40:08 2012 +0900
+
+    Use Gee.LinkedList instead of GLib.SList for stack.
+
+ libskk/context.vala |  125
+ ++++++++++++++++++++++++++++++---------------------
+ libskk/state.vala   |    4 +-
+ 2 files changed, 76 insertions(+), 53 deletions(-)
+
+commit b9043aa16f099acb46ca3a413b05fec79961c03e
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 13 18:43:43 2012 +0900
+
+    Fix memleaks in test cases, minor coverage improvements.
+
+ libskk/context.vala   |    2 +-
+ libskk/key-event.vala |    2 +-
+ libskk/rom-kana.vala  |    2 +-
+ libskk/skkserv.vala   |    3 ++-
+ libskk/state.vala     |    1 +
+ libskk/util.vala      |    4 ++++
+ tests/basic.c         |    1 +
+ tests/cdb-dict.c      |    1 +
+ tests/context.c       |   34 +++++++++++++++++++++++++++++++---
+ tests/rule.c          |   10 +++++++---
+ tests/skkserv.c       |   16 +++++++++++++++-
+ tests/user-dict.c     |    1 +
+ 12 files changed, 66 insertions(+), 11 deletions(-)
+
+commit f5e1087f89ff4935532e4138bb770ab2e36c94f9
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 13 17:36:51 2012 +0900
+
+    Create filter instance per rule.
+
+ libskk/rule.vala |   19 ++++++++++++-------
+ 1 files changed, 12 insertions(+), 7 deletions(-)
+
+commit 707f4b3cb75a63bde67c509afbcb0f49dc79fec2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 13 16:03:32 2012 +0900
+
+    Add NEWS entry for 0.0.9.
+
+ NEWS |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+commit ca25ce25cba9913702a4e35ebcde0e51ecebbf36
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 13 16:03:14 2012 +0900
+
+    Add skkserv test.
+
+ tests/Makefile.am |    5 +-
+ tests/skkserv.c   |  164
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 168 insertions(+), 1 deletions(-)
+
+commit a395d3e42123067eaf494ed6b192998201229100
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 13 16:02:25 2012 +0900
+
+    Fix skkserv completion response handling.
+
+    Also make sure to close the socket on finalize.
+
+ libskk/skkserv.vala |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 159e06616717984b6e1c92b03708e5857feba58c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 13 10:44:01 2012 +0900
+
+    Add tests for CDB dict and surrounding text.
+
+    Also split tests/context.c into separate files.
+
+ libskk/rom-kana.vala |    2 +
+ tests/Makefile.am    |   18 ++-
+ tests/basic.c        |  452
+ ++++++++++++++++++++++++++++++++++++++++++++++
+ tests/cdb-dict.c     |   58 ++++++
+ tests/cdb-dict.dat   |  Bin 0 -> 2426 bytes
+ tests/context.c      |  485
+ --------------------------------------------------
+ tests/file-dict.c    |    5 +
+ tests/rule.c         |   97 ++++++++++
+ tests/user-dict.c    |   22 +++-
+ 9 files changed, 650 insertions(+), 489 deletions(-)
+
+commit 0fede13b00f33586ca5b7db5c81ee858d8c84360
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 18:46:17 2012 +0900
+
+    Improve candidate_list test.
+
+ libskk/candidate-list.vala |    3 +-
+ tests/context.c            |   72
+ ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 74 insertions(+), 1 deletions(-)
+
+commit 4aefb71cf91ef40cc8ca109a8451a6a8f6bbc503
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 18:19:42 2012 +0900
+
+    Make ExprNode a struct instead of a class.
+
+ libskk/expr.vala |   12 ++++++------
+ 1 files changed, 6 insertions(+), 6 deletions(-)
+
+commit 761cef8360277f18ef9d9acc13e6ff8e1ffcfa9c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 18:19:21 2012 +0900
+
+    Derive EncodingConverter from GLib.Object.
+
+ libskk/encoding.vala |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit e255c01ae846f666bc3510509c11343ff3c0a317
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 18:18:34 2012 +0900
+
+    Always add empty dict to increase test coverage.
+
+ tests/common.c |    9 ++++++++-
+ 1 files changed, 8 insertions(+), 1 deletions(-)
+
+commit f59f11038d70702dac49f863985859ca6c9dfb47
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 18:00:39 2012 +0900
+
+    Fix compilation warnings.
+
+ tests/common.c    |   12 +++++++++---
+ tests/common.h    |    5 +++--
+ tests/context.c   |   37 +++++++++++++++++++------------------
+ tests/user-dict.c |   24 +++++++++++-------------
+ tools/tool.vala   |   32 ++++++++++++++++++++++++++++----
+ 5 files changed, 70 insertions(+), 40 deletions(-)
+
+commit 3bd2c44c776b5623e35e2b10cfa28834c8d78ee0
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 16:49:19 2012 +0900
+
+    Add --enable-valgrind-tests configure option.
+
+ configure.ac      |   15 +++++++++++++++
+ tests/Makefile.am |    8 ++++++--
+ 2 files changed, 21 insertions(+), 2 deletions(-)
+
+commit d53e73e4b47cb21010b1a4118ec15066e6a25854
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 16:33:15 2012 +0900
+
+    Fix skk command description in the command line help.
+
+ po/ja.po        |   12 ++++++++----
+ tools/tool.vala |    3 ++-
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+commit dba80820a606eb1fd1e92f3fcb6b698801602dab
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 16:15:40 2012 +0900
+
+    Fix gtk-doc link in README.
+
+ README |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 4d00219f0619c5ddccfab1d7e4c080ca19b83658
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 13:54:23 2012 +0900
+
+    Support code coverage check with lcov.
+
+ Makefile.am        |   16 ++++++++++++++++
+ configure.ac       |   14 ++++++++++++++
+ lcov.mk            |   23 +++++++++++++++++++++++
+ libskk/Makefile.am |    7 ++++++-
+ 4 files changed, 59 insertions(+), 1 deletions(-)
+
+commit c3c04a918260563f68ab845d15fd13a0f579e79e
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 11:53:54 2012 +0900
+
+    Don't export internal symbols from libskk.so.
+
+ configure.ac       |   15 +++++++++++++++
+ libskk/Makefile.am |   12 ++++++++++--
+ 2 files changed, 25 insertions(+), 2 deletions(-)
+
+commit 67bc47fb031ed0b1e761506d96e218b54ff7d4fe
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 11:26:46 2012 +0900
+
+    Doc fix.
+
+ libskk/cdb-dict.vala         |    2 +-
+ libskk/context.vala          |    2 +-
+ libskk/file-dict.vala        |    2 +-
+ libskk/key-event-filter.vala |    7 ++++++-
+ libskk/nicola.vala           |   10 +++++++++-
+ libskk/skkserv.vala          |    2 +-
+ libskk/user-dict.vala        |    2 +-
+ 7 files changed, 20 insertions(+), 7 deletions(-)
+
+commit 524a25c85be58fb6177fee38717846c2dca599c6
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 11:13:50 2012 +0900
+
+    Split out some classes to separate files to make valadoc happy.
+
+ libskk/Makefile.am           |    2 +
+ libskk/candidate-list.vala   |  410
+ ++++++++++++++++++++++++++++++++++++++++++
+ libskk/candidate.vala        |  390
+ ---------------------------------------
+ libskk/key-event-filter.vala |   63 +++++++
+ libskk/key-event.vala        |   45 -----
+ 5 files changed, 475 insertions(+), 435 deletions(-)
+
+commit 499e7a56661ec0b1d736139340f23fe840d36b7e
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 10:30:47 2012 +0900
+
+    Update copyright year.
+
+ Makefile.am           |    4 ++--
+ NEWS                  |    4 ++--
+ README                |    4 ++--
+ configure.ac          |    4 ++--
+ libskk/Makefile.am    |    4 ++--
+ libskk/candidate.vala |    4 ++--
+ libskk/cdb-dict.vala  |    4 ++--
+ libskk/context.vala   |    4 ++--
+ libskk/dict.vala      |    4 ++--
+ libskk/encoding.vala  |    4 ++--
+ libskk/expr.vala      |    4 ++--
+ libskk/file-dict.vala |    4 ++--
+ libskk/key-event.vala |    4 ++--
+ libskk/keymap.vala    |    4 ++--
+ libskk/map-file.vala  |    4 ++--
+ libskk/nicola.vala    |    4 ++--
+ libskk/rom-kana.vala  |    4 ++--
+ libskk/rule.vala      |    4 ++--
+ libskk/skkserv.vala   |    4 ++--
+ libskk/state.vala     |    4 ++--
+ libskk/user-dict.vala |    4 ++--
+ libskk/util.vala      |    4 ++--
+ rules/Makefile.am     |    4 ++--
+ tests/Makefile.am     |    4 ++--
+ tools/Makefile.am     |    4 ++--
+ tools/tool.vala       |    4 ++--
+ 26 files changed, 52 insertions(+), 52 deletions(-)
+
+commit 8ca45cc27d4feca52bb08785f6b2220aac327a91
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 12 10:27:06 2012 +0900
+
+    Import skk.1 from Debian.
+
+ docs/Makefile.am |    2 +
+ docs/skk.1       |   55
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 57 insertions(+), 0 deletions(-)
+
+commit 8874edd2f0a7bf852a6a4f0a5d03d0dbc4a2768a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 11 17:16:07 2012 +0900
+
+    Add NEWS entry for 0.0.8.
+
+ NEWS |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 63b79d2e99ece7b9b8ef49b3c2e52123f05bd310
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 11 17:05:09 2012 +0900
+
+    Bump version to 0.0.8.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit d2f6bf8c335bbc45bc1ec9f8f7d37fffd7a01d43
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 11 17:04:55 2012 +0900
+
+    Fix preedit change detection.
+
+ libskk/context.vala |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+commit 5ea878fad07966555c8723a079d23d52acdc0391
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 10 18:25:22 2012 +0900
+
+    Don't expose State's CandidateList to client.
+
+    Also make sure to disconnect signal handlers from per-state objects.
+
+ libskk/candidate.vala |  399
+ +++++++++++++++++++++++++++++++++----------------
+ libskk/context.vala   |   67 ++++++---
+ libskk/state.vala     |    3 +-
+ 3 files changed, 321 insertions(+), 148 deletions(-)
+
+commit ca7d6761741ea3a44f16419bdb0b54af7fa77a0d
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 11 10:57:35 2012 +0900
+
+    Fix a typo in the code swapping candidates in user dict.
+
+ libskk/user-dict.vala |    5 ++---
+ 1 files changed, 2 insertions(+), 3 deletions(-)
+
+commit ba9af5354e8f39e5a32cce000993dfc84d2504e1
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 11 10:43:01 2012 +0900
+
+    Call EncodingConverter.convert repeatedly until all the input is
+    consumed.
+
+    This fixes ibus-skk Issue#44.
+
+ libskk/encoding.vala |   28 +++++++++++++++++++---------
+ 1 files changed, 19 insertions(+), 9 deletions(-)
+
+commit d0393db1318087a83ac481078f4f9e2dd3d55e39
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 10 10:17:31 2012 +0900
+
+    Add Skk.Context.{add|remove}_dictionary.
+
+ libskk/context.vala |   25 ++++++++++++++++++++++++-
+ 1 files changed, 24 insertions(+), 1 deletions(-)
+
+commit 1c9d09c0335460a9c4cbada1b7e13b3727f61aa3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 10 10:08:03 2012 +0900
+
+    Update translation.
+
+ po/ja.po |    9 +++------
+ 1 files changed, 3 insertions(+), 6 deletions(-)
+
+commit 4e7309c204cc50c7c28b81833a51b24001cb56af
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 10 10:05:46 2012 +0900
+
+    Don't change input mode when ▽ひらがな + 'q' => ヒラガナ
+    (Issue#8).
+
+ libskk/state.vala |    2 +-
+ po/ja.po          |   25 ++++++++++++++++---------
+ tests/context.c   |   12 ++++++------
+ 3 files changed, 23 insertions(+), 16 deletions(-)
+
+commit 99b233ce406cca0c3cd5918e85d6be0b86fc41c6
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 6 18:33:43 2012 +0900
+
+    Fix the last commit; register completion test.
+
+ tests/user-dict.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 5b6cd8eb8dbaa4cbc45f1abaec525bbc9cb05e56
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 6 18:15:43 2012 +0900
+
+    Add completion test for user-dict.
+
+ tests/common.c    |   37 ++++++++++++++++++++++---------------
+ tests/common.h    |    3 ++-
+ tests/context.c   |   34 +++++++++++++++++-----------------
+ tests/user-dict.c |   43 ++++++++++++++++++++++++++++++++++++++++++-
+ 4 files changed, 83 insertions(+), 34 deletions(-)
+
+commit e7d52908e0797f884e48f941edac78953ba2cb6c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 6 17:29:17 2012 +0900
+
+    Avoid memleaks in Gee.TreeSet.
+
+ libskk/user-dict.vala |    9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+commit fb24c2c6493f6f73685433619932f83088ab71c7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 6 12:00:41 2012 +0900
+
+    Install skk-1.0.deps in vapi dir.
+
+ libskk/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit f7918d48e9130804d48fdf320313bc2a91db5824
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 6 11:59:59 2012 +0900
+
+    Improve exception message when loading map-file fails.
+
+ libskk/map-file.vala |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 8674aa83f97a0a5122af1fb794244a111b15e081
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 5 16:39:32 2012 +0900
+
+    Bump version to 0.0.7.
+
+ NEWS         |    8 +++++++-
+ configure.ac |    2 +-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+commit ca7bc375698fa217842dfcf946c6f75bdbac2f7e
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 5 16:24:26 2012 +0900
+
+    Preserve State.input_mode when reset.
+
+ libskk/candidate.vala |   16 ++++++++++++++++
+ libskk/state.vala     |   33 ++++++++-------------------------
+ 2 files changed, 24 insertions(+), 25 deletions(-)
+
+commit 80d5bf9f011503b09271c3223847c980ab351792
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 4 17:56:12 2012 +0900
+
+    Remove erroneous comma in rule example (Issue#7).
+
+ rules/README.rules |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit b43cd99a70d85615e28c4ef0b76f479774202917
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 4 17:54:33 2012 +0900
+
+    Check modifiers when handling latin keysyms in NoneStateHandler
+    (Issue#5).
+
+ libskk/state.vala |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+commit dd5233647ecfdcea689adfe565e03cc820e9b336
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 4 17:52:07 2012 +0900
+
+    Make user dict file modes private (Issue#4).
+
+ libskk/user-dict.vala |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 6cd3a6e63fd454d7fa0b71dc7010a4799870b9a3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Jan 4 17:50:27 2012 +0900
+
+    Fix candidate cursor movement with x and SPC.
+
+ libskk/candidate.vala |  156
+ +++++++++++++++++++++++++++++++++++++++++++++---
+ libskk/context.vala   |    1 +
+ libskk/state.vala     |   41 ++++++++-----
+ tests/context.c       |   25 +++++++-
+ 4 files changed, 194 insertions(+), 29 deletions(-)
+
+commit d8bc3891659061969e08c3cbbf1e59114cd98aed
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Dec 29 19:01:42 2011 +0900
+
+    Optimize the number of property notification.
+
+ libskk/candidate.vala |    4 +++-
+ libskk/context.vala   |   29 ++++++++++++++++++++---------
+ 2 files changed, 23 insertions(+), 10 deletions(-)
+
+commit 605f2cb6f226592eec49db65ca0147315f7e57f4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Dec 29 11:49:17 2011 +0900
+
+    Don't update preedit when CandidateList is cleared.
+
+ libskk/context.vala |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+commit 2150d6572de6300d8a467c36eccb10dcb6b1aa70
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 18:03:18 2011 +0900
+
+    Fix doc.
+
+ libskk/candidate.vala |   14 ++++++++------
+ libskk/cdb-dict.vala  |   13 ++++++++++++-
+ libskk/context.vala   |   15 +++++++++++----
+ libskk/file-dict.vala |    4 +++-
+ libskk/key-event.vala |   38 +++++++++++++++++++++++++++++++++++---
+ 5 files changed, 69 insertions(+), 15 deletions(-)
+
+commit 8ae149098b1ceafecee935137a07713fbfc3b7db
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 17:13:40 2011 +0900
+
+    Bump version to 0.0.6.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 6381269eda384aaaad92d7ab8680fdf8f90a8b81
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 17:14:23 2011 +0900
+
+    Relax valac version requirement for Fedora 15.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 88a98083ae9ad434849d92b25a8a7baf800781c2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 16:51:12 2011 +0900
+
+    Make sure to abort dict edit and restore surrounding text on
+    Context.reset.
+
+ configure.ac        |    2 +-
+ libskk/context.vala |   21 +++++++++++++++++----
+ libskk/state.vala   |    6 ++++++
+ tests/common.c      |    5 ++++-
+ tests/context.c     |    8 +++++---
+ tools/tool.vala     |    1 +
+ 6 files changed, 34 insertions(+), 9 deletions(-)
+
+commit 37e20192619520da1051622949d67ac57c102366
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 12:33:31 2011 +0900
+
+    Support (current-time-string), (pwd), and (skk-version).
+
+ libskk/expr.vala |   15 +++++++++++++--
+ 1 files changed, 13 insertions(+), 2 deletions(-)
+
+commit 914581ea7fed4209aa5f7a75015871b3f22fbec2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 11:32:36 2011 +0900
+
+    Add doc.
+
+ NEWS                |   40 ++++++++++++++++++++++++++++++++++++++++
+ README              |   30 ++++++++++++++++++++++++++++++
+ libskk/context.vala |   25 +++++++++++++++++++++++++
+ 3 files changed, 95 insertions(+), 0 deletions(-)
+
+commit 16f3818753c48679909be6097487efe2ac1e7c1a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 11:32:11 2011 +0900
+
+    Assign Left and Right to shrink-preedit and expand-preedit.
+
+ rules/default/keymap/default.json |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+commit 7043e20bf0eef7e4c96c8a397e78581f9b989873
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 28 11:31:47 2011 +0900
+
+    Fix memleak on loading user dict.
+
+ libskk/user-dict.vala |   22 ++++++++++++++++++++--
+ 1 files changed, 20 insertions(+), 2 deletions(-)
+
+commit a25700ec48fffb89d0bb95aeae24ba4bb0364b77
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 27 18:28:33 2011 +0900
+
+    Make sure to commit remaining surrounding text after SPC following
+    ▽.
+
+ libskk/state.vala |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+commit 9e85632c09a49f163c2d0d626fc1dfa39e548ede
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 27 18:24:26 2011 +0900
+
+    Fix reconvert behavior.
+
+ libskk/context.vala |   21 ++++++++++-
+ libskk/state.vala   |   98
+ +++++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 96 insertions(+), 23 deletions(-)
+
+commit 523520a246908f6b9b0d614b8e0bd75e9bb6896d
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 27 17:01:08 2011 +0900
+
+    Support reconvert based on surrounding text.
+
+ libskk/context.vala               |    6 +++
+ libskk/state.vala                 |   71
+ ++++++++++++++++++++++++++++---------
+ rules/default/keymap/default.json |    4 ++-
+ 3 files changed, 63 insertions(+), 18 deletions(-)
+
+commit ae78f9f1e76f3ab7dc5c15a56a89c2569b96d72a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Dec 26 18:05:20 2011 +0900
+
+    Refactor API.
+
+    Split Context.get_output into peek_output and poll_output, and abolish
+    list_typing_rule.
+
+ libskk/context.vala   |   42 +++++++++++++++++++++++++++++-------------
+ libskk/key-event.vala |    3 +--
+ libskk/nicola.vala    |   38 +++++++++++++++++++++++++++++---------
+ libskk/rule.vala      |    2 +-
+ tools/tool.vala       |    4 ++--
+ 5 files changed, 62 insertions(+), 27 deletions(-)
+
+commit d3aae2dfe1384aa74a27f9f4f556c418b7de811e
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Dec 26 16:29:09 2011 +0900
+
+    Simplify rule loading API.
+
+ libskk/map-file.vala |    6 +++---
+ libskk/rule.vala     |   46
+ +++++++++++++++++++++++++++++-----------------
+ 2 files changed, 32 insertions(+), 20 deletions(-)
+
+commit 207ef0f6a19b77da8017a530a86cfcd970b4a835
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Sun Dec 25 09:55:28 2011 +0900
+
+    Bump version to 0.0.5.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 18f3427bda4937096123c517dd6fc4111e7e11e8
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Sun Dec 25 09:54:46 2011 +0900
+
+    Add license header to Makefile.am and configure.ac.
+
+ Makefile.am        |   16 ++++++++
+ configure.ac       |   16 ++++++++
+ libskk/Makefile.am |   99
+ ++++++++++++++++++++++++++++++----------------------
+ rules/Makefile.am  |   46 +++++++++++++++++++-----
+ tests/Makefile.am  |   16 ++++++++
+ tools/Makefile.am  |   22 ++++++++++-
+ 6 files changed, 161 insertions(+), 54 deletions(-)
+
+commit d54734ab2b752c9f5a2e6748ed5ec7ece6707f31
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Sun Dec 25 09:36:29 2011 +0900
+
+    Fix buffer overrun when reading skkserv response (Issue#2).
+
+ libskk/skkserv.vala |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
+
+commit 5bc3defcaf7fe53dbe0955c2043ed9fa29d5f91b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Dec 23 07:30:29 2011 +0900
+
+    Clarify wording "rule" and "map file" in README.rules.
+
+ rules/README.rules |   31 ++++++++++++++++---------------
+ 1 files changed, 16 insertions(+), 15 deletions(-)
+
+commit cfc66724fefe53f9db603e6e651b17e663182303
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Dec 22 16:40:13 2011 +0900
+
+    Notify Context:candidates change.
+
+ libskk/context.vala |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+commit f21878c4ad915aa1e871627d54c839e234f23fbf
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Dec 22 16:09:06 2011 +0900
+
+    Fix zipcode conversion and avoid memleaks in Gee.TreeSet.
+
+ libskk/candidate.vala |   93 ++++++++++++------------------------------
+ libskk/cdb-dict.vala  |    2 +-
+ libskk/context.vala   |   49 +++++++++++++----------
+ libskk/dict.vala      |   31 +++++++++------
+ libskk/file-dict.vala |    2 +-
+ libskk/skkserv.vala   |    6 ++-
+ libskk/state.vala     |   66 ++++++++++++++++++------------
+ libskk/user-dict.vala |  106
+ ++++++++++++++++++++++++++-----------------------
+ tests/common.c        |   11 ++++-
+ tests/context.c       |    4 ++
+ tests/file-dict.c     |   18 ++++++--
+ 11 files changed, 203 insertions(+), 185 deletions(-)
+
+commit 939fe86af61257a8946e88310174f5ef04ec6b0b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Dec 22 11:14:48 2011 +0900
+
+    Fix a typo in README.
+
+ README |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 7f813d52d7e26da2407659e0ffb575f378c287cb
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Dec 22 11:13:08 2011 +0900
+
+    Reduce the number of pkg-config dependencies.
+
+ configure.ac |   20 ++++++++++++++++----
+ 1 files changed, 16 insertions(+), 4 deletions(-)
+
+commit b6f23cab13196693505d0e67f3b0d946ec8f03ea
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Dec 22 11:00:49 2011 +0900
+
+    Switch to use git.mk from pango.
+
+ .gitignore         |   35 ---------
+ Makefile.am        |   17 +++++
+ git.mk             |  200
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/Makefile.am |   21 ++++--
+ rules/Makefile.am  |    2 +
+ tests/Makefile.am  |    2 +
+ tools/Makefile.am  |   23 ++++--
+ 7 files changed, 250 insertions(+), 50 deletions(-)
+
+commit f6fcf56d94519dfcf8f6c650ee9262b7dcf11f59
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Dec 21 09:50:13 2011 +0900
+
+    Display library deps when PKG_CHECK_MODULES fails (Issue#1).
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ced30a300afd08464aa3127183b0c16643d5e651
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 20 13:31:16 2011 +0900
+
+    Bump version to 0.0.4.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit b767c6befba309f5b2603c739aa6524784ec990b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 20 13:03:12 2011 +0900
+
+    Fix extracting okurigana-prefix for "っX".
+
+ libskk/util.vala |   22 +++++++++++++---------
+ 1 files changed, 13 insertions(+), 9 deletions(-)
+
+commit 4e0aeefbb94bc39dbbcf2a0c0b51907b1d6d57bc
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 20 11:08:21 2011 +0900
+
+    Bump version to 0.0.3.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 084f34765a52e4a4c4b392c64c69d16d51e49337
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 20 10:31:26 2011 +0900
+
+    Preserve previous candidate list when dict edit.
+
+ libskk/candidate.vala |    5 ++++-
+ libskk/context.vala   |   23 +++++++++++++----------
+ libskk/state.vala     |   14 ++++++--------
+ tests/context.c       |   17 +++++++++++++++++
+ 4 files changed, 40 insertions(+), 19 deletions(-)
+
+commit e4734db27a434eaea641baaf5cf5c059af0a011e
+Merge: e6556b8 b4209c0
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Dec 20 09:52:26 2011 +0900
+
+    Merge branch 'master' of github.com:ueno/libskk
+
+    Conflicts:
+	rules/README.rules
+
+commit e6556b8ce2304ae673224a8aacdb0dd19120a0fd
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 18:08:03 2011 +0900
+
+    Update README.rules.
+
+ rules/README.rules |	38 +++++++++++++++++++++++++++++++++++---
+ 1 files changed, 35 insertions(+), 3 deletions(-)
+
+commit b4209c0832deb09f92b55ea158216519fd971023
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 18:08:03 2011 +0900
+
+    Update README.rules.
+
+ rules/README.rules |	38 +++++++++++++++++++++++++++++++++++---
+ 1 files changed, 35 insertions(+), 3 deletions(-)
+
+commit d9f293a3945c415e426e6367aa7d154e970ab442
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 17:58:42 2011 +0900
+
+    List available commands in doc.
+
+ rules/README.rules |	17 +++++++++++++++++
+ 1 files changed, 17 insertions(+), 0 deletions(-)
+
+commit 6f15e9d562300ecc4f849dca908e1276773af111
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 17:54:39 2011 +0900
+
+    Update README.rules.
+
+ rules/README.rules |	21 +++++++++++----------
+ 1 files changed, 11 insertions(+), 10 deletions(-)
+
+commit 262c0ea6ba5dec1985cbdf5f0cfdf0845e2df6c7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 16:55:41 2011 +0900
+
+    Support (concat ...).
+
+ libskk/Makefile.am    |    1 +
+ libskk/candidate.vala |    3 +
+ libskk/expr.vala      |  183
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/state.vala     |  123 +++++++++++++++++++--------------
+ tests/context.c       |    2 +
+ tests/file-dict.dat   |    2 +
+ 6 files changed, 263 insertions(+), 51 deletions(-)
+
+commit f6196123460b79df47b242c66027abc1f79121b5
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 15:07:58 2011 +0900
+
+    Rename commit-and-newline to commit-unhandled.
+
+ libskk/state.vala		   |	8 ++++----
+ rules/default/keymap/default.json |	4 ++--
+ rules/nicola/keymap/default.json  |	4 ++--
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+commit 749c2a4456ee53ad09507954fbde8a6a18ab95a7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 14:36:34 2011 +0900
+
+    Fix small conversion behavior.
+
+ libskk/context.vala |	  1 +
+ libskk/state.vala   |	 32 ++++++++++++++++++++++++++++----
+ tests/context.c     |	  6 ++++++
+ 3 files changed, 35 insertions(+), 4 deletions(-)
+
+commit d2ae14c63897027ce49bb2530c6aa112f5588f55
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 10:58:34 2011 +0900
+
+    Implement UserDict#complete.
+
+ libskk/file-dict.vala |   32 ++++++++++++++++++++------------
+ libskk/user-dict.vala |   34 +++++++++++++++++++++++++++++++---
+ tests/context.c       |   15 ++++++++++-----
+ 3 files changed, 61 insertions(+), 20 deletions(-)
+
+commit d0694aa4707b537d830cb20db723bbb1bd85427a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 19 10:29:10 2011 +0900
+
+    Cancel okuri-ari conversion with DEL.
+
+ libskk/state.vala |   11 ++++++++---
+ tests/context.c   |	2 ++
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+commit a7774a17d49564967eeaeb08dd05c43abb4c7ade
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sun Dec 18 11:13:11 2011 +0900
+
+    Rename "enter" to "commit-and-newline".
+
+ libskk/state.vala			    |	13 +++++++++----
+ rules/default/keymap/default.json	    |	 4 ++--
+ rules/default/keymap/hankaku-katakana.json |	 3 ++-
+ rules/default/keymap/hiragana.json	    |	 3 ++-
+ rules/default/keymap/katakana.json	    |	 3 ++-
+ rules/nicola/keymap/default.json	    |	 4 ++--
+ 6 files changed, 19 insertions(+), 11 deletions(-)
+
+commit 5cf756b8b2d55822ff7c871b2d59b358ca09b2c6
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 17:24:28 2011 +0900
+
+    Bump version to 0.0.2.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ed87ce54627b80de5511b26a852b9d105e19cdea
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 16:17:29 2011 +0900
+
+    Rewrite hiragana/katakana/hankaku-katakana conversion.
+
+ libskk/util.vala |  258
+ ++++++++++++++++++++++++++++++++----------------------
+ tests/context.c  |    2 +-
+ 2 files changed, 154 insertions(+), 106 deletions(-)
+
+commit 5010496525d61bf73edf70eeeb5da4998499eaca
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 12:21:36 2011 +0900
+
+    Fix hankaku katakana to kanji conversion.
+
+ libskk/util.vala |    9 ++++++---
+ tests/context.c  |    1 +
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+commit 3ee7c61f921bddda0227e7b2e982e8b7a08c0b58
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 11:59:37 2011 +0900
+
+    Fix tcode and trycode rom-kana map-files.
+
+ rules/tcode/rom-kana/default.json   | 2710 ++++++++--------
+ rules/trycode/rom-kana/default.json | 6484
+ +++++++++++++++++-----------------
+ 2 files changed, 4597 insertions(+), 4597 deletions(-)
+
+commit f897b0a9b4553270e833c9cb69cdbafef0257f38
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 11:40:16 2011 +0900
+
+    Check rule parse error when listing.
+
+ libskk/rule.vala |   14 +++++++++-----
+ 1 files changed, 9 insertions(+), 5 deletions(-)
+
+commit d280d759f0f59cded8040fe1c890ee8a65aeff7b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 10:49:36 2011 +0900
+
+    Support katakana input with NICOLA.
+
+ libskk/state.vala	       |    8 ++++++--
+ rules/nicola/keymap/kana.json |    5 ++++-
+ tests/context.c	       |    6 ++++++
+ 3 files changed, 16 insertions(+), 3 deletions(-)
+
+commit 351ed064b6f16d0de50cae9a467aa5486fd2e618
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 10:35:58 2011 +0900
+
+    Install nicola/keymap/default.json.
+
+ rules/Makefile.am |	1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 70da88c65146f15f7636f0ae58172fe787de8550
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 10:30:00 2011 +0900
+
+    Add missing nicola/keymap/default.json.
+
+ rules/nicola/keymap/default.json |   20 ++++++++++++++++++++
+ 1 files changed, 20 insertions(+), 0 deletions(-)
+
+commit c86c328ecb5f0799c6cc0d33e9f2689a0f521caf
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 10:23:24 2011 +0900
+
+    Fix metadata of tutcode-touch16x rule.
+
+ rules/tutcode-touch16x/metadata.json |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit d234bc7c5f047aca04e6b61061936fdfbad0f3ea
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 10:17:33 2011 +0900
+
+    Support okuri-ari conversion with NICOLA.
+
+ libskk/state.vala	       |   24 +++++++++++++++++++-----
+ rules/nicola/keymap/kana.json |    2 +-
+ tests/context.c	       |    4 ++++
+ 3 files changed, 24 insertions(+), 6 deletions(-)
+
+commit 0c4f23f314c0f1567b026253df6dbd2278c237b2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 09:57:14 2011 +0900
+
+    Abolish RomKanaConverter#is_active().
+
+ libskk/rom-kana.vala |    9 ---------
+ libskk/state.vala    |   48
+ ++++++++++++++++++++++++------------------------
+ 2 files changed, 24 insertions(+), 33 deletions(-)
+
+commit 3de68f4f21642eea5d00cae4682bdf2444520542
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 16 04:03:56 2011 +0900
+
+    Make TUT-Code Touch16+ extension as a separate rule.
+
+ libskk/rule.vala				    |	 5 +-
+ rules/Makefile.am				    |	30 +-
+ rules/act/keymap/default.json			    |	 5 +
+ rules/act/metadata.json			    |	 4 +
+ rules/azik/metadata.json			    |	 4 +
+ rules/default/metadata.json			    |	 4 +
+ rules/kzik/metadata.json			    |	 4 +
+ rules/nicola/metadata.json			    |	 2 +-
+ rules/tcode/metadata.json			    |	 2 +-
+ rules/trycode/metadata.json			    |	 2 +-
+ rules/tut-code/keymap/hankaku-katakana.json	    |	 5 -
+ rules/tut-code/keymap/hiragana.json		    |	 5 -
+ rules/tut-code/keymap/katakana.json		    |	 5 -
+ rules/tut-code/keymap/latin.json		    |	 5 -
+ rules/tut-code/keymap/wide-latin.json		    |	 5 -
+ rules/tut-code/rom-kana/default.json		    | 2645
+ --------------------
+ rules/tut-code/rom-kana/touch16+.json		    |	18 -
+ .../tutcode-touch16x/keymap/hankaku-katakana.json  |	 5 +
+ rules/tutcode-touch16x/keymap/hiragana.json	    |	 5 +
+ rules/tutcode-touch16x/keymap/katakana.json	    |	 5 +
+ rules/tutcode-touch16x/keymap/latin.json	    |	 5 +
+ rules/tutcode-touch16x/keymap/wide-latin.json	    |	 5 +
+ rules/tutcode-touch16x/metadata.json		    |	 4 +
+ rules/tutcode-touch16x/rom-kana/default.json	    |	18 +
+ rules/tutcode/keymap/hankaku-katakana.json	    |	 5 +
+ rules/tutcode/keymap/hiragana.json		    |	 5 +
+ rules/tutcode/keymap/katakana.json		    |	 5 +
+ rules/tutcode/keymap/latin.json		    |	 5 +
+ rules/tutcode/keymap/wide-latin.json		    |	 5 +
+ rules/tutcode/metadata.json			    |	 4 +
+ rules/tutcode/rom-kana/default.json		    | 2645
+ ++++++++++++++++++++
+ 31 files changed, 2767 insertions(+), 2704 deletions(-)
+
+commit c1b12bec9468a656f3a4d4054089a57b180498be
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 15 18:18:14 2011 +0900
+
+    Add T-Code and TRY-CODE rules.
+
+ rules/Makefile.am			    |	20 +
+ rules/tcode/keymap/hankaku-katakana.json   |	 5 +
+ rules/tcode/keymap/hiragana.json	    |	 5 +
+ rules/tcode/keymap/katakana.json	    |	 5 +
+ rules/tcode/keymap/latin.json		    |	 5 +
+ rules/tcode/keymap/wide-latin.json	    |	 5 +
+ rules/tcode/metadata.json		    |	 4 +
+ rules/tcode/rom-kana/default.json	    | 1360 ++++++++++++
+ rules/trycode/keymap/hankaku-katakana.json |	 5 +
+ rules/trycode/keymap/hiragana.json	    |	 5 +
+ rules/trycode/keymap/katakana.json	    |	 5 +
+ rules/trycode/keymap/latin.json	    |	 5 +
+ rules/trycode/keymap/wide-latin.json	    |	 5 +
+ rules/trycode/metadata.json		    |	 4 +
+ rules/trycode/rom-kana/default.json	    | 3249
+ ++++++++++++++++++++++++++++
+ 15 files changed, 4687 insertions(+), 0 deletions(-)
+
+commit 8d2bd3eb5ad06399d456e9302b3543b86025b593
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 15 17:07:31 2011 +0900
+
+    Embed kana char in insert-kana-* command name.
+
+ libskk/state.vala	       |   15 +--
+ rules/nicola/keymap/kana.json |  210
+ ++++++++++++++++++++--------------------
+ 2 files changed, 110 insertions(+), 115 deletions(-)
+
+commit 4f0edd9b149d0ee3fba9f5a651e77de739795fca
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 15 16:55:03 2011 +0900
+
+    Extract okuri-prefix from okurigana instead of input key sequence.
+
+ libskk/rom-kana.vala |   17 -----------------
+ libskk/state.vala    |   13 ++++++++-----
+ libskk/util.vala     |   28 ++++++++++++++++++++++++++++
+ tests/context.c      |    1 +
+ 4 files changed, 37 insertions(+), 22 deletions(-)
+
+commit cd368387f2a1c3dd96dc1c3a3cc0c57e1788d19b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 15 16:11:53 2011 +0900
+
+    Refactor command handling.
+
+ libskk/rule.vala  |   69 ++++++++++-------------
+ libskk/state.vala |  160
+ ++++++++++++++++++++++++++--------------------------
+ libskk/util.vala  |   70 +++++++++++++----------
+ tests/context.c   |	2 +
+ 4 files changed, 152 insertions(+), 149 deletions(-)
+
+commit bc5f98dbd169b934ff42d867aacbcd4aeaaea4b8
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Dec 14 18:01:21 2011 +0900
+
+    Update NICOLA rule.
+
+ libskk/key-event.vala		   |	5 +++++
+ libskk/nicola.vala		   |   11 ++++++++++-
+ rules/Makefile.am		   |	2 +-
+ rules/nicola/keymap/hiragana.json |	7 ++++++-
+ rules/nicola/keymap/kana.json	   |	3 +++
+ rules/nicola/keymap/katakana.json |	7 ++++++-
+ 6 files changed, 31 insertions(+), 4 deletions(-)
+
+commit 5bc96942f1a375d7614200c133ef46a7bc8101bb
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Dec 13 18:08:31 2011 +0900
+
+    Fix \0 handling in RomKanaConverter.append().
+
+ libskk/rom-kana.vala |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 60d56cf6b55c32643a9cfbb5345716a03db7f855
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Dec 13 17:26:22 2011 +0900
+
+    Support NICOLA.
+
+ README					   |	2 +
+ libskk/context.vala			   |   66 ++++++++++-
+ libskk/key-event.vala			   |   13 +-
+ libskk/nicola.vala			   |   72 ++++++++-----
+ libskk/rule.vala			   |	9 +-
+ libskk/state.vala			   |   10 ++-
+ rules/Makefile.am			   |   11 ++
+ rules/nicola/keymap/hankaku-katakana.json |	5 +
+ rules/nicola/keymap/hiragana.json	   |	5 +
+ rules/nicola/keymap/kana.json		   |  173
+ +++++++++++++++++++++++++++++
+ rules/nicola/keymap/katakana.json	   |	5 +
+ rules/nicola/keymap/latin.json		   |	5 +
+ rules/nicola/keymap/wide-latin.json	   |	5 +
+ rules/nicola/metadata.json		   |	5 +
+ rules/nicola/rom-kana/default.json	   |	6 +
+ tests/context.c			   |   53 ++++++++-
+ tools/tool.vala			   |	5 +-
+ 17 files changed, 400 insertions(+), 50 deletions(-)
+
+commit dbe3850236d01946720faf457371d26f4525e7f3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Dec 13 12:39:00 2011 +0900
+
+    Load KeyEventFilter from rule.
+
+ libskk/context.vala |	 17 +++----
+ libskk/rule.vala    |	137
+ ++++++++++++++++++++++++++++++++-------------------
+ 2 files changed, 93 insertions(+), 61 deletions(-)
+
+commit ba9f141a4b167e28c04a574f09e4a8ae001f7c75
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Dec 13 12:06:52 2011 +0900
+
+    Expose Rule class.
+
+ libskk/context.vala |	  2 +-
+ libskk/rule.vala    |	 52
+ ++++++++++++++++++++++++++++++++++++--------------
+ libskk/state.vala   |	 16 +++++---------
+ tests/context.c     |	  8 ++++++-
+ tools/tool.vala     |	  8 ++++++-
+ 5 files changed, 58 insertions(+), 28 deletions(-)
+
+commit 07c635e86fbabb1759d97795e87728729ef181e8
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Dec 13 11:26:37 2011 +0900
+
+    Rename Rule to MapFile, TypingRule to Rule.
+
+ libskk/Makefile.am	 |    2 +-
+ libskk/key-event.vala	 |    2 +-
+ libskk/map-file.vala	 |  135 ++++++++++++++++++++++
+ libskk/nicola.vala	 |    1 +
+ libskk/rom-kana.vala	 |    8 +-
+ libskk/rule.vala	 |  291
+ ++++++++++++++++++++++++-----------------------
+ libskk/state.vala	 |   14 +-
+ libskk/typing-rule.vala |  111 ------------------
+ libskk/util.vala	 |   18 +++
+ 9 files changed, 316 insertions(+), 266 deletions(-)
+
+commit ed21490ad5ccd1a83923b6434131db5755356079
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 12 16:06:46 2011 +0900
+
+    Add Skk.list_typing_rules().
+
+ libskk/context.vala |	 10 +++++++
+ libskk/rule.vala    |	 75
+ ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ rules/Makefile.am   |	  5 +++
+ tools/tool.vala     |	 14 +++++++++
+ 4 files changed, 103 insertions(+), 1 deletions(-)
+
+commit f6db40c5632a7de13d475017066ac53ac9a19c1f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 12 14:32:13 2011 +0900
+
+    Supply correct LIBSKK_DATA_PATH to tests.
+
+ libskk/rule.vala  |	9 +++++++--
+ tests/Makefile.am |	2 +-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+commit ce695710f9e9eaa2dd723ae34dca6c6f9709edec
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 12 11:35:27 2011 +0900
+
+    Merge rom-kana rule and keymaps into a typing rule.
+
+ README			 |    4 ++
+ libskk/Makefile.am	 |    1 +
+ libskk/context.vala	 |   12 +++--
+ libskk/keymap.vala	 |   20 ++-------
+ libskk/nicola.vala	 |    6 +++
+ libskk/rom-kana.vala	 |  106
+ +++++++++-----------------------------------
+ libskk/rule.vala	 |   10 ++--
+ libskk/skk-1.0.deps	 |    1 +
+ libskk/state.vala	 |   44 ++++++++-----------
+ libskk/typing-rule.vala |  111
+ +++++++++++++++++++++++++++++++++++++++++++++++
+ tests/context.c	 |    2 +-
+ tools/Makefile.am	 |    2 +-
+ tools/tool.vala	 |   10 ++--
+ 13 files changed, 187 insertions(+), 142 deletions(-)
+
+commit 906d884f7a8649bbfe057e4930f654f56f117986
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 9 16:52:51 2011 +0900
+
+    Change the rules directory layout.
+
+ Makefile.am				     |	  2 +-
+ configure.ac				     |	  4 +-
+ data/Makefile.am			     |	  2 -
+ data/README.rules			     |	 80 -
+ data/keymap/Makefile.am		     |	  8 -
+ data/keymap/default.json		     |	 20 -
+ data/keymap/hankaku-katakana.json	     |	 13 -
+ data/keymap/hiragana.json		     |	 13 -
+ data/keymap/katakana.json		     |	 13 -
+ data/keymap/latin.json			     |	 10 -
+ data/keymap/wide-latin.json		     |	 10 -
+ data/rom-kana/Makefile.am		     |	  8 -
+ data/rom-kana/act.json			     |	676 -------
+ data/rom-kana/azik.json		     |	497 -----
+ data/rom-kana/default.json		     |	242 ---
+ data/rom-kana/kzik.json		     |	521 ------
+ data/rom-kana/tut-code-touch16plus.json     |	 18 -
+ data/rom-kana/tut-code.json		     | 2645
+ ---------------------------
+ libskk/keymap.vala			     |	  4 +-
+ libskk/rom-kana.vala			     |	  4 +-
+ libskk/rule.vala			     |	 38 +-
+ libskk/state.vala			     |	 10 +-
+ rules/Makefile.am			     |	 53 +
+ rules/README.rules			     |	104 ++
+ rules/act/keymap/hankaku-katakana.json      |	  5 +
+ rules/act/keymap/hiragana.json		     |	  5 +
+ rules/act/keymap/katakana.json		     |	  5 +
+ rules/act/keymap/latin.json		     |	  5 +
+ rules/act/keymap/wide-latin.json	     |	  5 +
+ rules/act/rom-kana/default.json	     |	671 +++++++
+ rules/azik/keymap/hankaku-katakana.json     |	  5 +
+ rules/azik/keymap/hiragana.json	     |	  5 +
+ rules/azik/keymap/katakana.json	     |	  5 +
+ rules/azik/keymap/latin.json		     |	  5 +
+ rules/azik/keymap/wide-latin.json	     |	  5 +
+ rules/azik/rom-kana/default.json	     |	497 +++++
+ rules/default/keymap/default.json	     |	 20 +
+ rules/default/keymap/hankaku-katakana.json  |	 13 +
+ rules/default/keymap/hiragana.json	     |	 13 +
+ rules/default/keymap/katakana.json	     |	 13 +
+ rules/default/keymap/latin.json	     |	 10 +
+ rules/default/keymap/wide-latin.json	     |	 10 +
+ rules/default/rom-kana/default.json	     |	242 +++
+ rules/kzik/keymap/hankaku-katakana.json     |	  5 +
+ rules/kzik/keymap/hiragana.json	     |	  5 +
+ rules/kzik/keymap/katakana.json	     |	  5 +
+ rules/kzik/keymap/latin.json		     |	  5 +
+ rules/kzik/keymap/wide-latin.json	     |	  5 +
+ rules/kzik/rom-kana/default.json	     |	521 ++++++
+ rules/tut-code/keymap/hankaku-katakana.json |	  5 +
+ rules/tut-code/keymap/hiragana.json	     |	  5 +
+ rules/tut-code/keymap/katakana.json	     |	  5 +
+ rules/tut-code/keymap/latin.json	     |	  5 +
+ rules/tut-code/keymap/wide-latin.json	     |	  5 +
+ rules/tut-code/rom-kana/default.json	     | 2645
+ +++++++++++++++++++++++++++
+ rules/tut-code/rom-kana/touch16+.json	     |	 18 +
+ 56 files changed, 4969 insertions(+), 4799 deletions(-)
+
+commit 2bea3083dd42b6b214c8176337b9eb4328b65485
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 9 13:10:21 2011 +0900
+
+    Fix some mistake in rom-kana.
+
+ libskk/rom-kana.vala |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 1027f1c1b14719924e9e90ff48affe5e7582c995
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 9 12:55:53 2011 +0900
+
+    Make sure that strv ends with null.
+
+ libskk/key-event.vala |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit c84c4c59ea9757d5d307eb174fdc000667e82554
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 9 12:44:04 2011 +0900
+
+    Make sure that KeyEvent:name and KeyEvent:code are always set.
+
+ libskk/key-event.vala |   46
+ +++++++++++++++++++++++++++-------------------
+ 1 files changed, 27 insertions(+), 19 deletions(-)
+
+commit 6525b019f4098b7dfdd85ba08083c7017e9a68b6
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 9 12:32:27 2011 +0900
+
+    Check rule parse error.
+
+ libskk/keymap.vala   |    7 ++++++-
+ libskk/rom-kana.vala |    9 +++++++--
+ libskk/rule.vala     |    4 ++--
+ libskk/state.vala    |   26 ++++++++++++++++----------
+ 4 files changed, 31 insertions(+), 15 deletions(-)
+
+commit bb6b13e9be23b6601a9f530caef5e3825829eebe
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 9 12:14:38 2011 +0900
+
+    Don't use bare \x7F.
+
+ data/keymap/default.json |    2 +-
+ libskk/context.vala	  |    2 +-
+ tests/context.c	  |    8 ++++----
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+commit 285972fb30e06794cea97bc90c8d71d51441e08f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 9 10:07:29 2011 +0900
+
+    Factor out keymap from the code to json files.
+
+ configure.ac			   |	1 +
+ data/Makefile.am		   |	3 +-
+ data/README.rules		   |   80 ++++++++++++++++++++
+ data/keymap/Makefile.am	   |	8 ++
+ data/keymap/default.json	   |   20 +++++
+ data/keymap/hankaku-katakana.json |   13 +++
+ data/keymap/hiragana.json	   |   13 +++
+ data/keymap/katakana.json	   |   13 +++
+ data/keymap/latin.json		   |   10 +++
+ data/keymap/wide-latin.json	   |   10 +++
+ data/rom-kana/Makefile.am	   |	1 -
+ data/rom-kana/README.rom-kana	   |   48 ------------
+ libskk/Makefile.am		   |	1 +
+ libskk/key-event.vala		   |   40 ++++++++++
+ libskk/keymap.vala		   |   99 ++++++-------------------
+ libskk/rom-kana.vala		   |  128 +++++---------------------------
+ libskk/rule.vala		   |  148
+ +++++++++++++++++++++++++++++++++++++
+ libskk/state.vala		   |   42 ++++------
+ 18 files changed, 418 insertions(+), 260 deletions(-)
+
+commit e4bcd5a4cabae19ca01aeb0c72531688df4e62ed
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 8 15:31:33 2011 +0900
+
+    Rename standard.json to default.json.
+
+ data/rom-kana/Makefile.am     |    2 +-
+ data/rom-kana/README.rom-kana |    4 +-
+ data/rom-kana/act.json        |    2 +-
+ data/rom-kana/azik.json       |    2 +-
+ data/rom-kana/default.json    |  242
+ +++++++++++++++++++++++++++++++++++++++++
+ data/rom-kana/kzik.json       |    2 +-
+ data/rom-kana/standard.json   |  242
+ -----------------------------------------
+ 7 files changed, 248 insertions(+), 248 deletions(-)
+
+commit b154a3979596a429c330e358c9d95456b03f5cf3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 8 12:56:30 2011 +0900
+
+    Factor out keymap from the code.
+
+ libskk/Makefile.am    |    1 +
+ libskk/context.vala   |    3 +-
+ libskk/key-event.vala |    8 +-
+ libskk/keymap.vala    |  107 ++++++++++++++++++++++
+ libskk/state.vala     |  243
+ +++++++++++++++++++++++--------------------------
+ 5 files changed, 228 insertions(+), 134 deletions(-)
+
+commit 9f9679edff9113f97198caaa026fc144f47e0c56
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Dec 7 17:37:38 2011 +0900
+
+    Add experimental NICOLA support (not working yet).
+
+ libskk/Makefile.am    |    1 +
+ libskk/context.vala   |   12 +-
+ libskk/key-event.vala |   91 ++++++++++++-------
+ libskk/nicola.vala    |  242
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 307 insertions(+), 39 deletions(-)
+
+commit 4e5bc3b2cc7b64ebcc87b3b2b486541fad4f8870
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Dec 7 09:50:38 2011 +0900
+
+    Extend KeyEvent to accept more modifier prefixes.
+
+ libskk/key-event.vala |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+commit 2db61577fefdb99364f0e8a694257770b2afb3c7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Dec 6 17:42:58 2011 +0900
+
+    Apply key event filter before passing key events to state handler.
+
+ libskk/context.vala   |   20 ++++++++++++
+ libskk/key-event.vala |   78
+ ++++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 94 insertions(+), 4 deletions(-)
+
+commit 9f09464425585f1908e6103c773551d084200e18
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Dec 5 17:42:50 2011 +0900
+
+    Expose KeyEvent.
+
+ libskk/context.vala   |   10 +++++-----
+ libskk/key-event.vala |   15 ++++++++++-----
+ 2 files changed, 15 insertions(+), 10 deletions(-)
+
+commit 8e9edf166e3448367b8d30f25fa5e1ef6f8e7004
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sun Dec 4 18:19:47 2011 +0900
+
+    Fix RomKanaNode.remove().
+
+ libskk/rom-kana.vala |   34 ++++++++++++++++++++++++----------
+ 1 files changed, 24 insertions(+), 10 deletions(-)
+
+commit ef9da4847559b372214d8c0435f6861b01198757
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sat Dec 3 16:39:48 2011 +0900
+
+    Update COPYING.
+
+ COPYING | 1130
+ ++++++++++++++++++++++++++++++++++++---------------------------
+ 1 files changed, 651 insertions(+), 479 deletions(-)
+
+commit 647947b12578b6e462d10349964fc1bbff29e3ab
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sat Dec 3 16:32:10 2011 +0900
+
+    Add more examples in README.
+
+ README |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+commit f52e2c5b97bb731d597a00f08a513b39c3be8579
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sat Dec 3 16:29:10 2011 +0900
+
+    Change the license to GPLv3+.
+
+ libskk/candidate.vala |   30 ++++++++++++++----------------
+ libskk/cdb-dict.vala  |   30 ++++++++++++++----------------
+ libskk/context.vala   |   30 ++++++++++++++----------------
+ libskk/dict.vala      |   30 ++++++++++++++----------------
+ libskk/encoding.vala  |   30 ++++++++++++++----------------
+ libskk/file-dict.vala |   30 ++++++++++++++----------------
+ libskk/key-event.vala |   30 ++++++++++++++----------------
+ libskk/rom-kana.vala  |   30 ++++++++++++++----------------
+ libskk/skkserv.vala   |   30 ++++++++++++++----------------
+ libskk/state.vala     |   31 +++++++++++++++----------------
+ libskk/user-dict.vala |   30 ++++++++++++++----------------
+ libskk/util.vala      |   30 ++++++++++++++----------------
+ 12 files changed, 169 insertions(+), 192 deletions(-)
+
+commit 066e406209c1fad64ad833aaad7317eea4e02766
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sat Dec 3 15:53:44 2011 +0900
+
+    Fix reloading rom-kana rule.
+
+ libskk/rom-kana.vala |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit a4ec8d8240d1c1aa86c78c6b026122e0c9eda548
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sat Dec 3 11:27:04 2011 +0900
+
+    Add skk tool.
+
+ Makefile.am	       |    2 +-
+ README		       |    3 +
+ configure.ac	       |    2 +-
+ libskk/config.vapi    |    3 +
+ libskk/context.vala   |    6 +++
+ libskk/user-dict.vala |    4 +-
+ po/POTFILES.in        |    1 +
+ po/POTFILES.skip      |    1 +
+ po/ja.po	       |   22 ++++++++-
+ tools/Makefile.am     |   18 ++++++++
+ tools/tool.vala       |  112
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ 11 files changed, 168 insertions(+), 6 deletions(-)
+
+commit 6f69b778abbec68700195fc3a3cd8ef247e3f38d
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 18:19:49 2011 +0900
+
+    Wrap long lines.
+
+ libskk/rom-kana.vala |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+commit 21b3f1f04f8096df717522beb083496ee2728375
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 18:17:01 2011 +0900
+
+    Make rom-kana rule loading robuster.
+
+ libskk/rom-kana.vala |  120
+ +++++++++++++++++++++++++++++++-------------------
+ 1 files changed, 74 insertions(+), 46 deletions(-)
+
+commit 33608194f6f86239f34924398a5ac283debf9fc2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 17:57:10 2011 +0900
+
+    Allow arbitrary properties to be defined in rom-kana rule files.
+
+ data/rom-kana/README.rom-kana		 |   24 +-
+ data/rom-kana/act.json			 | 1327 ++++----
+ data/rom-kana/azik.json		 |  978 +++---
+ data/rom-kana/kzik.json		 | 1026 +++---
+ data/rom-kana/standard.json		 |  474 ++--
+ data/rom-kana/tut-code-touch16plus.json |   20 +-
+ data/rom-kana/tut-code.json		 | 5280
+ ++++++++++++++++---------------
+ libskk/rom-kana.vala			 |   73 +-
+ 8 files changed, 4619 insertions(+), 4583 deletions(-)
+
+commit cf33140fecd36c9058296a926c3d3baade1ff333
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 16:33:17 2011 +0900
+
+    Reuse Regex in numeric conversion.
+
+ libskk/context.vala |	  1 +
+ libskk/state.vala   |	 85
+ ++++++++++++++++++++++++++++-----------------------
+ 2 files changed, 48 insertions(+), 38 deletions(-)
+
+commit 3c685dac9df62458fa5e8c8faa583a70c0b772bf
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 16:18:30 2011 +0900
+
+    Rename tut-code-touch16.json to tut-code-touch16plus.json.
+
+ data/rom-kana/Makefile.am		 |    2 +-
+ data/rom-kana/tut-code-touch16.json	 |   16 ----------------
+ data/rom-kana/tut-code-touch16plus.json |   16 ++++++++++++++++
+ 3 files changed, 17 insertions(+), 17 deletions(-)
+
+commit 72c05a2696cda0fc9fa38b24560e83b1cecfddfe
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 16:01:04 2011 +0900
+
+    Fix ACT and TUT-code rom-kana rule files.
+
+ data/rom-kana/act.json		     | 1314 +++++-----
+ data/rom-kana/tut-code-touch16.json |	 22 +-
+ data/rom-kana/tut-code.json	     | 5282
+ +++++++++++++++++-----------------
+ 3 files changed, 3309 insertions(+), 3309 deletions(-)
+
+commit 81736400c95a6e7c026eb8674e6d91b49ce171f4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 15:46:23 2011 +0900
+
+    Fix valac warnings.
+
+ libskk/state.vala     |   16 ++++++++++++----
+ libskk/user-dict.vala |    5 ++++-
+ libskk/util.vala      |    2 +-
+ 3 files changed, 17 insertions(+), 6 deletions(-)
+
+commit 7b289f6bba3bd9121ec7aa844e77793f0ac3beab
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 15:42:01 2011 +0900
+
+    Fix the last commit.
+
+ libskk/rom-kana.vala |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
+
+commit dc805a9107c2a952820b70af2007e22e56cf2851
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 15:36:58 2011 +0900
+
+    Support ACT and TUT-code (experimental).
+
+ data/rom-kana/Makefile.am	     |	  8 +-
+ data/rom-kana/act.json		     |	663 +++++++++
+ data/rom-kana/tut-code-touch16.json |	 16 +
+ data/rom-kana/tut-code.json	     | 2643
+ +++++++++++++++++++++++++++++++++++
+ 4 files changed, 3329 insertions(+), 1 deletions(-)
+
+commit 02dfdda93394288c3ef42d940661ae674b3e1ff6
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 15:36:33 2011 +0900
+
+    Update rom-kana format spec.
+
+ data/rom-kana/README.rom-kana |   31 +++++++++++++------------------
+ 1 files changed, 13 insertions(+), 18 deletions(-)
+
+commit 1bfe5474d18ee78f49d0db867fa015b2ba9635ec
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Dec 2 10:19:47 2011 +0900
+
+    Compact rom-kana rules.
+
+ data/rom-kana/Makefile.am     |    1 +
+ data/rom-kana/README.rom-kana |   43 ++
+ data/rom-kana/azik.json       |  980
+ ++++++++++++++++++++--------------------
+ data/rom-kana/kzik.json       | 1028
+ ++++++++++++++++++++--------------------
+ data/rom-kana/standard.json   |  476 ++++++++++----------
+ libskk/context.vala	       |   12 +
+ libskk/rom-kana.vala	       |   61 ++-
+ libskk/util.vala	       |    4 +-
+ tests/context.c	       |    1 +
+ tests/file-dict.c	       |    1 +
+ tests/kana-kan.c	       |    1 +
+ tests/rom-kana.c	       |    1 +
+ tests/user-dict.c	       |    1 +
+ 13 files changed, 1345 insertions(+), 1265 deletions(-)
+
+commit c35b9e6e38273cf356f75abb6d643cf2502cef06
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 1 18:19:17 2011 +0900
+
+    Untabify rom-kana rules.
+
+ .dir-locals.el		     |	  3 +-
+ data/rom-kana/azik.json     |	978
+ ++++++++++++++++++++--------------------
+ data/rom-kana/kzik.json     | 1026
+ +++++++++++++++++++++---------------------
+ data/rom-kana/standard.json |	472 ++++++++++----------
+ 4 files changed, 1240 insertions(+), 1239 deletions(-)
+
+commit 9c826877e9857e86d7be308860a1004f07bfecfd
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 1 17:50:32 2011 +0900
+
+    Support AZIK.
+
+ data/rom-kana/Makefile.am |	2 +-
+ data/rom-kana/azik.json   |  495
+ +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 496 insertions(+), 1 deletions(-)
+
+commit 40715715ef68709cafaf7113e245171dde4039be
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 1 17:42:05 2011 +0900
+
+    Make rom-kana rule format extensible.
+
+ data/rom-kana/kzik.json     | 1207
+ +++++++++++++++++++------------------------
+ data/rom-kana/standard.json |	478 +++++++++---------
+ libskk/rom-kana.vala	     |	 83 +++-
+ 3 files changed, 823 insertions(+), 945 deletions(-)
+
+commit 07c9adcd033b5a00ecf11981c01494c3a2585c6c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 1 14:43:53 2011 +0900
+
+    Support CDB dictionary.
+
+ libskk/Makefile.am    |    1 +
+ libskk/cdb-dict.vala  |  138
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/file-dict.vala |    2 -
+ libskk/skkserv.vala   |    2 +-
+ libskk/state.vala     |    2 +-
+ 5 files changed, 141 insertions(+), 4 deletions(-)
+
+commit 91574a6e2e62bfffebe5145162b5bd9a2f4cf556
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Dec 1 11:05:27 2011 +0900
+
+    Factor out mmap related code to util.vala.
+
+ libskk/file-dict.vala |   60
+ ++++++++++++------------------------------------
+ libskk/util.vala      |   55 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 70 insertions(+), 45 deletions(-)
+
+commit 37d273a93985603b1cde9951d48a173e7339ca2a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 30 17:37:14 2011 +0900
+
+    Adopt intltool.
+
+ Makefile.am	     |	  2 +-
+ configure.ac	     |	 10 +++++++++-
+ libskk/Makefile.am  |	  3 +++
+ libskk/context.vala |	  2 +-
+ libskk/state.vala   |	  9 ++++++---
+ po/LINGUAS	     |	  1 +
+ po/POTFILES.in      |	  3 +++
+ po/POTFILES.skip    |	  2 ++
+ po/ja.po	     |	 25 +++++++++++++++++++++++++
+ 9 files changed, 51 insertions(+), 6 deletions(-)
+
+commit fcbb0c8d688f1fbb2043b37fe42caec92d23c4c7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 30 17:12:44 2011 +0900
+
+    Add doc references in README.
+
+ README |   10 ++++++++--
+ 1 files changed, 8 insertions(+), 2 deletions(-)
+
+commit 1969d46359f9eb1ce1278361c41649427229ba66
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 30 16:35:06 2011 +0900
+
+    Fix for valadoc.
+
+ docs/Makefile.am    |	  2 +-
+ libskk/dict.vala    |	 19 ++++++++++++++++++-
+ libskk/skkserv.vala |	  3 ++-
+ 3 files changed, 21 insertions(+), 3 deletions(-)
+
+commit c631cdcbca63c75fb0cd93dbf73e57bb1692270f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 30 13:24:52 2011 +0900
+
+    Bump version to 0.0.1.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 2dfe11193461c8e22a401d6cb8f5a7805ead0a70
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 30 13:24:15 2011 +0900
+
+    Support dictionary reloading.
+
+ docs/Makefile.am      |    2 +-
+ libskk/candidate.vala |    5 +++--
+ libskk/context.vala   |   20 +++++++++++++++++---
+ libskk/state.vala     |    6 ++++--
+ 4 files changed, 25 insertions(+), 8 deletions(-)
+
+commit 4344785eee27e71857f799c9666db4022858d7da
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 30 11:10:09 2011 +0900
+
+    Harden file-dict completion.
+
+ libskk/candidate.vala |    2 +
+ libskk/dict.vala      |    5 +++
+ libskk/file-dict.vala |   86
+ +++++++++++++++++++++++++++++-------------------
+ libskk/skkserv.vala   |    4 ++-
+ libskk/state.vala     |    1 -
+ libskk/user-dict.vala |   16 ++++----
+ tests/context.c       |   10 +++--
+ 7 files changed, 76 insertions(+), 48 deletions(-)
+
+commit 2ef2c9736476112490fd4e754ba667d71fcc07e8
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 30 10:09:10 2011 +0900
+
+    Rearrange the code for valadoc.
+
+ libskk/Makefile.am    |    1 +
+ libskk/candidate.vala |  211
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/context.vala   |  101 +----------------------
+ libskk/dict.vala      |   94 ----------------------
+ libskk/kana-kan.vala  |   95 +++++++++++-----------
+ libskk/rom-kana.vala  |    3 +
+ 6 files changed, 268 insertions(+), 237 deletions(-)
+
+commit 848a677d1c13894ff54a12828667f5dfa375f3eb
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 17:52:36 2011 +0900
+
+    Hide CandidateList#clear().
+
+ libskk/context.vala |	 57
+ ++++++++++++++++++++++++++++++++++-----------------
+ libskk/dict.vala    |	  7 ++++++
+ libskk/state.vala   |	 28 ++++++++++++++----------
+ 3 files changed, 61 insertions(+), 31 deletions(-)
+
+commit 5d9ba01ecf795158995c3cae6a2d09102bc2121b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 15:09:32 2011 +0900
+
+    Fix off-by-one in file-dict binary search.
+
+ libskk/file-dict.vala |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 25d3e5ffa53c9ca9348912d2ad07253520989fb2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 14:56:33 2011 +0900
+
+    Fix loading rom-kana rule.
+
+ libskk/rom-kana.vala |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 3cca4041b67590343daae6240d0732915805d58f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 14:51:31 2011 +0900
+
+    Throw exception on failure when loading/saving dictionaries.
+
+ libskk/context.vala   |   14 +++-
+ libskk/dict.vala      |    6 +-
+ libskk/encoding.vala  |    3 +-
+ libskk/file-dict.vala |   43 +++++++------
+ libskk/user-dict.vala |  162
+ ++++++++++++++++++++++++-------------------------
+ tests/user-dict.c     |    5 +-
+ 6 files changed, 123 insertions(+), 110 deletions(-)
+
+commit 69c18c384dcedf16239fa37d6b6ab9343cc3aec7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 13:06:20 2011 +0900
+
+    Use etag instead of mtime to detect file-dict modification.
+
+ libskk/file-dict.vala |   22 ++++++++++++----------
+ libskk/user-dict.vala |   15 +++++++++------
+ 2 files changed, 21 insertions(+), 16 deletions(-)
+
+commit b701728b321c2ac9d7517cfc8153500cfbaa4ac0
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 12:58:20 2011 +0900
+
+    Fix make distcheck.
+
+ Makefile.am		     |	  2 +-
+ configure.ac		     |	  4 +-
+ data/Makefile.am	     |	  1 +
+ data/rom-kana/Makefile.am   |	  2 +
+ data/rom-kana/kzik.json     |	688
+ +++++++++++++++++++++++++++++++++++++++++++
+ data/rom-kana/standard.json |	238 +++++++++++++++
+ docs/Makefile.am	     |	  3 +
+ libskk/Makefile.am	     |	  9 +-
+ libskk/config.vapi	     |	  2 +-
+ libskk/context.vala	     |	  2 +-
+ libskk/file-dict.vala	     |	  1 -
+ libskk/kzik.json	     |	688
+ -------------------------------------------
+ libskk/rom-kana.vala	     |	 28 ++-
+ libskk/standard.json	     |	238 ---------------
+ tests/Makefile.am	     |	  6 +-
+ tests/common.c		     |	  2 +-
+ tests/file-dict.c	     |	  4 +-
+ 17 files changed, 974 insertions(+), 944 deletions(-)
+
+commit aee86ade9338071af18aeb168954bdf7c9af38a4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 12:01:51 2011 +0900
+
+    Fix numeric conversion without numerals.
+
+ libskk/context.vala   |    4 ++--
+ libskk/state.vala     |   15 +++++++++++++--
+ libskk/user-dict.vala |   19 ++++++++++++++++---
+ libskk/util.vala      |    7 ++-----
+ tests/context.c       |    2 ++
+ 5 files changed, 35 insertions(+), 12 deletions(-)
+
+commit d04445defe03765b265ee6826e79b3d2e9a085ee
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 10:57:47 2011 +0900
+
+    Use GIO for accessing user dictionary.
+
+ libskk/user-dict.vala |  140
+ +++++++++++++++++++++++++------------------------
+ 1 files changed, 72 insertions(+), 68 deletions(-)
+
+commit 5a3f93af7c346c86197f601e17deb2d13f205215
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 29 09:58:09 2011 +0900
+
+    Fix learning numeric conversion.
+
+ libskk/dict.vala  |   21 ++++++++++++++++++++-
+ libskk/state.vala |	6 +++---
+ tests/common.c    |   12 ++++++------
+ tests/context.c   |	6 ++++--
+ 4 files changed, 33 insertions(+), 12 deletions(-)
+
+commit 9a33278c34e11c595e616d05c980e794b65cd8f4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 28 19:10:15 2011 +0900
+
+    Add some comment to the mmap code.
+
+ libskk/file-dict.vala |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+commit b02e41df079c32d8b92a2dfcc5d20d9a1df422b5
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 28 18:46:48 2011 +0900
+
+    Use mmap.
+
+ libskk/file-dict.vala |  255
+ ++++++++++++++++++++++++++++++++-----------------
+ 1 files changed, 168 insertions(+), 87 deletions(-)
+
+commit cd37b296cce8697734b3a138182e001ad6f56eba
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 28 12:08:59 2011 +0900
+
+    Support numeric conversion.
+
+ libskk/dict.vala  |	3 ++
+ libskk/state.vala |   90
+ +++++++++++++++++++++++++++++++++++++++++++++++++++--
+ libskk/util.vala  |   88
+ +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ tests/context.c   |   17 ++++++++++
+ 4 files changed, 194 insertions(+), 4 deletions(-)
+
+commit 2849f3d25f2c8a70719da37458b605ca9bddf30f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sat Nov 26 09:31:11 2011 +0900
+
+    Fix "K a n J i" conversion.
+
+ libskk/rom-kana.vala |    8 ++++++--
+ libskk/state.vala    |   11 ++++++++---
+ tests/context.c      |    1 +
+ 3 files changed, 15 insertions(+), 5 deletions(-)
+
+commit 308ce75aa9d3277bb9a23daf28fbe9a09b7d6ea8
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Sat Nov 26 06:23:50 2011 +0900
+
+    Add warning messages.
+
+ .gitignore	       |    1 -
+ libskk/context.vala   |   38 ++++++++++++++++++++------------------
+ libskk/file-dict.vala |    5 +++++
+ libskk/state.vala     |    6 +++++-
+ libskk/user-dict.vala |   29 +++++++++++++++++++++++------
+ 5 files changed, 53 insertions(+), 26 deletions(-)
+
+commit 639e9bacb2d428523fec7ef97ff914c0b85008a4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 25 21:25:36 2011 +0900
+
+    Add missing config.vapi.
+
+ libskk/config.vapi |	 8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+commit daf07f498e2d284bfc392cd432410b1003b23c4b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 25 18:14:30 2011 +0900
+
+    Fix minor warnings.
+
+ libskk/context.vala  |    5 +++--
+ libskk/rom-kana.vala |   14 +++++++++++---
+ 2 files changed, 14 insertions(+), 5 deletions(-)
+
+commit 8c1ee4a3c090c2183738fe600b45d0125b081bdd
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 25 18:08:35 2011 +0900
+
+    Uniquify candidates when adding them to CandidateList.
+
+ libskk/context.vala |	  8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 85346ad077a9b01fbfe2ec5f393ae789480aeff5
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 25 17:25:48 2011 +0900
+
+    Fix user-dict encoding.
+
+ libskk/context.vala   |   36 ++++++++++++++++++++++++++++++------
+ libskk/state.vala     |    2 +-
+ libskk/user-dict.vala |   10 ++++++----
+ 3 files changed, 37 insertions(+), 11 deletions(-)
+
+commit 88e92657716d24caf8bf8ef6901d2a6bf2cb8767
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 25 16:47:10 2011 +0900
+
+    Fix skkserv support.
+
+ libskk/skkserv.vala |	 26 +++++++++++++++++++-------
+ 1 files changed, 19 insertions(+), 7 deletions(-)
+
+commit 3b78e747fecee3dbdab538465334083ea1d12728
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 25 11:13:42 2011 +0900
+
+    Load rom-kana rule from JSON file.
+
+ configure.ac	      |    2 +-
+ libskk/Makefile.am   |   13 +-
+ libskk/context.vala  |    9 +
+ libskk/kzik.json     |  688
+ ++++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/rom-kana.vala |  288 ++++------------------
+ libskk/standard.json |  238 +++++++++++++++++
+ libskk/state.vala    |   10 +
+ tests/context.c      |   17 ++
+ 8 files changed, 1018 insertions(+), 247 deletions(-)
+
+commit 9b251582212254259f606ffbe5daa6e26ce4de2f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 24 18:15:20 2011 +0900
+
+    Support egg-like-newline.
+
+ libskk/context.vala |	 12 ++++++++++++
+ libskk/state.vala   |	  6 +++++-
+ tests/context.c     |	  6 +++---
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+
+commit c437c8a16705e783f9805389b89bcdd5d2ebdb64
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 24 15:46:21 2011 +0900
+
+    Export period style to Context from RomKanaConverter.
+
+ libskk/context.vala |	 12 ++++++++++++
+ libskk/state.vala   |	 24 +++++++++++++++++-------
+ 2 files changed, 29 insertions(+), 7 deletions(-)
+
+commit 475391df1ec6e19d48fb954fa29960563299d96a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 24 12:21:04 2011 +0900
+
+    Support auto conversion.
+
+ libskk/context.vala |	 12 ++++++++++++
+ libskk/state.vala   |	 47
+ ++++++++++++++++++++++++++++++++++++++++++++---
+ tests/context.c     |	 16 ++++++++++++++++
+ 3 files changed, 72 insertions(+), 3 deletions(-)
+
+commit e90854ddf2af9cb0c1e1531e22792f84109dd0e4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 21 12:17:19 2011 +0900
+
+    Don't handle control characters in latin input mode.
+
+ libskk/state.vala |   16 +++++++++++-----
+ tests/context.c   |	3 ++-
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+
+commit 343e19def73ac6ced69248be324eaf93f81e8eda
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 21 11:28:40 2011 +0900
+
+    Emit notify signal on input mode change.
+
+ libskk/context.vala |	  3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+commit e68ce910f8b3a208bb8571174ba53ff3739125f5
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 21 11:28:24 2011 +0900
+
+    Fix conversion from katakana to kanji.
+
+ libskk/state.vala |	2 +-
+ tests/context.c   |	1 +
+ 2 files changed, 2 insertions(+), 1 deletions(-)
+
+commit d2613879a072c37f5c0c72892721e77d4cfabadd
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 18 17:59:08 2011 +0900
+
+    Remove useless modifiers.
+
+ libskk/key-event.vala |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit c77fd0dba09604c72ea8b317cfd3a5361f8ef1cd
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 18 17:28:36 2011 +0900
+
+    Fix some mistakes.
+
+ libskk/context.vala  |   38 +++++++++++++++++++++++++++++++++-----
+ libskk/rom-kana.vala |    2 +-
+ libskk/state.vala    |   49
+ +++++++++++++++++++++++++++++++------------------
+ tests/context.c      |    4 +++-
+ 4 files changed, 68 insertions(+), 25 deletions(-)
+
+commit e6074749d30317d06246301a78b11680b3d173e2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Fri Nov 18 12:20:48 2011 +0900
+
+    Factor out CandidateList from State.
+
+ libskk/context.vala |	 50
+ ++++++++++++++++++++++++++++++++++++++++++++++++--
+ libskk/state.vala   |	 36 ++++++++++++++++--------------------
+ 2 files changed, 64 insertions(+), 22 deletions(-)
+
+commit 72d2d825d5043abb3c61be93e12028a10ad0ca76
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 18:12:46 2011 +0900
+
+    Check if rom-kana converter successfully consumed a character.
+
+ libskk/context.vala  |   32 +++++++++++---------
+ libskk/rom-kana.vala |   11 +++++--
+ libskk/state.vala    |   78
+ ++++++++++++++++++++++++++++++--------------------
+ tests/context.c      |    5 +++
+ 4 files changed, 78 insertions(+), 48 deletions(-)
+
+commit 9327c87e88808438e87baa90249f67808ddc3ad7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 16:00:41 2011 +0900
+
+    Add doc comments.
+
+ libskk/context.vala   |   52
+ +++++++++++++++++++++++++++++++++++++++++++-----
+ libskk/dict.vala      |   15 ++++++++++++++
+ libskk/file-dict.vala |   12 +++++++++++
+ libskk/rom-kana.vala  |   37 +++++++++++++++++++++++++++++++---
+ libskk/skkserv.vala   |   25 +++++++++++++++++++++++
+ libskk/user-dict.vala |   21 +++++++++++++++++++
+ 6 files changed, 152 insertions(+), 10 deletions(-)
+
+commit aa6abe7d818cb59e2654a2f3efe0767d958ca2a4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 13:56:17 2011 +0900
+
+    Split AbbrevStateHandler out of StartStateHandler.
+
+ libskk/context.vala |	  2 +
+ libskk/state.vala   |	 85
+ ++++++++++++++++++++++++++++++++++-----------------
+ 2 files changed, 59 insertions(+), 28 deletions(-)
+
+commit bc2e4b12a284b3289ca0d4a1c72bc98283db2d78
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 13:40:41 2011 +0900
+
+    Fix libskk.h installation.
+
+ libskk/Makefile.am |	 3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 3187f39ee962c0de238d94cc3b4383198615c330
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 11:52:59 2011 +0900
+
+    Fix vapi installation.
+
+ libskk/Makefile.am  |	  3 +++
+ libskk/skk-1.0.deps |	  4 ++++
+ 2 files changed, 7 insertions(+), 0 deletions(-)
+
+commit 235f606b446d6c41e2ef23e0cafc6a852058142e
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 11:43:59 2011 +0900
+
+    Fix pkgconfig stuff.
+
+ libskk/Makefile.am  |	  6 +++++-
+ libskk/libskk.pc.in |	  4 ++--
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+commit 654c77606347e4fd28d0dbff6d37b06a41bbd390
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 11:06:41 2011 +0900
+
+    Support kuten input.
+
+ libskk/context.vala   |    2 +
+ libskk/state.vala     |  100
+ +++++++++++++++++++++++++++++++++++++++++++++---
+ libskk/user-dict.vala |    2 +-
+ tests/context.c       |   19 +++++++++
+ 4 files changed, 115 insertions(+), 8 deletions(-)
+
+commit 7d5ba2c9fcab57dd811c5291cf5c502f20ad39f3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 17 09:46:05 2011 +0900
+
+    Add missing tests/user-dict.c.
+
+ tests/user-dict.c |   27 +++++++++++++++++++++++++++
+ 1 files changed, 27 insertions(+), 0 deletions(-)
+
+commit 76c9eb7ea0ef25ef396f84ab42614ef787fb6911
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 18:36:56 2011 +0900
+
+    Make sure to remove user-dict.dat before running each test.
+
+ libskk/state.vala   |	 34 ++++++++++++++++++++--------------
+ tests/common.c      |	  3 +++
+ tests/context.c     |	  5 +----
+ tests/user-dict.dat |	  2 --
+ 4 files changed, 24 insertions(+), 20 deletions(-)
+
+commit c85a57c5fcdb8da2c370c21e4816a5eacc1c570f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 18:16:13 2011 +0900
+
+    Support purge dictionary entry.
+
+ libskk/state.vala     |   20 ++++++++++++++++++--
+ libskk/user-dict.vala |   18 ++++++++++--------
+ tests/context.c       |   10 ++++++++++
+ 3 files changed, 38 insertions(+), 10 deletions(-)
+
+commit 34aa2665b8def41eb43728ebfbfd31418ef98bcf
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 17:25:44 2011 +0900
+
+    Fix dictionary saving.
+
+ libskk/context.vala   |   13 +++++++++++--
+ libskk/dict.vala      |    2 +-
+ libskk/state.vala     |    4 ++--
+ libskk/user-dict.vala |   14 +++++++-------
+ tests/context.c       |    2 ++
+ 5 files changed, 23 insertions(+), 12 deletions(-)
+
+commit 7770551d6e2a9943f598b3551776256e16c84958
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 16:48:25 2011 +0900
+
+    Add recursive-edit signals for dict-edit.
+
+ libskk/context.vala   |   55
+ +++++++++++++++++++++++-------------------------
+ libskk/kana-kan.vala  |    4 +-
+ libskk/skkserv.vala   |    2 +-
+ libskk/state.vala     |   21 +++++++++++++-----
+ libskk/user-dict.vala |    8 ++++--
+ 5 files changed, 49 insertions(+), 41 deletions(-)
+
+commit 4544faa8c4ee87976cde915ffc82aff159c30318
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 15:55:38 2011 +0900
+
+    Switch to valadoc from directly calling gtk-doc.
+
+ Makefile.am	       |    8 +++-
+ configure.ac	       |   22 ++++++++++-
+ docs/Makefile.am      |  101
+ ++++++++++++++++++++++++++++++++++++++++++++----
+ libskk/context.vala   |   49 +++++++++++++-----------
+ libskk/dict.vala      |   79 ++++++++++++++------------------------
+ libskk/file-dict.vala |   14 +++---
+ libskk/rom-kana.vala  |   67 +++++++++++++-------------------
+ libskk/state.vala     |    9 ----
+ libskk/user-dict.vala |   14 +++---
+ 9 files changed, 215 insertions(+), 148 deletions(-)
+
+commit d98848d46424b7b86a1f18683692967e0f0b299f
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 13:18:55 2011 +0900
+
+    Support dict-edit.
+
+ libskk/context.vala |	 68
+ ++++++++++++++++++++++++++++++++++++---------------
+ libskk/state.vala   |	  9 +++++-
+ tests/context.c     |	 23 +++++++++++++++++
+ 3 files changed, 78 insertions(+), 22 deletions(-)
+
+commit 1feeb945394c2a301f7768d5293306aada6ac44c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 11:50:38 2011 +0900
+
+    Support abbrev.
+
+ libskk/state.vala |   81
+ +++++++++++++++++++++++++++++++++++++++--------------
+ libskk/util.vala  |   14 +++++++++
+ tests/context.c   |   24 +++++++++++++++
+ 3 files changed, 98 insertions(+), 21 deletions(-)
+
+commit 7cdfa4648b3134238ad1d520ef40941150e33068
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Nov 16 10:32:18 2011 +0900
+
+    Include modified SKK-JISYO.S for testing.
+
+ tests/Makefile.am   |	  8 +-
+ tests/common.c      |	 46 +
+ tests/common.h      |	 20 +
+ tests/context.c     |	 50 +-
+ tests/file-dict.c   |	  2 +-
+ tests/file-dict.dat | 3417
+ +++++++++++++++++++++++++++++++++++++++++++++++++++
+ tests/user-dict.dat |	  2 +
+ 7 files changed, 3493 insertions(+), 52 deletions(-)
+
+commit 37cc1ba7f17c5b19ac6d073732dbcbef4318bd7d
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Nov 15 16:24:14 2011 +0900
+
+    Add support for skkserv and completion.
+
+ libskk/Makefile.am    |    1 +
+ libskk/dict.vala      |    7 ++-
+ libskk/file-dict.vala |   46 ++++++++++++----
+ libskk/skkserv.vala   |  135
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/state.vala     |   32 ++++++++++++
+ libskk/user-dict.vala |    4 ++
+ tests/context.c       |   19 +++++++
+ 7 files changed, 231 insertions(+), 13 deletions(-)
+
+commit 4539e72b4b258a920ce2fb170faf59c16c0fa5c3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 14 18:24:32 2011 +0900
+
+    Port some tests from ibus-skk's test.py.
+
+ libskk/context.vala  |    9 +
+ libskk/rom-kana.vala |  519
+ ++++++++++++++++++++++++++------------------------
+ libskk/state.vala    |  213 +++++++++++++++++----
+ libskk/util.vala     |   36 ++++-
+ tests/context.c      |  198 ++++++++++++++++---
+ 5 files changed, 664 insertions(+), 311 deletions(-)
+
+commit 0003d3a389e886736880d4a6d6d8da47ec650faa
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Nov 14 10:39:31 2011 +0900
+
+    Disable kana-kan test.
+
+ tests/Makefile.am |	9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+commit 7d024f99899f65f79fa03e89d534760fdd3e5b6c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Nov 10 11:52:13 2011 +0900
+
+    Add user dictionary support (WIP).
+
+ libskk/Makefile.am    |    1 +
+ libskk/context.vala   |    8 ++
+ libskk/dict.vala      |   56 ++++++++++-
+ libskk/encoding.vala  |    3 +
+ libskk/file-dict.vala |   10 ++-
+ libskk/user-dict.vala |  287
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/util.vala      |   26 +++---
+ tests/Makefile.am     |    5 +-
+ 8 files changed, 379 insertions(+), 17 deletions(-)
+
+commit 1b6131da6ce4836d819e1b3df261784dab3ca46a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Oct 27 11:50:41 2011 +0900
+
+    Fix rom-kana conversion when there is carryover.
+
+ libskk/rom-kana.vala |    1 +
+ tests/context.c      |    2 +-
+ tests/rom-kana.c     |   10 ++++++++++
+ 3 files changed, 12 insertions(+), 1 deletions(-)
+
+commit 8a0976eced53a4100240dfeef0698f11da8e3bf8
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 26 17:39:35 2011 +0900
+
+    Implement input mode change.
+
+ libskk/context.vala |	 10 ++++++-
+ libskk/state.vala   |	 76
+ ++++++++++++++++++++++++++++++++++++++++++++++++---
+ tests/context.c     |	 56 +++++++++++++++++++++++++++++++++++--
+ 3 files changed, 134 insertions(+), 8 deletions(-)
+
+commit 87f2b8b8253240d3ce758c1bc9a9f3004c25888b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Oct 20 09:44:53 2011 +0900
+
+    Make sure to unref objects in the kana-kan test.
+
+ tests/kana-kan.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+commit 7215f069ba364cac53805e4608bb5bebb603cd24
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Thu Oct 20 09:42:40 2011 +0900
+
+    Derive KanaKan* from GLib.Object.
+
+ libskk/kana-kan.vala |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+commit d7497e8eca325c8c57601374a34fa5011a23737b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 19 21:58:43 2011 +0900
+
+    Hide KanaKanConverter#viterbi().
+
+ libskk/kana-kan.vala |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit a6ebe090021598babe024b118ad7de4db9e6a549
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 19 21:57:41 2011 +0900
+
+    Require Vala 0.14.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit dc9c65f3dcfb6d3a6a52e6319db55ca73e16460a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 19 18:37:23 2011 +0900
+
+    Move UnicodeString to util.vala.
+
+ libskk/kana-kan.vala |   21 ---------------------
+ libskk/util.vala     |   21 +++++++++++++++++++++
+ 2 files changed, 21 insertions(+), 21 deletions(-)
+
+commit 6913205d7472095b15a47f92482d04db7947ed16
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 19 18:15:43 2011 +0900
+
+    Add naive kana-kanji converter.
+
+ libskk/Makefile.am   |    1 +
+ libskk/kana-kan.vala |  230
+ ++++++++++++++++++++++++++++++++++++++++++++++++++
+ tests/Makefile.am    |    5 +-
+ tests/kana-kan.c     |   23 +++++
+ 4 files changed, 258 insertions(+), 1 deletions(-)
+
+commit 65585fe814075d7e8550df8ea2c5c8112838251c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 19 15:58:35 2011 +0900
+
+    Rename converter.vala to encoding.vala.
+
+ libskk/Makefile.am    |    2 +-
+ libskk/converter.vala |   58
+ -------------------------------------------------
+ libskk/encoding.vala  |   58
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/file-dict.vala |    4 +-
+ 4 files changed, 61 insertions(+), 61 deletions(-)
+
+commit 8a889062d2f5232aeb4777866cfeb7d191078af4
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 19 13:47:32 2011 +0900
+
+    Add doc comments.
+
+ libskk/context.vala   |   46 +++++++++++++++++++++++++++++++++++-
+ libskk/dict.vala      |   62
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/file-dict.vala |   12 +++++++++
+ 3 files changed, 119 insertions(+), 1 deletions(-)
+
+commit 48450264e3fc2a26259d29844866ef9e274e8cad
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Wed Oct 19 12:21:51 2011 +0900
+
+    Implement kana-kanji conversion.
+
+    Represent key event as SkkKeyEvent instead of unichar; fix okuri-ari
+    lookup in
+    SkkFileDict; implement basic state transition between SkkStartState
+    and
+    SkkSelectState.
+
+ libskk/Makefile.am    |    1 +
+ libskk/context.vala   |   28 +++++++++----
+ libskk/file-dict.vala |    5 ++-
+ libskk/key-event.vala |   62 +++++++++++++++++++++++++++++
+ libskk/rom-kana.vala  |   16 ++++++++
+ libskk/state.vala     |  103
+ +++++++++++++++++++++++++++++++++++++++---------
+ tests/context.c       |   38 +++++++++++++++++-
+ tests/file-dict.c     |    6 +++
+ 8 files changed, 226 insertions(+), 33 deletions(-)
+
+commit 07d792ca9ebbf36998231772af8794cea1764c24
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Oct 18 18:09:15 2011 +0900
+
+    Add half/wide kana conversion utility.
+
+ libskk/Makefile.am |	 3 +-
+ libskk/state.vala  |	24 ++++++--
+ libskk/util.vala   |  169
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 189 insertions(+), 7 deletions(-)
+
+commit 9a774d9e0f36c67417ea4b5c2f1fbd5a2f3423b7
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Oct 18 16:59:42 2011 +0900
+
+    Simplify SkkContext#process_key_event().
+
+ libskk/context.vala |	 19 ++++++++++---------
+ 1 files changed, 10 insertions(+), 9 deletions(-)
+
+commit 03a6e9d3b11d2eda8b67aaefa619bc23e315e8aa
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Oct 17 17:52:18 2011 +0900
+
+    Simplify SkkState interface.
+
+ libskk/context.vala |	 52 +++++++++-----------------------------
+ libskk/state.vala   |	 69
+ ++++++++++++--------------------------------------
+ tests/context.c     |	  4 +-
+ 3 files changed, 31 insertions(+), 94 deletions(-)
+
+commit 885ae10a582bc3b6f76b0c7c2024a4ea08273a9c
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Oct 17 17:32:51 2011 +0900
+
+    Implement SkkState#get_preedit() for Start and Select states.
+
+ libskk/context.vala |	 12 ++++++------
+ libskk/state.vala   |	 40 ++++++++++++++++++++++++++++++++++++----
+ tests/context.c     |	  3 +++
+ 3 files changed, 45 insertions(+), 10 deletions(-)
+
+commit b2d4b66681595f2befd290003a25bda4fefbb144
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Mon Oct 17 10:07:56 2011 +0900
+
+    Partially implement SkkState and SkkContext.
+
+ .gitignore	      |    2 +-
+ README		      |    4 +-
+ libskk/context.vala  |   98 +++++++++++++++++++++++++++++-----------
+ libskk/rom-kana.vala |   41 +++++++++-------
+ libskk/state.vala    |  122
+ +++++++++++++++++++++++++++++++------------------
+ tests/Makefile.am    |    5 ++-
+ tests/context.c      |   34 ++++++++++++++
+ tests/rom-kana.c     |    8 ++--
+ 8 files changed, 217 insertions(+), 97 deletions(-)
+
+commit 24be44d9cf73cef0e6faf7cfbe6de96ef21c357b
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:	Tue Oct 4 17:48:43 2011 +0900
+
+    Initial import.
+
+ .dir-locals.el        |    2 +
+ .gitignore	       |   36 ++++
+ COPYING	       |  502
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ INSTALL	       |  365 +++++++++++++++++++++++++++++++++++
+ Makefile.am	       |    2 +
+ README		       |    3 +
+ autogen.sh	       |   25 +++
+ configure.ac	       |   55 ++++++
+ docs/Makefile.am      |   12 ++
+ libskk/Makefile.am    |   51 +++++
+ libskk/context.vala   |   85 +++++++++
+ libskk/converter.vala |   58 ++++++
+ libskk/dict.vala      |   94 +++++++++
+ libskk/file-dict.vala |  170 +++++++++++++++++
+ libskk/libskk.pc.in   |   29 +++
+ libskk/rom-kana.vala  |  479
+ ++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/state.vala     |  110 +++++++++++
+ tests/Makefile.am     |   10 +
+ tests/file-dict.c     |   29 +++
+ tests/rom-kana.c      |   42 ++++
+ 20 files changed, 2159 insertions(+), 0 deletions(-)

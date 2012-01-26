@@ -1,7 +1,7 @@
 // -*- coding: utf-8 -*-
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ namespace Skk {
 
     static const string[] PERIOD_RULE = {"。、", "．，", "。，", "．、"};
 
-    class RomKanaNode {
+    class RomKanaNode : Object {
         internal RomKanaEntry? entry;
         internal weak RomKanaNode parent;
         internal RomKanaNode children[128];
@@ -69,6 +69,7 @@ namespace Skk {
             node.entry = entry;
         }
 
+#if 0
         RomKanaNode? lookup_node (string key) {
             var node = this;
             for (var i = 0; i < key.length; i++) {
@@ -100,6 +101,7 @@ namespace Skk {
                 node.parent.remove_child (node);
             }
         }
+#endif
     }
 
     /**
@@ -200,11 +202,13 @@ namespace Skk {
         /**
          * Output "nn" if preedit ends with "n".
          */
-        public void output_nn_if_any () {
+        public bool output_nn_if_any () {
             if (_preedit.str.has_suffix ("n")) {
                 _output.append (NN[kana_mode]);
                 _preedit.truncate (_preedit.len - 1);
+                return true;
             }
+            return false;
         }
 
         /**
@@ -231,7 +235,7 @@ namespace Skk {
             var child_node = current_node.children[uc];
             if (child_node == null) {
                 // no such transition path in trie
-                output_nn_if_any ();
+                var retval = output_nn_if_any ();
                 // XXX: index_of_char does not work with '\0'
                 var index = uc != '\0' ? ".,".index_of_char (uc) : -1;
                 if (index >= 0) {
@@ -245,7 +249,8 @@ namespace Skk {
                     _output.append_unichar (uc);
                     _preedit.erase ();
                     current_node = rule.root_node;
-                    return false;
+                    // there may be "NN" output
+                    return retval;
                 } else {
                     // abondon current preedit and restart lookup from
                     // the root with uc

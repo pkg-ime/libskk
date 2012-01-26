@@ -429,15 +429,7 @@ typedef struct _SkkNicolaKeyEventFilterPrivate SkkNicolaKeyEventFilterPrivate;
 #define SKK_TYPE_EXPR_NODE_TYPE (skk_expr_node_type_get_type ())
 
 #define SKK_TYPE_EXPR_NODE (skk_expr_node_get_type ())
-#define SKK_EXPR_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_EXPR_NODE, SkkExprNode))
-#define SKK_EXPR_NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_EXPR_NODE, SkkExprNodeClass))
-#define SKK_IS_EXPR_NODE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_EXPR_NODE))
-#define SKK_IS_EXPR_NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_EXPR_NODE))
-#define SKK_EXPR_NODE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_EXPR_NODE, SkkExprNodeClass))
-
 typedef struct _SkkExprNode SkkExprNode;
-typedef struct _SkkExprNodeClass SkkExprNodeClass;
-typedef struct _SkkExprNodePrivate SkkExprNodePrivate;
 
 #define SKK_TYPE_EXPR_READER (skk_expr_reader_get_type ())
 #define SKK_EXPR_READER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_EXPR_READER, SkkExprReader))
@@ -504,8 +496,7 @@ typedef enum  {
 } SkkKanaMode;
 
 struct _SkkRomKanaNode {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
+	GObject parent_instance;
 	SkkRomKanaNodePrivate * priv;
 	SkkRomKanaEntry* entry;
 	SkkRomKanaNode* parent;
@@ -515,8 +506,7 @@ struct _SkkRomKanaNode {
 };
 
 struct _SkkRomKanaNodeClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkRomKanaNode *self);
+	GObjectClass parent_class;
 };
 
 typedef enum  {
@@ -591,14 +581,12 @@ struct _SkkKanaKanGraphClass {
 };
 
 struct _SkkEncodingConverter {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
+	GObject parent_instance;
 	SkkEncodingConverterPrivate * priv;
 };
 
 struct _SkkEncodingConverterClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkEncodingConverter *self);
+	GObjectClass parent_class;
 };
 
 struct _SkkDict {
@@ -692,14 +680,12 @@ typedef enum  {
 } SkkModifierType;
 
 struct _SkkKeyEvent {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
+	GObject parent_instance;
 	SkkKeyEventPrivate * priv;
 };
 
 struct _SkkKeyEventClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkKeyEvent *self);
+	GObjectClass parent_class;
 };
 
 struct _SkkKeyEventFilter {
@@ -789,7 +775,7 @@ struct _SkkState {
 	GObject parent_instance;
 	SkkStatePrivate * priv;
 	GType handler_type;
-	GeeArrayList* dictionaries;
+	GeeList* dictionaries;
 	SkkCandidateList* candidates;
 	SkkRomKanaConverter* rom_kana_converter;
 	SkkRomKanaConverter* okuri_rom_kana_converter;
@@ -969,17 +955,9 @@ typedef enum  {
 } SkkExprNodeType;
 
 struct _SkkExprNode {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
-	SkkExprNodePrivate * priv;
 	SkkExprNodeType type;
 	GeeLinkedList* nodes;
 	gchar* data;
-};
-
-struct _SkkExprNodeClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkExprNode *self);
 };
 
 struct _SkkExprReader {
@@ -1051,23 +1029,15 @@ void skk_rom_kana_entry_copy (const SkkRomKanaEntry* self, SkkRomKanaEntry* dest
 void skk_rom_kana_entry_destroy (SkkRomKanaEntry* self);
 GType skk_kana_mode_get_type (void) G_GNUC_CONST;
 gchar* skk_rom_kana_entry_get_kana (SkkRomKanaEntry *self, SkkKanaMode kana_mode);
-gpointer skk_rom_kana_node_ref (gpointer instance);
-void skk_rom_kana_node_unref (gpointer instance);
-GParamSpec* skk_param_spec_rom_kana_node (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_rom_kana_node (GValue* value, gpointer v_object);
-void skk_value_take_rom_kana_node (GValue* value, gpointer v_object);
-gpointer skk_value_get_rom_kana_node (const GValue* value);
 GType skk_rom_kana_node_get_type (void) G_GNUC_CONST;
 SkkRomKanaNode* skk_rom_kana_node_new (SkkRomKanaEntry* entry);
 SkkRomKanaNode* skk_rom_kana_node_construct (GType object_type, SkkRomKanaEntry* entry);
 void skk_rom_kana_node_insert (SkkRomKanaNode* self, const gchar* key, SkkRomKanaEntry* entry);
-SkkRomKanaEntry* skk_rom_kana_node_lookup (SkkRomKanaNode* self, const gchar* key);
-void skk_rom_kana_node_remove (SkkRomKanaNode* self, const gchar* key);
 GType skk_period_style_get_type (void) G_GNUC_CONST;
 GType skk_rom_kana_converter_get_type (void) G_GNUC_CONST;
 SkkRomKanaConverter* skk_rom_kana_converter_new (void);
 SkkRomKanaConverter* skk_rom_kana_converter_construct (GType object_type);
-void skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
+gboolean skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
 void skk_rom_kana_converter_append_text (SkkRomKanaConverter* self, const gchar* text);
 gboolean skk_rom_kana_converter_append (SkkRomKanaConverter* self, gunichar uc);
 gboolean skk_rom_kana_converter_can_consume (SkkRomKanaConverter* self, gunichar uc, gboolean preedit_only, gboolean no_carryover);
@@ -1108,12 +1078,6 @@ GType skk_kana_kan_graph_get_type (void) G_GNUC_CONST;
 SkkKanaKanGraph* skk_kana_kan_graph_new (SkkKanaKanDict* dict, const gchar* str);
 SkkKanaKanGraph* skk_kana_kan_graph_construct (GType object_type, SkkKanaKanDict* dict, const gchar* str);
 GeeArrayList* skk_kana_kan_graph_get_prev_nodes (SkkKanaKanGraph* self, SkkKanaKanNode* node);
-gpointer skk_encoding_converter_ref (gpointer instance);
-void skk_encoding_converter_unref (gpointer instance);
-GParamSpec* skk_param_spec_encoding_converter (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_encoding_converter (GValue* value, gpointer v_object);
-void skk_value_take_encoding_converter (GValue* value, gpointer v_object);
-gpointer skk_value_get_encoding_converter (const GValue* value);
 GType skk_encoding_converter_get_type (void) G_GNUC_CONST;
 SkkEncodingConverter* skk_encoding_converter_new (const gchar* encoding, GError** error);
 SkkEncodingConverter* skk_encoding_converter_construct (GType object_type, const gchar* encoding, GError** error);
@@ -1150,12 +1114,6 @@ GType skk_skk_serv_get_type (void) G_GNUC_CONST;
 SkkSkkServ* skk_skk_serv_new (const gchar* host, guint16 port, const gchar* encoding, GError** error);
 SkkSkkServ* skk_skk_serv_construct (GType object_type, const gchar* host, guint16 port, const gchar* encoding, GError** error);
 GType skk_modifier_type_get_type (void) G_GNUC_CONST;
-gpointer skk_key_event_ref (gpointer instance);
-void skk_key_event_unref (gpointer instance);
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_key_event (GValue* value, gpointer v_object);
-void skk_value_take_key_event (GValue* value, gpointer v_object);
-gpointer skk_value_get_key_event (const GValue* value);
 GType skk_key_event_get_type (void) G_GNUC_CONST;
 SkkKeyEvent* skk_key_event_new (const gchar* name, gunichar code, SkkModifierType modifiers);
 SkkKeyEvent* skk_key_event_construct (GType object_type, const gchar* name, gunichar code, SkkModifierType modifiers);
@@ -1207,8 +1165,8 @@ GType skk_candidate_list_get_type (void) G_GNUC_CONST;
 GType skk_unicode_string_get_type (void) G_GNUC_CONST;
 gchar* skk_state_lookup_key (SkkState* self, SkkKeyEvent* key);
 SkkKeyEvent* skk_state_where_is (SkkState* self, const gchar* command);
-SkkState* skk_state_new (GeeArrayList* dictionaries);
-SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries);
+SkkState* skk_state_new (GeeList* dictionaries);
+SkkState* skk_state_construct (GType object_type, GeeList* dictionaries);
 void skk_state_output_surrounding_text (SkkState* self);
 void skk_state_reset (SkkState* self);
 void skk_state_cancel_okuri (SkkState* self);
@@ -1317,18 +1275,15 @@ GType skk_nicola_key_event_filter_get_type (void) G_GNUC_CONST;
 SkkNicolaKeyEventFilter* skk_nicola_key_event_filter_new (void);
 SkkNicolaKeyEventFilter* skk_nicola_key_event_filter_construct (GType object_type);
 GType skk_expr_node_type_get_type (void) G_GNUC_CONST;
-gpointer skk_expr_node_ref (gpointer instance);
-void skk_expr_node_unref (gpointer instance);
-GParamSpec* skk_param_spec_expr_node (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_expr_node (GValue* value, gpointer v_object);
-void skk_value_take_expr_node (GValue* value, gpointer v_object);
-gpointer skk_value_get_expr_node (const GValue* value);
 GType skk_expr_node_get_type (void) G_GNUC_CONST;
-SkkExprNode* skk_expr_node_new (SkkExprNodeType type);
-SkkExprNode* skk_expr_node_construct (GType object_type, SkkExprNodeType type);
+SkkExprNode* skk_expr_node_dup (const SkkExprNode* self);
+void skk_expr_node_free (SkkExprNode* self);
+void skk_expr_node_copy (const SkkExprNode* self, SkkExprNode* dest);
+void skk_expr_node_destroy (SkkExprNode* self);
+void skk_expr_node_init (SkkExprNode *self, SkkExprNodeType type);
 GType skk_expr_reader_get_type (void) G_GNUC_CONST;
-SkkExprNode* skk_expr_reader_read_symbol (SkkExprReader* self, const gchar* expr, gint* index);
-SkkExprNode* skk_expr_reader_read_string (SkkExprReader* self, const gchar* expr, gint* index);
+void skk_expr_reader_read_symbol (SkkExprReader* self, const gchar* expr, gint* index, SkkExprNode* result);
+void skk_expr_reader_read_string (SkkExprReader* self, const gchar* expr, gint* index, SkkExprNode* result);
 SkkExprNode* skk_expr_reader_read_expr (SkkExprReader* self, const gchar* expr, gint* index);
 SkkExprReader* skk_expr_reader_new (void);
 SkkExprReader* skk_expr_reader_construct (GType object_type);
@@ -1346,7 +1301,6 @@ GType skk_util_get_type (void) G_GNUC_CONST;
 gchar* skk_util_get_okurigana_prefix (const gchar* okurigana);
 gunichar skk_util_get_wide_latin_char (gchar c);
 gchar* skk_util_get_wide_latin (const gchar* latin);
-gchar* skk_util_get_latin (const gchar* wide_latin);
 gchar* skk_util_get_katakana (const gchar* kana);
 gchar* skk_util_get_hiragana (const gchar* kana);
 gchar* skk_util_get_hankaku_katakana (const gchar* kana);

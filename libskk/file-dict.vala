@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ using Gee;
 
 namespace Skk {
     /**
-     * A file based implementation of Dict.
+     * Read-only file based implementation of Dict.
      */
     public class FileDict : Dict {
         // Read a line near offset and move offset to the beginning of

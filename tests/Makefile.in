@@ -15,8 +15,8 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
-# Copyright (C) 2011 Red Hat, Inc.
+# Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+# Copyright (C) 2011-2012 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,13 +52,17 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 TESTS = rom-kana$(EXEEXT) file-dict$(EXEEXT) user-dict$(EXEEXT) \
-	context$(EXEEXT)
+	cdb-dict$(EXEEXT) skkserv$(EXEEXT) rule$(EXEEXT) \
+	context$(EXEEXT) basic$(EXEEXT)
 noinst_PROGRAMS = $(am__EXEEXT_1)
 subdir = tests
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/intltool.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -66,11 +70,20 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = rom-kana$(EXEEXT) file-dict$(EXEEXT) user-dict$(EXEEXT) \
-	context$(EXEEXT)
+	cdb-dict$(EXEEXT) skkserv$(EXEEXT) rule$(EXEEXT) \
+	context$(EXEEXT) basic$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
+am_basic_OBJECTS = basic.$(OBJEXT) common.$(OBJEXT)
+basic_OBJECTS = $(am_basic_OBJECTS)
+am__DEPENDENCIES_1 =
+basic_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
+	$(am__DEPENDENCIES_1)
+am_cdb_dict_OBJECTS = cdb-dict.$(OBJEXT)
+cdb_dict_OBJECTS = $(am_cdb_dict_OBJECTS)
+cdb_dict_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
+	$(am__DEPENDENCIES_1)
 am_context_OBJECTS = context.$(OBJEXT) common.$(OBJEXT)
 context_OBJECTS = $(am_context_OBJECTS)
-am__DEPENDENCIES_1 =
 context_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
 	$(am__DEPENDENCIES_1)
 am_file_dict_OBJECTS = file-dict.$(OBJEXT)
@@ -80,6 +93,14 @@ file_dict_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
 am_rom_kana_OBJECTS = rom-kana.$(OBJEXT)
 rom_kana_OBJECTS = $(am_rom_kana_OBJECTS)
 rom_kana_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
+	$(am__DEPENDENCIES_1)
+am_rule_OBJECTS = rule.$(OBJEXT) common.$(OBJEXT)
+rule_OBJECTS = $(am_rule_OBJECTS)
+rule_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
+	$(am__DEPENDENCIES_1)
+am_skkserv_OBJECTS = skkserv.$(OBJEXT)
+skkserv_OBJECTS = $(am_skkserv_OBJECTS)
+skkserv_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
 	$(am__DEPENDENCIES_1)
 am_user_dict_OBJECTS = user-dict.$(OBJEXT) common.$(OBJEXT)
 user_dict_OBJECTS = $(am_user_dict_OBJECTS)
@@ -98,10 +119,12 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(context_SOURCES) $(file_dict_SOURCES) $(rom_kana_SOURCES) \
-	$(user_dict_SOURCES)
-DIST_SOURCES = $(context_SOURCES) $(file_dict_SOURCES) \
-	$(rom_kana_SOURCES) $(user_dict_SOURCES)
+SOURCES = $(basic_SOURCES) $(cdb_dict_SOURCES) $(context_SOURCES) \
+	$(file_dict_SOURCES) $(rom_kana_SOURCES) $(rule_SOURCES) \
+	$(skkserv_SOURCES) $(user_dict_SOURCES)
+DIST_SOURCES = $(basic_SOURCES) $(cdb_dict_SOURCES) $(context_SOURCES) \
+	$(file_dict_SOURCES) $(rom_kana_SOURCES) $(rule_SOURCES) \
+	$(skkserv_SOURCES) $(user_dict_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -132,6 +155,8 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CODE_COVERAGE_CFLAGS = @CODE_COVERAGE_CFLAGS@
+CODE_COVERAGE_LDFLAGS = @CODE_COVERAGE_LDFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -183,6 +208,9 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+LT_AGE = @LT_AGE@
+LT_CURRENT = @LT_CURRENT@
+LT_REVISION = @LT_REVISION@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -223,6 +251,8 @@ VALADOC = @VALADOC@
 VALADOC_CFLAGS = @VALADOC_CFLAGS@
 VALADOC_LIBS = @VALADOC_LIBS@
 VALAFLAGS = @VALAFLAGS@
+VALGRIND = @VALGRIND@
+VALGRIND_OPTS = @VALGRIND_OPTS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
 abs_builddir = @abs_builddir@
@@ -278,9 +308,18 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir) $(LIBSKK_CFLAGS)
-TESTS_ENVIRONMENT = LIBSKK_DATA_PATH=$(top_srcdir)
+TESTS_ENVIRONMENT = \
+	G_DEBUG=${G_DEBUG:+"${G_DEBUG},"}gc-friendly	\
+	G_SLICE=${G_SLICE},always-malloc		\
+	LIBSKK_DATA_PATH=$(top_srcdir)			\
+	$(LIBTOOL) --mode=execute $(VALGRIND) $(VALGRIND_OPTS)
+
 noinst_HEADERS = common.h
-AM_CPPFLAGS = -DLIBSKK_FILE_DICT=\"$(top_srcdir)/tests/file-dict.dat\"
+AM_CPPFLAGS = \
+	-DLIBSKK_FILE_DICT=\"$(top_srcdir)/tests/file-dict.dat\"	\
+	-DLIBSKK_CDB_DICT=\"$(top_srcdir)/tests/cdb-dict.dat\"		\
+	$(NULL)
+
 rom_kana_SOURCES = rom-kana.c
 rom_kana_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 
@@ -288,12 +327,20 @@ rom_kana_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 # kana_kan_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 file_dict_SOURCES = file-dict.c
 file_dict_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+cdb_dict_SOURCES = cdb-dict.c
+cdb_dict_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+skkserv_SOURCES = skkserv.c
+skkserv_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 user_dict_SOURCES = user-dict.c common.c
 user_dict_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+rule_SOURCES = rule.c common.c
+rule_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 context_SOURCES = context.c common.c
 context_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
-EXTRA_DIST = file-dict.dat kana-kan.c
-CLEANFILES = user-dict.dat
+basic_SOURCES = basic.c common.c
+basic_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+EXTRA_DIST = file-dict.dat cdb-dict.dat kana-kan.c
+CLEANFILES = user-dict.dat valgrind.log.*
 all: all-am
 
 .SUFFIXES:
@@ -337,6 +384,12 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+basic$(EXEEXT): $(basic_OBJECTS) $(basic_DEPENDENCIES) 
+	@rm -f basic$(EXEEXT)
+	$(LINK) $(basic_OBJECTS) $(basic_LDADD) $(LIBS)
+cdb-dict$(EXEEXT): $(cdb_dict_OBJECTS) $(cdb_dict_DEPENDENCIES) 
+	@rm -f cdb-dict$(EXEEXT)
+	$(LINK) $(cdb_dict_OBJECTS) $(cdb_dict_LDADD) $(LIBS)
 context$(EXEEXT): $(context_OBJECTS) $(context_DEPENDENCIES) 
 	@rm -f context$(EXEEXT)
 	$(LINK) $(context_OBJECTS) $(context_LDADD) $(LIBS)
@@ -346,6 +399,12 @@ file-dict$(EXEEXT): $(file_dict_OBJECTS) $(file_dict_DEPENDENCIES)
 rom-kana$(EXEEXT): $(rom_kana_OBJECTS) $(rom_kana_DEPENDENCIES) 
 	@rm -f rom-kana$(EXEEXT)
 	$(LINK) $(rom_kana_OBJECTS) $(rom_kana_LDADD) $(LIBS)
+rule$(EXEEXT): $(rule_OBJECTS) $(rule_DEPENDENCIES) 
+	@rm -f rule$(EXEEXT)
+	$(LINK) $(rule_OBJECTS) $(rule_LDADD) $(LIBS)
+skkserv$(EXEEXT): $(skkserv_OBJECTS) $(skkserv_DEPENDENCIES) 
+	@rm -f skkserv$(EXEEXT)
+	$(LINK) $(skkserv_OBJECTS) $(skkserv_LDADD) $(LIBS)
 user-dict$(EXEEXT): $(user_dict_OBJECTS) $(user_dict_DEPENDENCIES) 
 	@rm -f user-dict$(EXEEXT)
 	$(LINK) $(user_dict_OBJECTS) $(user_dict_LDADD) $(LIBS)
@@ -356,10 +415,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cdb-dict.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/context.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file-dict.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rom-kana.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rule.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skkserv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/user-dict.Po@am__quote@
 
 .c.o:

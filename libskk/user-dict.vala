@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ using Gee;
 
 namespace Skk {
     /**
-     * A file based implementation of Dict used for user dictionary.
+     * File based implementation of Dict with write access.
      */
     public class UserDict : Dict {
         static const Entry<string,string> ENCODING_TO_CODING_SYSTEM_RULE[] = {

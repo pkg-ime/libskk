@@ -2,8 +2,8 @@
  * generated from key-event.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gee.h>
-#include <gobject/gvaluecollector.h>
 
 
 #define SKK_TYPE_MODIFIER_TYPE (skk_modifier_type_get_type ())
@@ -41,29 +40,6 @@ typedef struct _SkkKeyEventClass SkkKeyEventClass;
 typedef struct _SkkKeyEventPrivate SkkKeyEventPrivate;
 #define _g_free0(var) (var = (g_free (var), NULL))
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
-typedef struct _SkkParamSpecKeyEvent SkkParamSpecKeyEvent;
-
-#define SKK_TYPE_KEY_EVENT_FILTER (skk_key_event_filter_get_type ())
-#define SKK_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_KEY_EVENT_FILTER, SkkKeyEventFilter))
-#define SKK_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_KEY_EVENT_FILTER, SkkKeyEventFilterClass))
-#define SKK_IS_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_KEY_EVENT_FILTER))
-#define SKK_IS_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_KEY_EVENT_FILTER))
-#define SKK_KEY_EVENT_FILTER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_KEY_EVENT_FILTER, SkkKeyEventFilterClass))
-
-typedef struct _SkkKeyEventFilter SkkKeyEventFilter;
-typedef struct _SkkKeyEventFilterClass SkkKeyEventFilterClass;
-typedef struct _SkkKeyEventFilterPrivate SkkKeyEventFilterPrivate;
-
-#define SKK_TYPE_SIMPLE_KEY_EVENT_FILTER (skk_simple_key_event_filter_get_type ())
-#define SKK_SIMPLE_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER, SkkSimpleKeyEventFilter))
-#define SKK_SIMPLE_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER, SkkSimpleKeyEventFilterClass))
-#define SKK_IS_SIMPLE_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER))
-#define SKK_IS_SIMPLE_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER))
-#define SKK_SIMPLE_KEY_EVENT_FILTER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER, SkkSimpleKeyEventFilterClass))
-
-typedef struct _SkkSimpleKeyEventFilter SkkSimpleKeyEventFilter;
-typedef struct _SkkSimpleKeyEventFilterClass SkkSimpleKeyEventFilterClass;
-typedef struct _SkkSimpleKeyEventFilterPrivate SkkSimpleKeyEventFilterPrivate;
 
 typedef enum  {
 	SKK_MODIFIER_TYPE_NONE = 0,
@@ -85,14 +61,12 @@ typedef enum  {
 } SkkModifierType;
 
 struct _SkkKeyEvent {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
+	GObject parent_instance;
 	SkkKeyEventPrivate * priv;
 };
 
 struct _SkkKeyEventClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkKeyEvent *self);
+	GObjectClass parent_class;
 };
 
 struct _SkkKeyEventPrivate {
@@ -101,46 +75,17 @@ struct _SkkKeyEventPrivate {
 	SkkModifierType _modifiers;
 };
 
-struct _SkkParamSpecKeyEvent {
-	GParamSpec parent_instance;
-};
-
-struct _SkkKeyEventFilter {
-	GObject parent_instance;
-	SkkKeyEventFilterPrivate * priv;
-};
-
-struct _SkkKeyEventFilterClass {
-	GObjectClass parent_class;
-	SkkKeyEvent* (*filter_key_event) (SkkKeyEventFilter* self, SkkKeyEvent* key);
-	void (*reset) (SkkKeyEventFilter* self);
-};
-
-struct _SkkSimpleKeyEventFilter {
-	SkkKeyEventFilter parent_instance;
-	SkkSimpleKeyEventFilterPrivate * priv;
-};
-
-struct _SkkSimpleKeyEventFilterClass {
-	SkkKeyEventFilterClass parent_class;
-};
-
 
 static gpointer skk_key_event_parent_class = NULL;
-static gpointer skk_key_event_filter_parent_class = NULL;
-static gpointer skk_simple_key_event_filter_parent_class = NULL;
 
 GType skk_modifier_type_get_type (void) G_GNUC_CONST;
-gpointer skk_key_event_ref (gpointer instance);
-void skk_key_event_unref (gpointer instance);
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_key_event (GValue* value, gpointer v_object);
-void skk_value_take_key_event (GValue* value, gpointer v_object);
-gpointer skk_value_get_key_event (const GValue* value);
 GType skk_key_event_get_type (void) G_GNUC_CONST;
 #define SKK_KEY_EVENT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_KEY_EVENT, SkkKeyEventPrivate))
 enum  {
-	SKK_KEY_EVENT_DUMMY_PROPERTY
+	SKK_KEY_EVENT_DUMMY_PROPERTY,
+	SKK_KEY_EVENT_NAME,
+	SKK_KEY_EVENT_CODE,
+	SKK_KEY_EVENT_MODIFIERS
 };
 SkkKeyEvent* skk_key_event_new (const gchar* name, gunichar code, SkkModifierType modifiers);
 SkkKeyEvent* skk_key_event_construct (GType object_type, const gchar* name, gunichar code, SkkModifierType modifiers);
@@ -155,24 +100,9 @@ SkkKeyEvent* skk_key_event_new_from_string (const gchar* key);
 SkkKeyEvent* skk_key_event_construct_from_string (GType object_type, const gchar* key);
 gchar* skk_key_event_to_string (SkkKeyEvent* self);
 gboolean skk_key_event_base_equal (SkkKeyEvent* self, SkkKeyEvent* key);
-static void skk_key_event_finalize (SkkKeyEvent* obj);
-GType skk_key_event_filter_get_type (void) G_GNUC_CONST;
-enum  {
-	SKK_KEY_EVENT_FILTER_DUMMY_PROPERTY
-};
-SkkKeyEvent* skk_key_event_filter_filter_key_event (SkkKeyEventFilter* self, SkkKeyEvent* key);
-static SkkKeyEvent* skk_key_event_filter_real_filter_key_event (SkkKeyEventFilter* self, SkkKeyEvent* key);
-void skk_key_event_filter_reset (SkkKeyEventFilter* self);
-static void skk_key_event_filter_real_reset (SkkKeyEventFilter* self);
-SkkKeyEventFilter* skk_key_event_filter_construct (GType object_type);
-static void g_cclosure_user_marshal_VOID__SKK_KEY_EVENT (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data);
-GType skk_simple_key_event_filter_get_type (void) G_GNUC_CONST;
-enum  {
-	SKK_SIMPLE_KEY_EVENT_FILTER_DUMMY_PROPERTY
-};
-static SkkKeyEvent* skk_simple_key_event_filter_real_filter_key_event (SkkKeyEventFilter* base, SkkKeyEvent* key);
-SkkSimpleKeyEventFilter* skk_simple_key_event_filter_new (void);
-SkkSimpleKeyEventFilter* skk_simple_key_event_filter_construct (GType object_type);
+static void skk_key_event_finalize (GObject* obj);
+static void _vala_skk_key_event_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+static void _vala_skk_key_event_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
 static void _vala_array_destroy (gpointer array, gint array_length, GDestroyNotify destroy_func);
 static void _vala_array_free (gpointer array, gint array_length, GDestroyNotify destroy_func);
 static gint _vala_array_length (gpointer array);
@@ -203,11 +133,11 @@ GType skk_modifier_type_get_type (void) {
          * @return a new KeyEvent
          */
 SkkKeyEvent* skk_key_event_construct (GType object_type, const gchar* name, gunichar code, SkkModifierType modifiers) {
-	SkkKeyEvent* self = NULL;
+	SkkKeyEvent * self = NULL;
 	const gchar* _tmp0_;
 	gunichar _tmp1_;
 	SkkModifierType _tmp2_;
-	self = (SkkKeyEvent*) g_type_create_instance (object_type);
+	self = (SkkKeyEvent*) g_object_new (object_type, NULL);
 	_tmp0_ = name;
 	skk_key_event_set_name (self, _tmp0_);
 	_tmp1_ = code;
@@ -469,13 +399,13 @@ static gchar* string_substring (const gchar* self, glong offset, glong len) {
 
 
 SkkKeyEvent* skk_key_event_construct_from_string (GType object_type, const gchar* key) {
-	SkkKeyEvent* self = NULL;
+	SkkKeyEvent * self = NULL;
 	gboolean _tmp0_ = FALSE;
 	const gchar* _tmp1_;
 	gboolean _tmp2_ = FALSE;
 	gboolean _tmp5_;
 	g_return_val_if_fail (key != NULL, NULL);
-	self = (SkkKeyEvent*) g_type_create_instance (object_type);
+	self = (SkkKeyEvent*) g_object_new (object_type, NULL);
 	_tmp1_ = key;
 	_tmp2_ = g_str_has_prefix (_tmp1_, "(");
 	if (_tmp2_) {
@@ -1048,6 +978,7 @@ static void skk_key_event_set_name (SkkKeyEvent* self, const gchar* value) {
 	_tmp1_ = g_strdup (_tmp0_);
 	_g_free0 (self->priv->_name);
 	self->priv->_name = _tmp1_;
+	g_object_notify ((GObject *) self, "name");
 }
 
 
@@ -1066,6 +997,7 @@ static void skk_key_event_set_code (SkkKeyEvent* self, gunichar value) {
 	g_return_if_fail (self != NULL);
 	_tmp0_ = value;
 	self->priv->_code = _tmp0_;
+	g_object_notify ((GObject *) self, "code");
 }
 
 
@@ -1084,136 +1016,45 @@ void skk_key_event_set_modifiers (SkkKeyEvent* self, SkkModifierType value) {
 	g_return_if_fail (self != NULL);
 	_tmp0_ = value;
 	self->priv->_modifiers = _tmp0_;
-}
-
-
-static void skk_value_key_event_init (GValue* value) {
-	value->data[0].v_pointer = NULL;
-}
-
-
-static void skk_value_key_event_free_value (GValue* value) {
-	if (value->data[0].v_pointer) {
-		skk_key_event_unref (value->data[0].v_pointer);
-	}
-}
-
-
-static void skk_value_key_event_copy_value (const GValue* src_value, GValue* dest_value) {
-	if (src_value->data[0].v_pointer) {
-		dest_value->data[0].v_pointer = skk_key_event_ref (src_value->data[0].v_pointer);
-	} else {
-		dest_value->data[0].v_pointer = NULL;
-	}
-}
-
-
-static gpointer skk_value_key_event_peek_pointer (const GValue* value) {
-	return value->data[0].v_pointer;
-}
-
-
-static gchar* skk_value_key_event_collect_value (GValue* value, guint n_collect_values, GTypeCValue* collect_values, guint collect_flags) {
-	if (collect_values[0].v_pointer) {
-		SkkKeyEvent* object;
-		object = collect_values[0].v_pointer;
-		if (object->parent_instance.g_class == NULL) {
-			return g_strconcat ("invalid unclassed object pointer for value type `", G_VALUE_TYPE_NAME (value), "'", NULL);
-		} else if (!g_value_type_compatible (G_TYPE_FROM_INSTANCE (object), G_VALUE_TYPE (value))) {
-			return g_strconcat ("invalid object type `", g_type_name (G_TYPE_FROM_INSTANCE (object)), "' for value type `", G_VALUE_TYPE_NAME (value), "'", NULL);
-		}
-		value->data[0].v_pointer = skk_key_event_ref (object);
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	return NULL;
-}
-
-
-static gchar* skk_value_key_event_lcopy_value (const GValue* value, guint n_collect_values, GTypeCValue* collect_values, guint collect_flags) {
-	SkkKeyEvent** object_p;
-	object_p = collect_values[0].v_pointer;
-	if (!object_p) {
-		return g_strdup_printf ("value location for `%s' passed as NULL", G_VALUE_TYPE_NAME (value));
-	}
-	if (!value->data[0].v_pointer) {
-		*object_p = NULL;
-	} else if (collect_flags & G_VALUE_NOCOPY_CONTENTS) {
-		*object_p = value->data[0].v_pointer;
-	} else {
-		*object_p = skk_key_event_ref (value->data[0].v_pointer);
-	}
-	return NULL;
-}
-
-
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags) {
-	SkkParamSpecKeyEvent* spec;
-	g_return_val_if_fail (g_type_is_a (object_type, SKK_TYPE_KEY_EVENT), NULL);
-	spec = g_param_spec_internal (G_TYPE_PARAM_OBJECT, name, nick, blurb, flags);
-	G_PARAM_SPEC (spec)->value_type = object_type;
-	return G_PARAM_SPEC (spec);
-}
-
-
-gpointer skk_value_get_key_event (const GValue* value) {
-	g_return_val_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_KEY_EVENT), NULL);
-	return value->data[0].v_pointer;
-}
-
-
-void skk_value_set_key_event (GValue* value, gpointer v_object) {
-	SkkKeyEvent* old;
-	g_return_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_KEY_EVENT));
-	old = value->data[0].v_pointer;
-	if (v_object) {
-		g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (v_object, SKK_TYPE_KEY_EVENT));
-		g_return_if_fail (g_value_type_compatible (G_TYPE_FROM_INSTANCE (v_object), G_VALUE_TYPE (value)));
-		value->data[0].v_pointer = v_object;
-		skk_key_event_ref (value->data[0].v_pointer);
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	if (old) {
-		skk_key_event_unref (old);
-	}
-}
-
-
-void skk_value_take_key_event (GValue* value, gpointer v_object) {
-	SkkKeyEvent* old;
-	g_return_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_KEY_EVENT));
-	old = value->data[0].v_pointer;
-	if (v_object) {
-		g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (v_object, SKK_TYPE_KEY_EVENT));
-		g_return_if_fail (g_value_type_compatible (G_TYPE_FROM_INSTANCE (v_object), G_VALUE_TYPE (value)));
-		value->data[0].v_pointer = v_object;
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	if (old) {
-		skk_key_event_unref (old);
-	}
+	g_object_notify ((GObject *) self, "modifiers");
 }
 
 
 static void skk_key_event_class_init (SkkKeyEventClass * klass) {
 	skk_key_event_parent_class = g_type_class_peek_parent (klass);
-	SKK_KEY_EVENT_CLASS (klass)->finalize = skk_key_event_finalize;
 	g_type_class_add_private (klass, sizeof (SkkKeyEventPrivate));
+	G_OBJECT_CLASS (klass)->get_property = _vala_skk_key_event_get_property;
+	G_OBJECT_CLASS (klass)->set_property = _vala_skk_key_event_set_property;
+	G_OBJECT_CLASS (klass)->finalize = skk_key_event_finalize;
+	/**
+	         * The base name of the KeyEvent.
+	         *
+	         * This is exclusive to {@link code}.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_KEY_EVENT_NAME, g_param_spec_string ("name", "name", "name", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+	/**
+	         * The base code of the KeyEvent.
+	         *
+	         * This is exclusive to {@link name}.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_KEY_EVENT_CODE, g_param_spec_uint ("code", "code", "code", 0, G_MAXUINT, 0U, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+	/**
+	         * Modifier mask.
+	         */
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_KEY_EVENT_MODIFIERS, g_param_spec_enum ("modifiers", "modifiers", "modifiers", SKK_TYPE_MODIFIER_TYPE, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 }
 
 
 static void skk_key_event_instance_init (SkkKeyEvent * self) {
 	self->priv = SKK_KEY_EVENT_GET_PRIVATE (self);
-	self->ref_count = 1;
 }
 
 
-static void skk_key_event_finalize (SkkKeyEvent* obj) {
+static void skk_key_event_finalize (GObject* obj) {
 	SkkKeyEvent * self;
 	self = SKK_KEY_EVENT (obj);
 	_g_free0 (self->priv->_name);
+	G_OBJECT_CLASS (skk_key_event_parent_class)->finalize (obj);
 }
 
 
@@ -1223,202 +1064,52 @@ static void skk_key_event_finalize (SkkKeyEvent* obj) {
 GType skk_key_event_get_type (void) {
 	static volatile gsize skk_key_event_type_id__volatile = 0;
 	if (g_once_init_enter (&skk_key_event_type_id__volatile)) {
-		static const GTypeValueTable g_define_type_value_table = { skk_value_key_event_init, skk_value_key_event_free_value, skk_value_key_event_copy_value, skk_value_key_event_peek_pointer, "p", skk_value_key_event_collect_value, "p", skk_value_key_event_lcopy_value };
-		static const GTypeInfo g_define_type_info = { sizeof (SkkKeyEventClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_key_event_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkKeyEvent), 0, (GInstanceInitFunc) skk_key_event_instance_init, &g_define_type_value_table };
-		static const GTypeFundamentalInfo g_define_type_fundamental_info = { (G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_INSTANTIATABLE | G_TYPE_FLAG_DERIVABLE | G_TYPE_FLAG_DEEP_DERIVABLE) };
+		static const GTypeInfo g_define_type_info = { sizeof (SkkKeyEventClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_key_event_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkKeyEvent), 0, (GInstanceInitFunc) skk_key_event_instance_init, NULL };
 		GType skk_key_event_type_id;
-		skk_key_event_type_id = g_type_register_fundamental (g_type_fundamental_next (), "SkkKeyEvent", &g_define_type_info, &g_define_type_fundamental_info, 0);
+		skk_key_event_type_id = g_type_register_static (G_TYPE_OBJECT, "SkkKeyEvent", &g_define_type_info, 0);
 		g_once_init_leave (&skk_key_event_type_id__volatile, skk_key_event_type_id);
 	}
 	return skk_key_event_type_id__volatile;
 }
 
 
-gpointer skk_key_event_ref (gpointer instance) {
-	SkkKeyEvent* self;
-	self = instance;
-	g_atomic_int_inc (&self->ref_count);
-	return instance;
-}
-
-
-void skk_key_event_unref (gpointer instance) {
-	SkkKeyEvent* self;
-	self = instance;
-	if (g_atomic_int_dec_and_test (&self->ref_count)) {
-		SKK_KEY_EVENT_GET_CLASS (self)->finalize (self);
-		g_type_free_instance ((GTypeInstance *) self);
+static void _vala_skk_key_event_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
+	SkkKeyEvent * self;
+	self = SKK_KEY_EVENT (object);
+	switch (property_id) {
+		case SKK_KEY_EVENT_NAME:
+		g_value_set_string (value, skk_key_event_get_name (self));
+		break;
+		case SKK_KEY_EVENT_CODE:
+		g_value_set_uint (value, skk_key_event_get_code (self));
+		break;
+		case SKK_KEY_EVENT_MODIFIERS:
+		g_value_set_enum (value, skk_key_event_get_modifiers (self));
+		break;
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
 	}
 }
 
 
-/**
-         * Convert a key event to another.
-         *
-         * @param key a key event
-         *
-         * @return a KeyEvent or `null` if the result cannot be
-         * fetched immediately
-         */
-static SkkKeyEvent* skk_key_event_filter_real_filter_key_event (SkkKeyEventFilter* self, SkkKeyEvent* key) {
-	g_critical ("Type `%s' does not implement abstract method `skk_key_event_filter_filter_key_event'", g_type_name (G_TYPE_FROM_INSTANCE (self)));
-	return NULL;
-}
-
-
-SkkKeyEvent* skk_key_event_filter_filter_key_event (SkkKeyEventFilter* self, SkkKeyEvent* key) {
-	g_return_val_if_fail (self != NULL, NULL);
-	return SKK_KEY_EVENT_FILTER_GET_CLASS (self)->filter_key_event (self, key);
-}
-
-
-/**
-         * Reset the filter.
-         */
-static void skk_key_event_filter_real_reset (SkkKeyEventFilter* self) {
-}
-
-
-void skk_key_event_filter_reset (SkkKeyEventFilter* self) {
-	g_return_if_fail (self != NULL);
-	SKK_KEY_EVENT_FILTER_GET_CLASS (self)->reset (self);
-}
-
-
-SkkKeyEventFilter* skk_key_event_filter_construct (GType object_type) {
-	SkkKeyEventFilter * self = NULL;
-	self = (SkkKeyEventFilter*) g_object_new (object_type, NULL);
-	return self;
-}
-
-
-static void g_cclosure_user_marshal_VOID__SKK_KEY_EVENT (GClosure * closure, GValue * return_value, guint n_param_values, const GValue * param_values, gpointer invocation_hint, gpointer marshal_data) {
-	typedef void (*GMarshalFunc_VOID__SKK_KEY_EVENT) (gpointer data1, gpointer arg_1, gpointer data2);
-	register GMarshalFunc_VOID__SKK_KEY_EVENT callback;
-	register GCClosure * cc;
-	register gpointer data1;
-	register gpointer data2;
-	cc = (GCClosure *) closure;
-	g_return_if_fail (n_param_values == 2);
-	if (G_CCLOSURE_SWAP_DATA (closure)) {
-		data1 = closure->data;
-		data2 = param_values->data[0].v_pointer;
-	} else {
-		data1 = param_values->data[0].v_pointer;
-		data2 = closure->data;
+static void _vala_skk_key_event_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
+	SkkKeyEvent * self;
+	self = SKK_KEY_EVENT (object);
+	switch (property_id) {
+		case SKK_KEY_EVENT_NAME:
+		skk_key_event_set_name (self, g_value_get_string (value));
+		break;
+		case SKK_KEY_EVENT_CODE:
+		skk_key_event_set_code (self, g_value_get_uint (value));
+		break;
+		case SKK_KEY_EVENT_MODIFIERS:
+		skk_key_event_set_modifiers (self, g_value_get_enum (value));
+		break;
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
 	}
-	callback = (GMarshalFunc_VOID__SKK_KEY_EVENT) (marshal_data ? marshal_data : cc->callback);
-	callback (data1, skk_value_get_key_event (param_values + 1), data2);
-}
-
-
-static void skk_key_event_filter_class_init (SkkKeyEventFilterClass * klass) {
-	skk_key_event_filter_parent_class = g_type_class_peek_parent (klass);
-	SKK_KEY_EVENT_FILTER_CLASS (klass)->filter_key_event = skk_key_event_filter_real_filter_key_event;
-	SKK_KEY_EVENT_FILTER_CLASS (klass)->reset = skk_key_event_filter_real_reset;
-	/**
-	         * Signal emitted when a new key event is generated in the filter.
-	         *
-	         * @param key a key event
-	         */
-	g_signal_new ("forwarded", SKK_TYPE_KEY_EVENT_FILTER, G_SIGNAL_RUN_LAST, 0, NULL, NULL, g_cclosure_user_marshal_VOID__SKK_KEY_EVENT, G_TYPE_NONE, 1, SKK_TYPE_KEY_EVENT);
-}
-
-
-static void skk_key_event_filter_instance_init (SkkKeyEventFilter * self) {
-}
-
-
-/**
-     * Base class of a key event filter.
-     */
-GType skk_key_event_filter_get_type (void) {
-	static volatile gsize skk_key_event_filter_type_id__volatile = 0;
-	if (g_once_init_enter (&skk_key_event_filter_type_id__volatile)) {
-		static const GTypeInfo g_define_type_info = { sizeof (SkkKeyEventFilterClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_key_event_filter_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkKeyEventFilter), 0, (GInstanceInitFunc) skk_key_event_filter_instance_init, NULL };
-		GType skk_key_event_filter_type_id;
-		skk_key_event_filter_type_id = g_type_register_static (G_TYPE_OBJECT, "SkkKeyEventFilter", &g_define_type_info, G_TYPE_FLAG_ABSTRACT);
-		g_once_init_leave (&skk_key_event_filter_type_id__volatile, skk_key_event_filter_type_id);
-	}
-	return skk_key_event_filter_type_id__volatile;
-}
-
-
-/**
-         * {@inheritDoc}
-         */
-static gpointer _skk_key_event_ref0 (gpointer self) {
-	return self ? skk_key_event_ref (self) : NULL;
-}
-
-
-static SkkKeyEvent* skk_simple_key_event_filter_real_filter_key_event (SkkKeyEventFilter* base, SkkKeyEvent* key) {
-	SkkSimpleKeyEventFilter * self;
-	SkkKeyEvent* result = NULL;
-	SkkKeyEvent* _tmp0_;
-	SkkModifierType _tmp1_;
-	SkkModifierType _tmp2_;
-	SkkKeyEvent* _tmp3_;
-	SkkKeyEvent* _tmp4_;
-	SkkModifierType _tmp5_;
-	SkkModifierType _tmp6_;
-	SkkKeyEvent* _tmp7_;
-	SkkKeyEvent* _tmp8_;
-	self = (SkkSimpleKeyEventFilter*) base;
-	g_return_val_if_fail (key != NULL, NULL);
-	_tmp0_ = key;
-	_tmp1_ = skk_key_event_get_modifiers (_tmp0_);
-	_tmp2_ = _tmp1_;
-	if ((_tmp2_ & SKK_MODIFIER_TYPE_RELEASE_MASK) != 0) {
-		result = NULL;
-		return result;
-	}
-	_tmp3_ = key;
-	_tmp4_ = key;
-	_tmp5_ = skk_key_event_get_modifiers (_tmp4_);
-	_tmp6_ = _tmp5_;
-	skk_key_event_set_modifiers (_tmp4_, _tmp6_ & (~SKK_MODIFIER_TYPE_SHIFT_MASK));
-	_tmp7_ = key;
-	_tmp8_ = _skk_key_event_ref0 (_tmp7_);
-	result = _tmp8_;
-	return result;
-}
-
-
-SkkSimpleKeyEventFilter* skk_simple_key_event_filter_construct (GType object_type) {
-	SkkSimpleKeyEventFilter * self = NULL;
-	self = (SkkSimpleKeyEventFilter*) skk_key_event_filter_construct (object_type);
-	return self;
-}
-
-
-SkkSimpleKeyEventFilter* skk_simple_key_event_filter_new (void) {
-	return skk_simple_key_event_filter_construct (SKK_TYPE_SIMPLE_KEY_EVENT_FILTER);
-}
-
-
-static void skk_simple_key_event_filter_class_init (SkkSimpleKeyEventFilterClass * klass) {
-	skk_simple_key_event_filter_parent_class = g_type_class_peek_parent (klass);
-	SKK_KEY_EVENT_FILTER_CLASS (klass)->filter_key_event = skk_simple_key_event_filter_real_filter_key_event;
-}
-
-
-static void skk_simple_key_event_filter_instance_init (SkkSimpleKeyEventFilter * self) {
-}
-
-
-/**
-     * Simple implementation of a key event filter.
-     */
-GType skk_simple_key_event_filter_get_type (void) {
-	static volatile gsize skk_simple_key_event_filter_type_id__volatile = 0;
-	if (g_once_init_enter (&skk_simple_key_event_filter_type_id__volatile)) {
-		static const GTypeInfo g_define_type_info = { sizeof (SkkSimpleKeyEventFilterClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_simple_key_event_filter_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkSimpleKeyEventFilter), 0, (GInstanceInitFunc) skk_simple_key_event_filter_instance_init, NULL };
-		GType skk_simple_key_event_filter_type_id;
-		skk_simple_key_event_filter_type_id = g_type_register_static (SKK_TYPE_KEY_EVENT_FILTER, "SkkSimpleKeyEventFilter", &g_define_type_info, 0);
-		g_once_init_leave (&skk_simple_key_event_filter_type_id__volatile, skk_simple_key_event_filter_type_id);
-	}
-	return skk_simple_key_event_filter_type_id__volatile;
 }
 
 
