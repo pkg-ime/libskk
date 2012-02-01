@@ -2,7 +2,7 @@
 
 namespace Skk {
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
-	internal class RomKanaNode {
+	internal class RomKanaNode : GLib.Object {
 		internal Skk.RomKanaEntry? entry;
 		internal weak Skk.RomKanaNode parent;
 		internal Skk.RomKanaNode[] children;
@@ -10,13 +10,11 @@ namespace Skk {
 		internal uint n_children;
 		internal RomKanaNode (Skk.RomKanaEntry? entry);
 		internal void insert (string key, Skk.RomKanaEntry entry);
-		internal Skk.RomKanaEntry? lookup (string key);
-		internal void remove (string key);
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
 	public class RomKanaConverter : GLib.Object {
 		public RomKanaConverter ();
-		public void output_nn_if_any ();
+		public bool output_nn_if_any ();
 		public void append_text (string text);
 		public bool append (unichar uc);
 		public bool can_consume (unichar uc, bool preedit_only = false, bool no_carryover = true);
@@ -66,7 +64,7 @@ namespace Skk {
 		internal Gee.ArrayList<Skk.KanaKanNode> get_prev_nodes (Skk.KanaKanNode node);
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
-	internal class EncodingConverter {
+	internal class EncodingConverter : GLib.Object {
 		internal EncodingConverter (string encoding) throws GLib.Error;
 		internal string encode (string internal_str) throws GLib.Error;
 		internal string decode (string external_str) throws GLib.Error;
@@ -129,7 +127,7 @@ namespace Skk {
 		public override bool read_only { get; }
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
-	public class KeyEvent {
+	public class KeyEvent : GLib.Object {
 		public KeyEvent (string? name, unichar code, Skk.ModifierType modifiers);
 		public Skk.KeyEvent copy ();
 		public KeyEvent.from_string (string key);
@@ -147,7 +145,7 @@ namespace Skk {
 		public signal void forwarded (Skk.KeyEvent key);
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
-	public class SimpleKeyEventFilter : Skk.KeyEventFilter {
+	internal class SimpleKeyEventFilter : Skk.KeyEventFilter {
 		public override Skk.KeyEvent? filter_key_event (Skk.KeyEvent key);
 		public SimpleKeyEventFilter ();
 	}
@@ -187,7 +185,7 @@ namespace Skk {
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
 	internal class State : GLib.Object {
 		internal GLib.Type handler_type;
-		internal Gee.ArrayList<Skk.Dict> dictionaries;
+		internal Gee.List<Skk.Dict> dictionaries;
 		internal Skk.CandidateList candidates;
 		internal Skk.RomKanaConverter rom_kana_converter;
 		internal Skk.RomKanaConverter okuri_rom_kana_converter;
@@ -204,7 +202,7 @@ namespace Skk {
 		internal uint surrounding_end;
 		internal string? lookup_key (Skk.KeyEvent key);
 		internal Skk.KeyEvent? where_is (string command);
-		internal State (Gee.ArrayList<Skk.Dict> dictionaries);
+		internal State (Gee.List<Skk.Dict> dictionaries);
 		internal void output_surrounding_text ();
 		internal void reset ();
 		internal void cancel_okuri ();
@@ -371,13 +369,6 @@ namespace Skk {
 		public NicolaKeyEventFilter ();
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
-	internal class ExprNode {
-		public Skk.ExprNodeType type;
-		public Gee.LinkedList<Skk.ExprNode> nodes;
-		public string data;
-		public ExprNode (Skk.ExprNodeType type);
-	}
-	[CCode (cheader_filename = "libskk/libskk-internals.h")]
 	internal class ExprReader : GLib.Object {
 		public Skk.ExprNode read_symbol (string expr, ref int index);
 		public Skk.ExprNode read_string (string expr, ref int index);
@@ -394,7 +385,6 @@ namespace Skk {
 		internal static string? get_okurigana_prefix (string okurigana);
 		internal static unichar get_wide_latin_char (char c);
 		internal static string get_wide_latin (string latin);
-		internal static string get_latin (string wide_latin);
 		internal static string get_katakana (string kana);
 		internal static string get_hiragana (string kana);
 		internal static string get_hankaku_katakana (string kana);
@@ -432,6 +422,13 @@ namespace Skk {
 		public string label;
 		public string description;
 		public string filter;
+	}
+	[CCode (cheader_filename = "libskk/libskk-internals.h")]
+	internal struct ExprNode {
+		public Skk.ExprNodeType type;
+		public Gee.LinkedList<Skk.ExprNode?> nodes;
+		public string data;
+		public ExprNode (Skk.ExprNodeType type);
 	}
 	[CCode (cheader_filename = "libskk/libskk-internals.h")]
 	internal struct Entry<K,V> {

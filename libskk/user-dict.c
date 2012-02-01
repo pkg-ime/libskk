@@ -2,8 +2,8 @@
  * generated from user-dict.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@ typedef struct _SkkEncodingConverter SkkEncodingConverter;
 typedef struct _SkkEncodingConverterClass SkkEncodingConverterClass;
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 #define _g_free0(var) (var = (g_free (var), NULL))
-#define _skk_encoding_converter_unref0(var) ((var == NULL) ? NULL : (var = (skk_encoding_converter_unref (var), NULL)))
 #define _g_regex_unref0(var) ((var == NULL) ? NULL : (var = (g_regex_unref (var), NULL)))
 
 #define SKK_TYPE_ENTRY (skk_entry_get_type ())
@@ -131,12 +130,6 @@ static gpointer skk_user_dict_parent_class = NULL;
 GType skk_dict_get_type (void) G_GNUC_CONST;
 GType skk_candidate_get_type (void) G_GNUC_CONST;
 GType skk_user_dict_get_type (void) G_GNUC_CONST;
-gpointer skk_encoding_converter_ref (gpointer instance);
-void skk_encoding_converter_unref (gpointer instance);
-GParamSpec* skk_param_spec_encoding_converter (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_encoding_converter (GValue* value, gpointer v_object);
-void skk_value_take_encoding_converter (GValue* value, gpointer v_object);
-gpointer skk_value_get_encoding_converter (const GValue* value);
 GType skk_encoding_converter_get_type (void) G_GNUC_CONST;
 #define SKK_USER_DICT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_USER_DICT, SkkUserDictPrivate))
 enum  {
@@ -458,7 +451,7 @@ static void skk_user_dict_load (SkkUserDict* self, GError** error) {
 							if (_inner_error_ != NULL) {
 								goto __catch11_g_error;
 							}
-							_skk_encoding_converter_unref0 (self->priv->converter);
+							_g_object_unref0 (self->priv->converter);
 							self->priv->converter = _tmp28_;
 						}
 						goto __finally11;
@@ -2005,7 +1998,7 @@ SkkUserDict* skk_user_dict_construct (GType object_type, const gchar* path, cons
 		_g_object_unref0 (self);
 		return NULL;
 	}
-	_skk_encoding_converter_unref0 (self->priv->converter);
+	_g_object_unref0 (self->priv->converter);
 	self->priv->converter = _tmp5_;
 	{
 		GRegex* _tmp6_;
@@ -2185,7 +2178,7 @@ static void skk_user_dict_finalize (GObject* obj) {
 	_g_object_unref0 (okuri_ari_iter);
 	_g_object_unref0 (self->priv->file);
 	_g_free0 (self->priv->etag);
-	_skk_encoding_converter_unref0 (self->priv->converter);
+	_g_object_unref0 (self->priv->converter);
 	_g_object_unref0 (self->priv->okuri_ari_entries);
 	_g_object_unref0 (self->priv->okuri_nasi_entries);
 	_g_regex_unref0 (self->priv->coding_cookie_regex);
@@ -2195,7 +2188,7 @@ static void skk_user_dict_finalize (GObject* obj) {
 
 
 /**
-     * A file based implementation of Dict used for user dictionary.
+     * File based implementation of Dict with write access.
      */
 GType skk_user_dict_get_type (void) {
 	static volatile gsize skk_user_dict_type_id__volatile = 0;

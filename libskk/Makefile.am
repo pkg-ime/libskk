@@ -1,5 +1,5 @@
-# Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
-# Copyright (C) 2011 Red Hat, Inc.
+# Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+# Copyright (C) 2011-2012 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,10 +34,22 @@ libskk_la_VALAFLAGS =						\
 	--internal-vapi skk-internals-@SKK_API_VERSION@.vapi	\
 	--library skk-@SKK_API_VERSION@				\
 	--gir Skk-@SKK_API_VERSION@.gir				\
-	$(VALAFLAGS)
+	--symbols libskk.symbols				\
+	$(VALAFLAGS)						\
+	$(NULL)
 
-libskk_la_CFLAGS = $(LIBSKK_CFLAGS) -DPKGDATADIR=\"$(pkgdatadir)\"
+libskk_la_CFLAGS =				\
+	$(CODE_COVERAGE_CFLAGS)			\
+	$(LIBSKK_CFLAGS)			\
+	-DPKGDATADIR=\"$(pkgdatadir)\"		\
+	$(NULL)
 libskk_la_LIBADD = $(LIBSKK_LIBS)
+libskk_la_LDFLAGS =							\
+	$(CODE_COVERAGE_LDFLAGS)					\
+	-version-info "$(LT_CURRENT)":"$(LT_REVISION)":"$(LT_AGE)"	\
+	-export-dynamic							\
+	-export-symbols $(srcdir)/libskk.symbols			\
+	$(NULL)
 
 libskkincludedir = $(includedir)/libskk
 libskkinclude_HEADERS = libskk.h
@@ -52,12 +64,14 @@ libskk_la_SOURCES =				\
 	user-dict.vala				\
 	skkserv.vala				\
 	key-event.vala				\
+	key-event-filter.vala			\
 	keymap.vala				\
 	rule.vala				\
 	map-file.vala				\
 	state.vala				\
 	context.vala				\
 	candidate.vala				\
+	candidate-list.vala			\
 	nicola.vala				\
 	expr.vala				\
 	util.vala				\
@@ -81,6 +95,7 @@ GITIGNOREFILES =				\
 	libskk_la_vala.stamp			\
 	libskk.h				\
 	libskk-internals.h			\
+	libskk.symbols				\
 	$(NULL)
 
 CLEANFILES =					\
@@ -97,6 +112,6 @@ pkgconfig_DATA = libskk.pc
 vapi_DATA = skk-1.0.vapi skk-1.0.deps
 vapidir = $(datadir)/vala/vapi
 
-EXTRA_DIST = config.vapi skk-1.0.deps
+EXTRA_DIST = config.vapi skk-1.0.deps libskk.symbols
 
 -include $(top_srcdir)/git.mk

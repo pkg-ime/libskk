@@ -161,17 +161,6 @@ typedef struct _SkkKeyEventFilter SkkKeyEventFilter;
 typedef struct _SkkKeyEventFilterClass SkkKeyEventFilterClass;
 typedef struct _SkkKeyEventFilterPrivate SkkKeyEventFilterPrivate;
 
-#define SKK_TYPE_SIMPLE_KEY_EVENT_FILTER (skk_simple_key_event_filter_get_type ())
-#define SKK_SIMPLE_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER, SkkSimpleKeyEventFilter))
-#define SKK_SIMPLE_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER, SkkSimpleKeyEventFilterClass))
-#define SKK_IS_SIMPLE_KEY_EVENT_FILTER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER))
-#define SKK_IS_SIMPLE_KEY_EVENT_FILTER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER))
-#define SKK_SIMPLE_KEY_EVENT_FILTER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_SIMPLE_KEY_EVENT_FILTER, SkkSimpleKeyEventFilterClass))
-
-typedef struct _SkkSimpleKeyEventFilter SkkSimpleKeyEventFilter;
-typedef struct _SkkSimpleKeyEventFilterClass SkkSimpleKeyEventFilterClass;
-typedef struct _SkkSimpleKeyEventFilterPrivate SkkSimpleKeyEventFilterPrivate;
-
 #define SKK_TYPE_RULE_METADATA (skk_rule_metadata_get_type ())
 typedef struct _SkkRuleMetadata SkkRuleMetadata;
 
@@ -382,14 +371,12 @@ typedef enum  {
 } SkkModifierType;
 
 struct _SkkKeyEvent {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
+	GObject parent_instance;
 	SkkKeyEventPrivate * priv;
 };
 
 struct _SkkKeyEventClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkKeyEvent *self);
+	GObjectClass parent_class;
 };
 
 struct _SkkKeyEventFilter {
@@ -401,15 +388,6 @@ struct _SkkKeyEventFilterClass {
 	GObjectClass parent_class;
 	SkkKeyEvent* (*filter_key_event) (SkkKeyEventFilter* self, SkkKeyEvent* key);
 	void (*reset) (SkkKeyEventFilter* self);
-};
-
-struct _SkkSimpleKeyEventFilter {
-	SkkKeyEventFilter parent_instance;
-	SkkSimpleKeyEventFilterPrivate * priv;
-};
-
-struct _SkkSimpleKeyEventFilterClass {
-	SkkKeyEventFilterClass parent_class;
 };
 
 typedef enum  {
@@ -517,7 +495,7 @@ GType skk_period_style_get_type (void) G_GNUC_CONST;
 GType skk_rom_kana_converter_get_type (void) G_GNUC_CONST;
 SkkRomKanaConverter* skk_rom_kana_converter_new (void);
 SkkRomKanaConverter* skk_rom_kana_converter_construct (GType object_type);
-void skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
+gboolean skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
 void skk_rom_kana_converter_append_text (SkkRomKanaConverter* self, const gchar* text);
 gboolean skk_rom_kana_converter_append (SkkRomKanaConverter* self, gunichar uc);
 gboolean skk_rom_kana_converter_can_consume (SkkRomKanaConverter* self, gunichar uc, gboolean preedit_only, gboolean no_carryover);
@@ -568,12 +546,6 @@ GType skk_skk_serv_get_type (void) G_GNUC_CONST;
 SkkSkkServ* skk_skk_serv_new (const gchar* host, guint16 port, const gchar* encoding, GError** error);
 SkkSkkServ* skk_skk_serv_construct (GType object_type, const gchar* host, guint16 port, const gchar* encoding, GError** error);
 GType skk_modifier_type_get_type (void) G_GNUC_CONST;
-gpointer skk_key_event_ref (gpointer instance);
-void skk_key_event_unref (gpointer instance);
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_key_event (GValue* value, gpointer v_object);
-void skk_value_take_key_event (GValue* value, gpointer v_object);
-gpointer skk_value_get_key_event (const GValue* value);
 GType skk_key_event_get_type (void) G_GNUC_CONST;
 SkkKeyEvent* skk_key_event_new (const gchar* name, gunichar code, SkkModifierType modifiers);
 SkkKeyEvent* skk_key_event_construct (GType object_type, const gchar* name, gunichar code, SkkModifierType modifiers);
@@ -590,9 +562,6 @@ GType skk_key_event_filter_get_type (void) G_GNUC_CONST;
 SkkKeyEvent* skk_key_event_filter_filter_key_event (SkkKeyEventFilter* self, SkkKeyEvent* key);
 void skk_key_event_filter_reset (SkkKeyEventFilter* self);
 SkkKeyEventFilter* skk_key_event_filter_construct (GType object_type);
-GType skk_simple_key_event_filter_get_type (void) G_GNUC_CONST;
-SkkSimpleKeyEventFilter* skk_simple_key_event_filter_new (void);
-SkkSimpleKeyEventFilter* skk_simple_key_event_filter_construct (GType object_type);
 GQuark skk_rule_parse_error_quark (void);
 GType skk_rule_metadata_get_type (void) G_GNUC_CONST;
 SkkRuleMetadata* skk_rule_metadata_dup (const SkkRuleMetadata* self);

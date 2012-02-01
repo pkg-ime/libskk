@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ namespace Skk {
     /**
      * Object representing a key event.
      */
-    public class KeyEvent {
+    public class KeyEvent : Object {
         /**
          * The base name of the KeyEvent.
          *
@@ -206,51 +206,6 @@ namespace Skk {
          */
         public bool base_equal (KeyEvent key) {
             return code == key.code && name == key.name;
-        }
-    }
-
-    /**
-     * Base class of a key event filter.
-     */
-    public abstract class KeyEventFilter : Object {
-        /**
-         * Convert a key event to another.
-         *
-         * @param key a key event
-         *
-         * @return a KeyEvent or `null` if the result cannot be
-         * fetched immediately
-         */
-        public abstract KeyEvent? filter_key_event (KeyEvent key);
-
-        /**
-         * Signal emitted when a new key event is generated in the filter.
-         *
-         * @param key a key event
-         */
-        public signal void forwarded (KeyEvent key);
-
-        /**
-         * Reset the filter.
-         */
-        public virtual void reset () {
-        }
-    }
-
-    /**
-     * Simple implementation of a key event filter.
-     */
-    public class SimpleKeyEventFilter : KeyEventFilter {
-        /**
-         * {@inheritDoc}
-         */
-        public override KeyEvent? filter_key_event (KeyEvent key) {
-            // ignore key release event
-            if ((key.modifiers & ModifierType.RELEASE_MASK) != 0)
-                return null;
-            // clear shift mask
-            key.modifiers &= ~ModifierType.SHIFT_MASK;
-            return key;
         }
     }
 }

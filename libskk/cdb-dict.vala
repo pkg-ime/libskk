@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 namespace Skk {
     /**
-     * A CDB based implementation of Dict.
+     * CDB based implementation of Dict.
      */
     public class CdbDict : Dict {
         static uint32 hash (char[] chars) {

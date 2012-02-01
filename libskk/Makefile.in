@@ -15,8 +15,8 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
-# Copyright (C) 2011 Red Hat, Inc.
+# Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+# Copyright (C) 2011-2012 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,15 +55,18 @@ host_triplet = @host@
 subdir = libskk
 DIST_COMMON = $(libskkinclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/libskk.pc.in \
-	Skk-@SKK_API_VERSION@.gir candidate.c cdb-dict.c context.c \
-	dict.c encoding.c expr.c file-dict.c kana-kan.c key-event.c \
-	keymap.c libskk-internals.h libskk.h libskk_la_vala.stamp \
-	map-file.c nicola.c rom-kana.c rule.c \
-	skk-@SKK_API_VERSION@.vapi \
+	Skk-@SKK_API_VERSION@.gir candidate-list.c candidate.c \
+	cdb-dict.c context.c dict.c encoding.c expr.c file-dict.c \
+	kana-kan.c key-event-filter.c key-event.c keymap.c \
+	libskk-internals.h libskk.h libskk_la_vala.stamp map-file.c \
+	nicola.c rom-kana.c rule.c skk-@SKK_API_VERSION@.vapi \
 	skk-internals-@SKK_API_VERSION@.vapi skkserv.c state.c \
 	user-dict.c util.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/intltool.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -101,13 +104,15 @@ am_libskk_la_OBJECTS = libskk_la-rom-kana.lo libskk_la-kana-kan.lo \
 	libskk_la-encoding.lo libskk_la-dict.lo libskk_la-file-dict.lo \
 	libskk_la-cdb-dict.lo libskk_la-user-dict.lo \
 	libskk_la-skkserv.lo libskk_la-key-event.lo \
-	libskk_la-keymap.lo libskk_la-rule.lo libskk_la-map-file.lo \
-	libskk_la-state.lo libskk_la-context.lo libskk_la-candidate.lo \
-	libskk_la-nicola.lo libskk_la-expr.lo libskk_la-util.lo
+	libskk_la-key-event-filter.lo libskk_la-keymap.lo \
+	libskk_la-rule.lo libskk_la-map-file.lo libskk_la-state.lo \
+	libskk_la-context.lo libskk_la-candidate.lo \
+	libskk_la-candidate-list.lo libskk_la-nicola.lo \
+	libskk_la-expr.lo libskk_la-util.lo
 libskk_la_OBJECTS = $(am_libskk_la_OBJECTS)
 libskk_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libskk_la_CFLAGS) \
-	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+	$(CFLAGS) $(libskk_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -142,6 +147,8 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CODE_COVERAGE_CFLAGS = @CODE_COVERAGE_CFLAGS@
+CODE_COVERAGE_LDFLAGS = @CODE_COVERAGE_LDFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -193,6 +200,9 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+LT_AGE = @LT_AGE@
+LT_CURRENT = @LT_CURRENT@
+LT_REVISION = @LT_REVISION@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -233,6 +243,8 @@ VALADOC = @VALADOC@
 VALADOC_CFLAGS = @VALADOC_CFLAGS@
 VALADOC_LIBS = @VALADOC_LIBS@
 VALAFLAGS = @VALAFLAGS@
+VALGRIND = @VALGRIND@
+VALGRIND_OPTS = @VALGRIND_OPTS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
 abs_builddir = @abs_builddir@
@@ -306,10 +318,24 @@ libskk_la_VALAFLAGS = \
 	--internal-vapi skk-internals-@SKK_API_VERSION@.vapi	\
 	--library skk-@SKK_API_VERSION@				\
 	--gir Skk-@SKK_API_VERSION@.gir				\
-	$(VALAFLAGS)
+	--symbols libskk.symbols				\
+	$(VALAFLAGS)						\
+	$(NULL)
 
-libskk_la_CFLAGS = $(LIBSKK_CFLAGS) -DPKGDATADIR=\"$(pkgdatadir)\"
+libskk_la_CFLAGS = \
+	$(CODE_COVERAGE_CFLAGS)			\
+	$(LIBSKK_CFLAGS)			\
+	-DPKGDATADIR=\"$(pkgdatadir)\"		\
+	$(NULL)
+
 libskk_la_LIBADD = $(LIBSKK_LIBS)
+libskk_la_LDFLAGS = \
+	$(CODE_COVERAGE_LDFLAGS)					\
+	-version-info "$(LT_CURRENT)":"$(LT_REVISION)":"$(LT_AGE)"	\
+	-export-dynamic							\
+	-export-symbols $(srcdir)/libskk.symbols			\
+	$(NULL)
+
 libskkincludedir = $(includedir)/libskk
 libskkinclude_HEADERS = libskk.h
 libskk_la_SOURCES = \
@@ -322,12 +348,14 @@ libskk_la_SOURCES = \
 	user-dict.vala				\
 	skkserv.vala				\
 	key-event.vala				\
+	key-event-filter.vala			\
 	keymap.vala				\
 	rule.vala				\
 	map-file.vala				\
 	state.vala				\
 	context.vala				\
 	candidate.vala				\
+	candidate-list.vala			\
 	nicola.vala				\
 	expr.vala				\
 	util.vala				\
@@ -342,6 +370,7 @@ GITIGNOREFILES = \
 	libskk_la_vala.stamp			\
 	libskk.h				\
 	libskk-internals.h			\
+	libskk.symbols				\
 	$(NULL)
 
 CLEANFILES = \
@@ -356,7 +385,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libskk.pc
 vapi_DATA = skk-1.0.vapi skk-1.0.deps
 vapidir = $(datadir)/vala/vapi
-EXTRA_DIST = config.vapi skk-1.0.deps
+EXTRA_DIST = config.vapi skk-1.0.deps libskk.symbols
 all: all-am
 
 .SUFFIXES:
@@ -433,6 +462,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-candidate-list.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-candidate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-cdb-dict.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-context.Plo@am__quote@
@@ -441,6 +471,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-expr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-file-dict.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-kana-kan.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-key-event-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-key-event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-keymap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-map-file.Plo@am__quote@
@@ -536,6 +567,13 @@ libskk_la-key-event.lo: key-event.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -c -o libskk_la-key-event.lo `test -f 'key-event.c' || echo '$(srcdir)/'`key-event.c
 
+libskk_la-key-event-filter.lo: key-event-filter.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -MT libskk_la-key-event-filter.lo -MD -MP -MF $(DEPDIR)/libskk_la-key-event-filter.Tpo -c -o libskk_la-key-event-filter.lo `test -f 'key-event-filter.c' || echo '$(srcdir)/'`key-event-filter.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libskk_la-key-event-filter.Tpo $(DEPDIR)/libskk_la-key-event-filter.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='key-event-filter.c' object='libskk_la-key-event-filter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -c -o libskk_la-key-event-filter.lo `test -f 'key-event-filter.c' || echo '$(srcdir)/'`key-event-filter.c
+
 libskk_la-keymap.lo: keymap.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -MT libskk_la-keymap.lo -MD -MP -MF $(DEPDIR)/libskk_la-keymap.Tpo -c -o libskk_la-keymap.lo `test -f 'keymap.c' || echo '$(srcdir)/'`keymap.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libskk_la-keymap.Tpo $(DEPDIR)/libskk_la-keymap.Plo
@@ -577,6 +615,13 @@ libskk_la-candidate.lo: candidate.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='candidate.c' object='libskk_la-candidate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -c -o libskk_la-candidate.lo `test -f 'candidate.c' || echo '$(srcdir)/'`candidate.c
+
+libskk_la-candidate-list.lo: candidate-list.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -MT libskk_la-candidate-list.lo -MD -MP -MF $(DEPDIR)/libskk_la-candidate-list.Tpo -c -o libskk_la-candidate-list.lo `test -f 'candidate-list.c' || echo '$(srcdir)/'`candidate-list.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libskk_la-candidate-list.Tpo $(DEPDIR)/libskk_la-candidate-list.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='candidate-list.c' object='libskk_la-candidate-list.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -c -o libskk_la-candidate-list.lo `test -f 'candidate-list.c' || echo '$(srcdir)/'`candidate-list.c
 
 libskk_la-nicola.lo: nicola.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -MT libskk_la-nicola.lo -MD -MP -MF $(DEPDIR)/libskk_la-nicola.Tpo -c -o libskk_la-nicola.lo `test -f 'nicola.c' || echo '$(srcdir)/'`nicola.c
@@ -643,6 +688,11 @@ $(srcdir)/key-event.c: $(srcdir)/libskk_la_vala.stamp
 	  rm -f $(srcdir)/libskk_la_vala.stamp; \
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
 	fi
+$(srcdir)/key-event-filter.c: $(srcdir)/libskk_la_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/libskk_la_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
+	fi
 $(srcdir)/keymap.c: $(srcdir)/libskk_la_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/libskk_la_vala.stamp; \
@@ -669,6 +719,11 @@ $(srcdir)/context.c: $(srcdir)/libskk_la_vala.stamp
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
 	fi
 $(srcdir)/candidate.c: $(srcdir)/libskk_la_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/libskk_la_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
+	fi
+$(srcdir)/candidate-list.c: $(srcdir)/libskk_la_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/libskk_la_vala.stamp; \
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
@@ -939,6 +994,7 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f Skk-@SKK_API_VERSION@.gir
+	-rm -f candidate-list.c
 	-rm -f candidate.c
 	-rm -f cdb-dict.c
 	-rm -f context.c
@@ -947,6 +1003,7 @@ maintainer-clean-generic:
 	-rm -f expr.c
 	-rm -f file-dict.c
 	-rm -f kana-kan.c
+	-rm -f key-event-filter.c
 	-rm -f key-event.c
 	-rm -f keymap.c
 	-rm -f libskk-internals.h

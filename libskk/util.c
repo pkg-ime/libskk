@@ -2,8 +2,8 @@
  * generated from util.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,10 +51,10 @@ typedef struct _SkkUtilPrivate SkkUtilPrivate;
 #define SKK_UTIL_TYPE_KANA_TABLE_ENTRY (skk_util_kana_table_entry_get_type ())
 typedef struct _SkkUtilKanaTableEntry SkkUtilKanaTableEntry;
 #define _g_string_free0(var) ((var == NULL) ? NULL : (var = (g_string_free (var, TRUE), NULL)))
-#define _g_free0(var) (var = (g_free (var), NULL))
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 typedef struct _Block1Data Block1Data;
 typedef struct _Block2Data Block2Data;
+#define _g_free0(var) (var = (g_free (var), NULL))
 typedef struct _Block3Data Block3Data;
 
 #define SKK_TYPE_KANA_MODE (skk_kana_mode_get_type ())
@@ -212,7 +212,6 @@ static gchar* skk_util_get_okurigana_prefix_for_char (gunichar uc);
 gchar* skk_util_get_okurigana_prefix (const gchar* okurigana);
 gunichar skk_util_get_wide_latin_char (gchar c);
 gchar* skk_util_get_wide_latin (const gchar* latin);
-gchar* skk_util_get_latin (const gchar* wide_latin);
 static gunichar skk_util_get_katakana_char (gunichar uc);
 static void skk_util_foreach_katakana (const gchar* kana, GFunc func, void* func_target);
 gchar* skk_util_get_katakana (const gchar* kana);
@@ -539,83 +538,6 @@ gchar* skk_util_get_wide_latin (const gchar* latin) {
 	_tmp14_ = _tmp13_->str;
 	_tmp15_ = g_strdup (_tmp14_);
 	result = _tmp15_;
-	_g_string_free0 (builder);
-	return result;
-}
-
-
-static gchar* g_unichar_to_string (gunichar self) {
-	gchar* result = NULL;
-	gchar* _tmp0_ = NULL;
-	gchar* str;
-	const gchar* _tmp1_;
-	_tmp0_ = g_new0 (gchar, 7);
-	str = (gchar*) _tmp0_;
-	_tmp1_ = str;
-	g_unichar_to_utf8 (self, _tmp1_);
-	result = str;
-	return result;
-}
-
-
-gchar* skk_util_get_latin (const gchar* wide_latin) {
-	gchar* result = NULL;
-	GString* _tmp0_;
-	GString* builder;
-	gint index;
-	gunichar uc = 0U;
-	GString* _tmp15_;
-	const gchar* _tmp16_;
-	gchar* _tmp17_;
-	g_return_val_if_fail (wide_latin != NULL, NULL);
-	_tmp0_ = g_string_new ("");
-	builder = _tmp0_;
-	index = 0;
-	while (TRUE) {
-		const gchar* _tmp1_;
-		gunichar _tmp2_ = 0U;
-		gboolean _tmp3_ = FALSE;
-		gunichar _tmp4_;
-		gchar* _tmp5_ = NULL;
-		gchar* str;
-		GeeMap* _tmp6_;
-		const gchar* _tmp7_;
-		gboolean _tmp8_ = FALSE;
-		_tmp1_ = wide_latin;
-		_tmp3_ = string_get_next_char (_tmp1_, &index, &_tmp2_);
-		uc = _tmp2_;
-		if (!_tmp3_) {
-			break;
-		}
-		_tmp4_ = uc;
-		_tmp5_ = g_unichar_to_string (_tmp4_);
-		str = _tmp5_;
-		_tmp6_ = skk_util__WideLatinToLatinTable;
-		_tmp7_ = str;
-		_tmp8_ = gee_map_has_key (_tmp6_, _tmp7_);
-		if (_tmp8_) {
-			GString* _tmp9_;
-			GeeMap* _tmp10_;
-			const gchar* _tmp11_;
-			gpointer _tmp12_ = NULL;
-			_tmp9_ = builder;
-			_tmp10_ = skk_util__WideLatinToLatinTable;
-			_tmp11_ = str;
-			_tmp12_ = gee_map_get (_tmp10_, _tmp11_);
-			g_string_append_c (_tmp9_, GPOINTER_TO_INT (_tmp12_));
-		} else {
-			GString* _tmp13_;
-			const gchar* _tmp14_;
-			_tmp13_ = builder;
-			_tmp14_ = str;
-			g_string_append (_tmp13_, _tmp14_);
-		}
-		_g_free0 (str);
-	}
-	_tmp15_ = builder;
-	_tmp16_ = _tmp15_->str;
-	_tmp17_ = g_strdup (_tmp16_);
-	result = _tmp17_;
 	_g_string_free0 (builder);
 	return result;
 }
@@ -969,31 +891,22 @@ gchar* skk_util_convert_by_input_mode (const gchar* str, SkkInputMode input_mode
 			result = _tmp6_;
 			return result;
 		}
-		case SKK_INPUT_MODE_LATIN:
+		case SKK_INPUT_MODE_WIDE_LATIN:
 		{
 			const gchar* _tmp7_;
 			gchar* _tmp8_ = NULL;
 			_tmp7_ = str;
-			_tmp8_ = skk_util_get_latin (_tmp7_);
+			_tmp8_ = skk_util_get_wide_latin (_tmp7_);
 			result = _tmp8_;
-			return result;
-		}
-		case SKK_INPUT_MODE_WIDE_LATIN:
-		{
-			const gchar* _tmp9_;
-			gchar* _tmp10_ = NULL;
-			_tmp9_ = str;
-			_tmp10_ = skk_util_get_wide_latin (_tmp9_);
-			result = _tmp10_;
 			return result;
 		}
 		default:
 		{
-			const gchar* _tmp11_;
-			gchar* _tmp12_;
-			_tmp11_ = str;
-			_tmp12_ = g_strdup (_tmp11_);
-			result = _tmp12_;
+			const gchar* _tmp9_;
+			gchar* _tmp10_;
+			_tmp9_ = str;
+			_tmp10_ = g_strdup (_tmp9_);
+			result = _tmp10_;
 			return result;
 		}
 	}

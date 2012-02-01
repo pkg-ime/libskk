@@ -2,8 +2,8 @@
  * generated from encoding.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gio/gio.h>
-#include <gobject/gvaluecollector.h>
 
 
 #define SKK_TYPE_ENCODING_CONVERTER (skk_encoding_converter_get_type ())
@@ -39,19 +38,15 @@ typedef struct _SkkEncodingConverterClass SkkEncodingConverterClass;
 typedef struct _SkkEncodingConverterPrivate SkkEncodingConverterPrivate;
 #define _g_free0(var) (var = (g_free (var), NULL))
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
-#define _skk_encoding_converter_unref0(var) ((var == NULL) ? NULL : (var = (skk_encoding_converter_unref (var), NULL)))
 #define _g_string_free0(var) ((var == NULL) ? NULL : (var = (g_string_free (var, TRUE), NULL)))
-typedef struct _SkkParamSpecEncodingConverter SkkParamSpecEncodingConverter;
 
 struct _SkkEncodingConverter {
-	GTypeInstance parent_instance;
-	volatile int ref_count;
+	GObject parent_instance;
 	SkkEncodingConverterPrivate * priv;
 };
 
 struct _SkkEncodingConverterClass {
-	GTypeClass parent_class;
-	void (*finalize) (SkkEncodingConverter *self);
+	GObjectClass parent_class;
 };
 
 struct _SkkEncodingConverterPrivate {
@@ -60,23 +55,14 @@ struct _SkkEncodingConverterPrivate {
 	GCharsetConverter* decoder;
 };
 
-struct _SkkParamSpecEncodingConverter {
-	GParamSpec parent_instance;
-};
-
 
 static gpointer skk_encoding_converter_parent_class = NULL;
 
-gpointer skk_encoding_converter_ref (gpointer instance);
-void skk_encoding_converter_unref (gpointer instance);
-GParamSpec* skk_param_spec_encoding_converter (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_encoding_converter (GValue* value, gpointer v_object);
-void skk_value_take_encoding_converter (GValue* value, gpointer v_object);
-gpointer skk_value_get_encoding_converter (const GValue* value);
 GType skk_encoding_converter_get_type (void) G_GNUC_CONST;
 #define SKK_ENCODING_CONVERTER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_ENCODING_CONVERTER, SkkEncodingConverterPrivate))
 enum  {
-	SKK_ENCODING_CONVERTER_DUMMY_PROPERTY
+	SKK_ENCODING_CONVERTER_DUMMY_PROPERTY,
+	SKK_ENCODING_CONVERTER_ENCODING
 };
 #define SKK_ENCODING_CONVERTER_BUFSIZ 4096
 #define SKK_ENCODING_CONVERTER_INTERNAL_ENCODING "UTF-8"
@@ -88,11 +74,13 @@ static guint8* _vala_array_dup1 (guint8* self, int length);
 gchar* skk_encoding_converter_encode (SkkEncodingConverter* self, const gchar* internal_str, GError** error);
 gchar* skk_encoding_converter_decode (SkkEncodingConverter* self, const gchar* external_str, GError** error);
 const gchar* skk_encoding_converter_get_encoding (SkkEncodingConverter* self);
-static void skk_encoding_converter_finalize (SkkEncodingConverter* obj);
+static void skk_encoding_converter_finalize (GObject* obj);
+static void _vala_skk_encoding_converter_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+static void _vala_skk_encoding_converter_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
 
 
 SkkEncodingConverter* skk_encoding_converter_construct (GType object_type, const gchar* encoding, GError** error) {
-	SkkEncodingConverter* self = NULL;
+	SkkEncodingConverter * self = NULL;
 	const gchar* _tmp0_;
 	const gchar* _tmp1_;
 	GCharsetConverter* _tmp2_;
@@ -102,7 +90,7 @@ SkkEncodingConverter* skk_encoding_converter_construct (GType object_type, const
 	GCharsetConverter* _tmp6_;
 	GError * _inner_error_ = NULL;
 	g_return_val_if_fail (encoding != NULL, NULL);
-	self = (SkkEncodingConverter*) g_type_create_instance (object_type);
+	self = (SkkEncodingConverter*) g_object_new (object_type, NULL);
 	_tmp0_ = encoding;
 	skk_encoding_converter_set_encoding (self, _tmp0_);
 	_tmp1_ = encoding;
@@ -110,7 +98,7 @@ SkkEncodingConverter* skk_encoding_converter_construct (GType object_type, const
 	_tmp3_ = _tmp2_;
 	if (_inner_error_ != NULL) {
 		g_propagate_error (error, _inner_error_);
-		_skk_encoding_converter_unref0 (self);
+		_g_object_unref0 (self);
 		return NULL;
 	}
 	_g_object_unref0 (self->priv->encoder);
@@ -120,7 +108,7 @@ SkkEncodingConverter* skk_encoding_converter_construct (GType object_type, const
 	_tmp6_ = _tmp5_;
 	if (_inner_error_ != NULL) {
 		g_propagate_error (error, _inner_error_);
-		_skk_encoding_converter_unref0 (self);
+		_g_object_unref0 (self);
 		return NULL;
 	}
 	_g_object_unref0 (self->priv->decoder);
@@ -368,169 +356,71 @@ static void skk_encoding_converter_set_encoding (SkkEncodingConverter* self, con
 	_tmp1_ = g_strdup (_tmp0_);
 	_g_free0 (self->priv->_encoding);
 	self->priv->_encoding = _tmp1_;
-}
-
-
-static void skk_value_encoding_converter_init (GValue* value) {
-	value->data[0].v_pointer = NULL;
-}
-
-
-static void skk_value_encoding_converter_free_value (GValue* value) {
-	if (value->data[0].v_pointer) {
-		skk_encoding_converter_unref (value->data[0].v_pointer);
-	}
-}
-
-
-static void skk_value_encoding_converter_copy_value (const GValue* src_value, GValue* dest_value) {
-	if (src_value->data[0].v_pointer) {
-		dest_value->data[0].v_pointer = skk_encoding_converter_ref (src_value->data[0].v_pointer);
-	} else {
-		dest_value->data[0].v_pointer = NULL;
-	}
-}
-
-
-static gpointer skk_value_encoding_converter_peek_pointer (const GValue* value) {
-	return value->data[0].v_pointer;
-}
-
-
-static gchar* skk_value_encoding_converter_collect_value (GValue* value, guint n_collect_values, GTypeCValue* collect_values, guint collect_flags) {
-	if (collect_values[0].v_pointer) {
-		SkkEncodingConverter* object;
-		object = collect_values[0].v_pointer;
-		if (object->parent_instance.g_class == NULL) {
-			return g_strconcat ("invalid unclassed object pointer for value type `", G_VALUE_TYPE_NAME (value), "'", NULL);
-		} else if (!g_value_type_compatible (G_TYPE_FROM_INSTANCE (object), G_VALUE_TYPE (value))) {
-			return g_strconcat ("invalid object type `", g_type_name (G_TYPE_FROM_INSTANCE (object)), "' for value type `", G_VALUE_TYPE_NAME (value), "'", NULL);
-		}
-		value->data[0].v_pointer = skk_encoding_converter_ref (object);
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	return NULL;
-}
-
-
-static gchar* skk_value_encoding_converter_lcopy_value (const GValue* value, guint n_collect_values, GTypeCValue* collect_values, guint collect_flags) {
-	SkkEncodingConverter** object_p;
-	object_p = collect_values[0].v_pointer;
-	if (!object_p) {
-		return g_strdup_printf ("value location for `%s' passed as NULL", G_VALUE_TYPE_NAME (value));
-	}
-	if (!value->data[0].v_pointer) {
-		*object_p = NULL;
-	} else if (collect_flags & G_VALUE_NOCOPY_CONTENTS) {
-		*object_p = value->data[0].v_pointer;
-	} else {
-		*object_p = skk_encoding_converter_ref (value->data[0].v_pointer);
-	}
-	return NULL;
-}
-
-
-GParamSpec* skk_param_spec_encoding_converter (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags) {
-	SkkParamSpecEncodingConverter* spec;
-	g_return_val_if_fail (g_type_is_a (object_type, SKK_TYPE_ENCODING_CONVERTER), NULL);
-	spec = g_param_spec_internal (G_TYPE_PARAM_OBJECT, name, nick, blurb, flags);
-	G_PARAM_SPEC (spec)->value_type = object_type;
-	return G_PARAM_SPEC (spec);
-}
-
-
-gpointer skk_value_get_encoding_converter (const GValue* value) {
-	g_return_val_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_ENCODING_CONVERTER), NULL);
-	return value->data[0].v_pointer;
-}
-
-
-void skk_value_set_encoding_converter (GValue* value, gpointer v_object) {
-	SkkEncodingConverter* old;
-	g_return_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_ENCODING_CONVERTER));
-	old = value->data[0].v_pointer;
-	if (v_object) {
-		g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (v_object, SKK_TYPE_ENCODING_CONVERTER));
-		g_return_if_fail (g_value_type_compatible (G_TYPE_FROM_INSTANCE (v_object), G_VALUE_TYPE (value)));
-		value->data[0].v_pointer = v_object;
-		skk_encoding_converter_ref (value->data[0].v_pointer);
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	if (old) {
-		skk_encoding_converter_unref (old);
-	}
-}
-
-
-void skk_value_take_encoding_converter (GValue* value, gpointer v_object) {
-	SkkEncodingConverter* old;
-	g_return_if_fail (G_TYPE_CHECK_VALUE_TYPE (value, SKK_TYPE_ENCODING_CONVERTER));
-	old = value->data[0].v_pointer;
-	if (v_object) {
-		g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (v_object, SKK_TYPE_ENCODING_CONVERTER));
-		g_return_if_fail (g_value_type_compatible (G_TYPE_FROM_INSTANCE (v_object), G_VALUE_TYPE (value)));
-		value->data[0].v_pointer = v_object;
-	} else {
-		value->data[0].v_pointer = NULL;
-	}
-	if (old) {
-		skk_encoding_converter_unref (old);
-	}
+	g_object_notify ((GObject *) self, "encoding");
 }
 
 
 static void skk_encoding_converter_class_init (SkkEncodingConverterClass * klass) {
 	skk_encoding_converter_parent_class = g_type_class_peek_parent (klass);
-	SKK_ENCODING_CONVERTER_CLASS (klass)->finalize = skk_encoding_converter_finalize;
 	g_type_class_add_private (klass, sizeof (SkkEncodingConverterPrivate));
+	G_OBJECT_CLASS (klass)->get_property = _vala_skk_encoding_converter_get_property;
+	G_OBJECT_CLASS (klass)->set_property = _vala_skk_encoding_converter_set_property;
+	G_OBJECT_CLASS (klass)->finalize = skk_encoding_converter_finalize;
+	g_object_class_install_property (G_OBJECT_CLASS (klass), SKK_ENCODING_CONVERTER_ENCODING, g_param_spec_string ("encoding", "encoding", "encoding", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
 }
 
 
 static void skk_encoding_converter_instance_init (SkkEncodingConverter * self) {
 	self->priv = SKK_ENCODING_CONVERTER_GET_PRIVATE (self);
-	self->ref_count = 1;
 }
 
 
-static void skk_encoding_converter_finalize (SkkEncodingConverter* obj) {
+static void skk_encoding_converter_finalize (GObject* obj) {
 	SkkEncodingConverter * self;
 	self = SKK_ENCODING_CONVERTER (obj);
 	_g_free0 (self->priv->_encoding);
 	_g_object_unref0 (self->priv->encoder);
 	_g_object_unref0 (self->priv->decoder);
+	G_OBJECT_CLASS (skk_encoding_converter_parent_class)->finalize (obj);
 }
 
 
 GType skk_encoding_converter_get_type (void) {
 	static volatile gsize skk_encoding_converter_type_id__volatile = 0;
 	if (g_once_init_enter (&skk_encoding_converter_type_id__volatile)) {
-		static const GTypeValueTable g_define_type_value_table = { skk_value_encoding_converter_init, skk_value_encoding_converter_free_value, skk_value_encoding_converter_copy_value, skk_value_encoding_converter_peek_pointer, "p", skk_value_encoding_converter_collect_value, "p", skk_value_encoding_converter_lcopy_value };
-		static const GTypeInfo g_define_type_info = { sizeof (SkkEncodingConverterClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_encoding_converter_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkEncodingConverter), 0, (GInstanceInitFunc) skk_encoding_converter_instance_init, &g_define_type_value_table };
-		static const GTypeFundamentalInfo g_define_type_fundamental_info = { (G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_INSTANTIATABLE | G_TYPE_FLAG_DERIVABLE | G_TYPE_FLAG_DEEP_DERIVABLE) };
+		static const GTypeInfo g_define_type_info = { sizeof (SkkEncodingConverterClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) skk_encoding_converter_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SkkEncodingConverter), 0, (GInstanceInitFunc) skk_encoding_converter_instance_init, NULL };
 		GType skk_encoding_converter_type_id;
-		skk_encoding_converter_type_id = g_type_register_fundamental (g_type_fundamental_next (), "SkkEncodingConverter", &g_define_type_info, &g_define_type_fundamental_info, 0);
+		skk_encoding_converter_type_id = g_type_register_static (G_TYPE_OBJECT, "SkkEncodingConverter", &g_define_type_info, 0);
 		g_once_init_leave (&skk_encoding_converter_type_id__volatile, skk_encoding_converter_type_id);
 	}
 	return skk_encoding_converter_type_id__volatile;
 }
 
 
-gpointer skk_encoding_converter_ref (gpointer instance) {
-	SkkEncodingConverter* self;
-	self = instance;
-	g_atomic_int_inc (&self->ref_count);
-	return instance;
+static void _vala_skk_encoding_converter_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
+	SkkEncodingConverter * self;
+	self = SKK_ENCODING_CONVERTER (object);
+	switch (property_id) {
+		case SKK_ENCODING_CONVERTER_ENCODING:
+		g_value_set_string (value, skk_encoding_converter_get_encoding (self));
+		break;
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
 }
 
 
-void skk_encoding_converter_unref (gpointer instance) {
-	SkkEncodingConverter* self;
-	self = instance;
-	if (g_atomic_int_dec_and_test (&self->ref_count)) {
-		SKK_ENCODING_CONVERTER_GET_CLASS (self)->finalize (self);
-		g_type_free_instance ((GTypeInstance *) self);
+static void _vala_skk_encoding_converter_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
+	SkkEncodingConverter * self;
+	self = SKK_ENCODING_CONVERTER (object);
+	switch (property_id) {
+		case SKK_ENCODING_CONVERTER_ENCODING:
+		skk_encoding_converter_set_encoding (self, g_value_get_string (value));
+		break;
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
 	}
 }
 

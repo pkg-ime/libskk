@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 namespace Skk {
     // XXX: we use Vala string to represent byte array, assuming that
     // it does not contain null element
-    class EncodingConverter {
+    class EncodingConverter : Object {
         static const int BUFSIZ = 4096;
         static const string INTERNAL_ENCODING = "UTF-8";
 

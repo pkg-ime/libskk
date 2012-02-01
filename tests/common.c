@@ -6,15 +6,19 @@ SkkContext *
 create_context (gboolean use_user_dict,
                 gboolean use_file_dict)
 {
-  SkkDict *dictionaries[2];
+  SkkDict *dictionaries[3];
   gint n_dictionaries = 0;
+  SkkEmptyDict *empty_dict;
   SkkUserDict *user_dict = NULL;
   SkkFileDict *file_dict = NULL;
   SkkContext *context;
   GError *error;
 
-  unlink ("user-dict.dat");
-
+  error = NULL;
+  empty_dict = skk_empty_dict_new ();
+  g_assert_no_error (error);
+  dictionaries[n_dictionaries++] = SKK_DICT (empty_dict);
+  
   if (use_user_dict) {
     error = NULL;
     user_dict = skk_user_dict_new ("user-dict.dat", "EUC-JP", &error);
@@ -31,12 +35,20 @@ create_context (gboolean use_user_dict,
 
   context = skk_context_new (dictionaries, n_dictionaries);
 
+  g_object_unref (empty_dict);
   if (user_dict)
     g_object_unref (user_dict);
   if (file_dict)
     g_object_unref (file_dict);
 
   return context;
+}
+
+void
+destroy_context (SkkContext *context)
+{
+  unlink ("user-dict.dat");
+  g_object_unref (context);
 }
 
 void
@@ -47,7 +59,8 @@ check_transitions (SkkContext    *context,
   gint i;
 
   for (i = 0; i < n_transitions; i++) {
-    const gchar *preedit, *output;
+    const gchar *preedit;
+    gchar *output;
     SkkInputMode input_mode;
     skk_context_reset (context);
     output = skk_context_poll_output (context);

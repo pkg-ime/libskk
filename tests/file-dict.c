@@ -9,6 +9,11 @@ file_dict (void)
 
   gint len;
   SkkCandidate **candidates;
+  gboolean read_only;
+
+  g_assert (skk_dict_get_read_only (SKK_DICT (dict)));
+  g_object_get (dict, "read-only", &read_only, NULL);
+  g_assert (read_only);
 
   candidates = skk_dict_lookup (SKK_DICT (dict),
                                 "かんじ",

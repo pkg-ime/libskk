@@ -2,8 +2,8 @@
  * generated from tool.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -277,7 +277,7 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar* 
 		regex = _tmp4_;
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == G_REGEX_ERROR) {
-				goto __catch2_g_regex_error;
+				goto __catch6_g_regex_error;
 			}
 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 			g_clear_error (&_inner_error_);
@@ -290,7 +290,7 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar* 
 		if (_inner_error_ != NULL) {
 			_g_regex_unref0 (regex);
 			if (_inner_error_->domain == G_REGEX_ERROR) {
-				goto __catch2_g_regex_error;
+				goto __catch6_g_regex_error;
 			}
 			_g_regex_unref0 (regex);
 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
@@ -301,8 +301,8 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar* 
 		_g_regex_unref0 (regex);
 		return result;
 	}
-	goto __finally2;
-	__catch2_g_regex_error:
+	goto __finally6;
+	__catch6_g_regex_error:
 	{
 		GError* e = NULL;
 		e = _inner_error_;
@@ -310,7 +310,7 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar* 
 		g_assert_not_reached ();
 		_g_error_free0 (e);
 	}
-	__finally2:
+	__finally6:
 	if (_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
@@ -321,38 +321,40 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar* 
 
 gint skk_tool_main (gchar** args, int args_length1) {
 	gint result = 0;
-	GOptionContext* _tmp0_;
-	GOptionContext* option_context;
+	const gchar* _tmp0_ = NULL;
 	GOptionContext* _tmp1_;
-	gboolean _tmp6_;
-	GeeArrayList* _tmp18_;
+	GOptionContext* option_context;
+	GOptionContext* _tmp2_;
+	gboolean _tmp7_;
+	GeeArrayList* _tmp19_;
 	GeeArrayList* dictionaries;
-	const gchar* _tmp19_;
-	const gchar* _tmp25_;
-	const gchar* _tmp45_;
-	GeeArrayList* _tmp68_;
-	gint _tmp69_ = 0;
-	gpointer* _tmp70_ = NULL;
-	SkkDict** _tmp71_;
-	gint _tmp71__length1;
-	SkkContext* _tmp72_;
-	SkkContext* _tmp73_;
+	const gchar* _tmp20_;
+	const gchar* _tmp30_;
+	const gchar* _tmp58_;
+	GeeArrayList* _tmp86_;
+	gint _tmp87_ = 0;
+	gpointer* _tmp88_ = NULL;
+	SkkDict** _tmp89_;
+	gint _tmp89__length1;
+	SkkContext* _tmp90_;
+	SkkContext* _tmp91_;
 	SkkContext* context;
-	const gchar* _tmp74_;
+	const gchar* _tmp92_;
 	gchar* line = NULL;
 	GError * _inner_error_ = NULL;
 	setlocale (LC_ALL, "");
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
-	_tmp0_ = g_option_context_new ("- skk");
-	option_context = _tmp0_;
-	_tmp1_ = option_context;
-	g_option_context_add_main_entries (_tmp1_, SKK_TOOL_options, "libskk");
+	_tmp0_ = _ ("- emulate SKK input method on the command line");
+	_tmp1_ = g_option_context_new (_tmp0_);
+	option_context = _tmp1_;
+	_tmp2_ = option_context;
+	g_option_context_add_main_entries (_tmp2_, SKK_TOOL_options, "libskk");
 	{
-		GOptionContext* _tmp2_;
-		_tmp2_ = option_context;
-		g_option_context_parse (_tmp2_, &args_length1, &args, &_inner_error_);
+		GOptionContext* _tmp3_;
+		_tmp3_ = option_context;
+		g_option_context_parse (_tmp3_, &args_length1, &args, &_inner_error_);
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == G_OPTION_ERROR) {
 				goto __catch0_g_option_error;
@@ -367,15 +369,15 @@ gint skk_tool_main (gchar** args, int args_length1) {
 	__catch0_g_option_error:
 	{
 		GError* e = NULL;
-		FILE* _tmp3_;
-		GError* _tmp4_;
-		const gchar* _tmp5_;
+		FILE* _tmp4_;
+		GError* _tmp5_;
+		const gchar* _tmp6_;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_tmp3_ = stderr;
-		_tmp4_ = e;
-		_tmp5_ = _tmp4_->message;
-		fprintf (_tmp3_, "%s\n", _tmp5_);
+		_tmp4_ = stderr;
+		_tmp5_ = e;
+		_tmp6_ = _tmp5_->message;
+		fprintf (_tmp4_, "%s\n", _tmp6_);
 		result = 1;
 		_g_error_free0 (e);
 		_g_option_context_free0 (option_context);
@@ -389,49 +391,49 @@ gint skk_tool_main (gchar** args, int args_length1) {
 		return 0;
 	}
 	skk_init ();
-	_tmp6_ = skk_tool_list_typing_rules;
-	if (_tmp6_) {
-		gint _tmp7_ = 0;
-		SkkRuleMetadata* _tmp8_ = NULL;
+	_tmp7_ = skk_tool_list_typing_rules;
+	if (_tmp7_) {
+		gint _tmp8_ = 0;
+		SkkRuleMetadata* _tmp9_ = NULL;
 		SkkRuleMetadata* rules;
 		gint rules_length1;
 		gint _rules_size_;
-		SkkRuleMetadata* _tmp9_;
-		gint _tmp9__length1;
-		_tmp8_ = skk_rule_list (&_tmp7_);
-		rules = _tmp8_;
-		rules_length1 = _tmp7_;
+		SkkRuleMetadata* _tmp10_;
+		gint _tmp10__length1;
+		_tmp9_ = skk_rule_list (&_tmp8_);
+		rules = _tmp9_;
+		rules_length1 = _tmp8_;
 		_rules_size_ = rules_length1;
-		_tmp9_ = rules;
-		_tmp9__length1 = rules_length1;
+		_tmp10_ = rules;
+		_tmp10__length1 = rules_length1;
 		{
 			SkkRuleMetadata* rule_collection = NULL;
 			gint rule_collection_length1 = 0;
 			gint _rule_collection_size_ = 0;
 			gint rule_it = 0;
-			rule_collection = _tmp9_;
-			rule_collection_length1 = _tmp9__length1;
-			for (rule_it = 0; rule_it < _tmp9__length1; rule_it = rule_it + 1) {
-				SkkRuleMetadata _tmp10_ = {0};
+			rule_collection = _tmp10_;
+			rule_collection_length1 = _tmp10__length1;
+			for (rule_it = 0; rule_it < _tmp10__length1; rule_it = rule_it + 1) {
+				SkkRuleMetadata _tmp11_ = {0};
 				SkkRuleMetadata rule = {0};
-				skk_rule_metadata_copy (&rule_collection[rule_it], &_tmp10_);
-				rule = _tmp10_;
+				skk_rule_metadata_copy (&rule_collection[rule_it], &_tmp11_);
+				rule = _tmp11_;
 				{
-					FILE* _tmp11_;
-					SkkRuleMetadata _tmp12_;
-					const gchar* _tmp13_;
-					SkkRuleMetadata _tmp14_;
-					const gchar* _tmp15_;
-					SkkRuleMetadata _tmp16_;
-					const gchar* _tmp17_;
-					_tmp11_ = stdout;
-					_tmp12_ = rule;
-					_tmp13_ = _tmp12_.name;
-					_tmp14_ = rule;
-					_tmp15_ = _tmp14_.label;
-					_tmp16_ = rule;
-					_tmp17_ = _tmp16_.description;
-					fprintf (_tmp11_, "%s - %s: %s\n", _tmp13_, _tmp15_, _tmp17_);
+					FILE* _tmp12_;
+					SkkRuleMetadata _tmp13_;
+					const gchar* _tmp14_;
+					SkkRuleMetadata _tmp15_;
+					const gchar* _tmp16_;
+					SkkRuleMetadata _tmp17_;
+					const gchar* _tmp18_;
+					_tmp12_ = stdout;
+					_tmp13_ = rule;
+					_tmp14_ = _tmp13_.name;
+					_tmp15_ = rule;
+					_tmp16_ = _tmp15_.label;
+					_tmp17_ = rule;
+					_tmp18_ = _tmp17_.description;
+					fprintf (_tmp12_, "%s - %s: %s\n", _tmp14_, _tmp16_, _tmp18_);
 					skk_rule_metadata_destroy (&rule);
 				}
 			}
@@ -441,18 +443,49 @@ gint skk_tool_main (gchar** args, int args_length1) {
 		_g_option_context_free0 (option_context);
 		return result;
 	}
-	_tmp18_ = gee_array_list_new (SKK_TYPE_DICT, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL);
-	dictionaries = _tmp18_;
-	_tmp19_ = skk_tool_user_dict;
-	if (_tmp19_ != NULL) {
-		const gchar* _tmp20_;
-		SkkUserDict* _tmp21_;
-		SkkUserDict* _tmp22_;
-		GeeArrayList* _tmp23_;
-		SkkUserDict* _tmp24_;
-		_tmp20_ = skk_tool_file_dict;
-		_tmp21_ = skk_user_dict_new (_tmp20_, "UTF-8", &_inner_error_);
-		_tmp22_ = _tmp21_;
+	_tmp19_ = gee_array_list_new (SKK_TYPE_DICT, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL);
+	dictionaries = _tmp19_;
+	_tmp20_ = skk_tool_user_dict;
+	if (_tmp20_ != NULL) {
+		{
+			const gchar* _tmp21_;
+			SkkUserDict* _tmp22_;
+			SkkUserDict* _tmp23_;
+			GeeArrayList* _tmp24_;
+			SkkUserDict* _tmp25_;
+			_tmp21_ = skk_tool_user_dict;
+			_tmp22_ = skk_user_dict_new (_tmp21_, "UTF-8", &_inner_error_);
+			_tmp23_ = _tmp22_;
+			if (_inner_error_ != NULL) {
+				goto __catch1_g_error;
+			}
+			_tmp24_ = dictionaries;
+			_tmp25_ = _tmp23_;
+			gee_abstract_collection_add ((GeeAbstractCollection*) _tmp24_, (SkkDict*) _tmp25_);
+			_g_object_unref0 (_tmp25_);
+		}
+		goto __finally1;
+		__catch1_g_error:
+		{
+			GError* e = NULL;
+			FILE* _tmp26_;
+			const gchar* _tmp27_;
+			GError* _tmp28_;
+			const gchar* _tmp29_;
+			e = _inner_error_;
+			_inner_error_ = NULL;
+			_tmp26_ = stderr;
+			_tmp27_ = skk_tool_user_dict;
+			_tmp28_ = e;
+			_tmp29_ = _tmp28_->message;
+			fprintf (_tmp26_, "can't open user dict %s: %s", _tmp27_, _tmp29_);
+			result = 1;
+			_g_error_free0 (e);
+			_g_object_unref0 (dictionaries);
+			_g_option_context_free0 (option_context);
+			return result;
+		}
+		__finally1:
 		if (_inner_error_ != NULL) {
 			_g_object_unref0 (dictionaries);
 			_g_option_context_free0 (option_context);
@@ -460,26 +493,53 @@ gint skk_tool_main (gchar** args, int args_length1) {
 			g_clear_error (&_inner_error_);
 			return 0;
 		}
-		_tmp23_ = dictionaries;
-		_tmp24_ = _tmp22_;
-		gee_abstract_collection_add ((GeeAbstractCollection*) _tmp23_, (SkkDict*) _tmp24_);
-		_g_object_unref0 (_tmp24_);
 	}
-	_tmp25_ = skk_tool_file_dict;
-	if (_tmp25_ != NULL) {
-		const gchar* _tmp26_;
-		gboolean _tmp27_ = FALSE;
-		_tmp26_ = skk_tool_file_dict;
-		_tmp27_ = g_str_has_suffix (_tmp26_, ".cdb");
-		if (_tmp27_) {
-			const gchar* _tmp28_;
-			SkkCdbDict* _tmp29_;
-			SkkCdbDict* _tmp30_;
-			GeeArrayList* _tmp31_;
-			SkkCdbDict* _tmp32_;
-			_tmp28_ = skk_tool_file_dict;
-			_tmp29_ = skk_cdb_dict_new (_tmp28_, "EUC-JP", &_inner_error_);
-			_tmp30_ = _tmp29_;
+	_tmp30_ = skk_tool_file_dict;
+	if (_tmp30_ != NULL) {
+		const gchar* _tmp31_;
+		gboolean _tmp32_ = FALSE;
+		_tmp31_ = skk_tool_file_dict;
+		_tmp32_ = g_str_has_suffix (_tmp31_, ".cdb");
+		if (_tmp32_) {
+			{
+				const gchar* _tmp33_;
+				SkkCdbDict* _tmp34_;
+				SkkCdbDict* _tmp35_;
+				GeeArrayList* _tmp36_;
+				SkkCdbDict* _tmp37_;
+				_tmp33_ = skk_tool_file_dict;
+				_tmp34_ = skk_cdb_dict_new (_tmp33_, "EUC-JP", &_inner_error_);
+				_tmp35_ = _tmp34_;
+				if (_inner_error_ != NULL) {
+					goto __catch2_g_error;
+				}
+				_tmp36_ = dictionaries;
+				_tmp37_ = _tmp35_;
+				gee_abstract_collection_add ((GeeAbstractCollection*) _tmp36_, (SkkDict*) _tmp37_);
+				_g_object_unref0 (_tmp37_);
+			}
+			goto __finally2;
+			__catch2_g_error:
+			{
+				GError* e = NULL;
+				FILE* _tmp38_;
+				const gchar* _tmp39_;
+				GError* _tmp40_;
+				const gchar* _tmp41_;
+				e = _inner_error_;
+				_inner_error_ = NULL;
+				_tmp38_ = stderr;
+				_tmp39_ = skk_tool_file_dict;
+				_tmp40_ = e;
+				_tmp41_ = _tmp40_->message;
+				fprintf (_tmp38_, "can't open CDB dict %s: %s", _tmp39_, _tmp41_);
+				result = 1;
+				_g_error_free0 (e);
+				_g_object_unref0 (dictionaries);
+				_g_option_context_free0 (option_context);
+				return result;
+			}
+			__finally2:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (dictionaries);
 				_g_option_context_free0 (option_context);
@@ -487,19 +547,46 @@ gint skk_tool_main (gchar** args, int args_length1) {
 				g_clear_error (&_inner_error_);
 				return 0;
 			}
-			_tmp31_ = dictionaries;
-			_tmp32_ = _tmp30_;
-			gee_abstract_collection_add ((GeeAbstractCollection*) _tmp31_, (SkkDict*) _tmp32_);
-			_g_object_unref0 (_tmp32_);
 		} else {
-			const gchar* _tmp33_;
-			SkkFileDict* _tmp34_;
-			SkkFileDict* _tmp35_;
-			GeeArrayList* _tmp36_;
-			SkkFileDict* _tmp37_;
-			_tmp33_ = skk_tool_file_dict;
-			_tmp34_ = skk_file_dict_new (_tmp33_, "EUC-JP", &_inner_error_);
-			_tmp35_ = _tmp34_;
+			{
+				const gchar* _tmp42_;
+				SkkFileDict* _tmp43_;
+				SkkFileDict* _tmp44_;
+				GeeArrayList* _tmp45_;
+				SkkFileDict* _tmp46_;
+				_tmp42_ = skk_tool_file_dict;
+				_tmp43_ = skk_file_dict_new (_tmp42_, "EUC-JP", &_inner_error_);
+				_tmp44_ = _tmp43_;
+				if (_inner_error_ != NULL) {
+					goto __catch3_g_error;
+				}
+				_tmp45_ = dictionaries;
+				_tmp46_ = _tmp44_;
+				gee_abstract_collection_add ((GeeAbstractCollection*) _tmp45_, (SkkDict*) _tmp46_);
+				_g_object_unref0 (_tmp46_);
+			}
+			goto __finally3;
+			__catch3_g_error:
+			{
+				GError* e = NULL;
+				FILE* _tmp47_;
+				const gchar* _tmp48_;
+				GError* _tmp49_;
+				const gchar* _tmp50_;
+				e = _inner_error_;
+				_inner_error_ = NULL;
+				_tmp47_ = stderr;
+				_tmp48_ = skk_tool_file_dict;
+				_tmp49_ = e;
+				_tmp50_ = _tmp49_->message;
+				fprintf (_tmp47_, "can't open file dict %s: %s", _tmp48_, _tmp50_);
+				result = 1;
+				_g_error_free0 (e);
+				_g_object_unref0 (dictionaries);
+				_g_option_context_free0 (option_context);
+				return result;
+			}
+			__finally3:
 			if (_inner_error_ != NULL) {
 				_g_object_unref0 (dictionaries);
 				_g_option_context_free0 (option_context);
@@ -507,25 +594,21 @@ gint skk_tool_main (gchar** args, int args_length1) {
 				g_clear_error (&_inner_error_);
 				return 0;
 			}
-			_tmp36_ = dictionaries;
-			_tmp37_ = _tmp35_;
-			gee_abstract_collection_add ((GeeAbstractCollection*) _tmp36_, (SkkDict*) _tmp37_);
-			_g_object_unref0 (_tmp37_);
 		}
 	} else {
-		gchar* _tmp38_ = NULL;
-		gchar* _tmp39_;
-		SkkFileDict* _tmp40_;
-		SkkFileDict* _tmp41_;
-		SkkFileDict* _tmp42_;
-		GeeArrayList* _tmp43_;
-		SkkFileDict* _tmp44_;
-		_tmp38_ = g_build_filename (DATADIR, "skk", "SKK-JISYO.L", NULL);
-		_tmp39_ = _tmp38_;
-		_tmp40_ = skk_file_dict_new (_tmp39_, "EUC-JP", &_inner_error_);
-		_tmp41_ = _tmp40_;
-		_g_free0 (_tmp39_);
-		_tmp42_ = _tmp41_;
+		gchar* _tmp51_ = NULL;
+		gchar* _tmp52_;
+		SkkFileDict* _tmp53_;
+		SkkFileDict* _tmp54_;
+		SkkFileDict* _tmp55_;
+		GeeArrayList* _tmp56_;
+		SkkFileDict* _tmp57_;
+		_tmp51_ = g_build_filename (DATADIR, "skk", "SKK-JISYO.L", NULL);
+		_tmp52_ = _tmp51_;
+		_tmp53_ = skk_file_dict_new (_tmp52_, "EUC-JP", &_inner_error_);
+		_tmp54_ = _tmp53_;
+		_g_free0 (_tmp52_);
+		_tmp55_ = _tmp54_;
 		if (_inner_error_ != NULL) {
 			_g_object_unref0 (dictionaries);
 			_g_option_context_free0 (option_context);
@@ -533,69 +616,103 @@ gint skk_tool_main (gchar** args, int args_length1) {
 			g_clear_error (&_inner_error_);
 			return 0;
 		}
-		_tmp43_ = dictionaries;
-		_tmp44_ = _tmp42_;
-		gee_abstract_collection_add ((GeeAbstractCollection*) _tmp43_, (SkkDict*) _tmp44_);
-		_g_object_unref0 (_tmp44_);
+		_tmp56_ = dictionaries;
+		_tmp57_ = _tmp55_;
+		gee_abstract_collection_add ((GeeAbstractCollection*) _tmp56_, (SkkDict*) _tmp57_);
+		_g_object_unref0 (_tmp57_);
 	}
-	_tmp45_ = skk_tool_skkserv;
-	if (_tmp45_ != NULL) {
-		const gchar* _tmp46_;
-		gint _tmp47_ = 0;
+	_tmp58_ = skk_tool_skkserv;
+	if (_tmp58_ != NULL) {
+		const gchar* _tmp59_;
+		gint _tmp60_ = 0;
 		gint index;
 		gchar* host = NULL;
 		guint16 port = 0U;
-		gint _tmp48_;
-		const gchar* _tmp62_;
-		guint16 _tmp63_;
-		SkkSkkServ* _tmp64_;
-		SkkSkkServ* _tmp65_;
-		GeeArrayList* _tmp66_;
-		SkkSkkServ* _tmp67_;
-		_tmp46_ = skk_tool_skkserv;
-		_tmp47_ = string_last_index_of (_tmp46_, ":", 0);
-		index = _tmp47_;
-		_tmp48_ = index;
-		if (_tmp48_ < 0) {
-			const gchar* _tmp49_;
-			gchar* _tmp50_;
-			_tmp49_ = skk_tool_skkserv;
-			_tmp50_ = g_strdup (_tmp49_);
+		gint _tmp61_;
+		_tmp59_ = skk_tool_skkserv;
+		_tmp60_ = string_last_index_of (_tmp59_, ":", 0);
+		index = _tmp60_;
+		_tmp61_ = index;
+		if (_tmp61_ < 0) {
+			const gchar* _tmp62_;
+			gchar* _tmp63_;
+			_tmp62_ = skk_tool_skkserv;
+			_tmp63_ = g_strdup (_tmp62_);
 			_g_free0 (host);
-			host = _tmp50_;
+			host = _tmp63_;
 			port = (guint16) 1178;
 		} else {
-			const gchar* _tmp51_;
-			gint _tmp52_;
-			gchar* _tmp53_ = NULL;
-			const gchar* _tmp54_;
-			gint _tmp55_;
-			const gchar* _tmp56_;
-			gint _tmp57_;
-			gint _tmp58_;
-			gchar* _tmp59_ = NULL;
-			gchar* _tmp60_;
-			gint _tmp61_ = 0;
-			_tmp51_ = skk_tool_skkserv;
-			_tmp52_ = index;
-			_tmp53_ = string_slice (_tmp51_, (glong) 0, (glong) _tmp52_);
+			const gchar* _tmp64_;
+			gint _tmp65_;
+			gchar* _tmp66_ = NULL;
+			const gchar* _tmp67_;
+			gint _tmp68_;
+			const gchar* _tmp69_;
+			gint _tmp70_;
+			gint _tmp71_;
+			gchar* _tmp72_ = NULL;
+			gchar* _tmp73_;
+			gint _tmp74_ = 0;
+			_tmp64_ = skk_tool_skkserv;
+			_tmp65_ = index;
+			_tmp66_ = string_slice (_tmp64_, (glong) 0, (glong) _tmp65_);
 			_g_free0 (host);
-			host = _tmp53_;
-			_tmp54_ = skk_tool_skkserv;
-			_tmp55_ = index;
-			_tmp56_ = skk_tool_skkserv;
-			_tmp57_ = strlen (_tmp56_);
-			_tmp58_ = _tmp57_;
-			_tmp59_ = string_slice (_tmp54_, (glong) (_tmp55_ + 1), (glong) _tmp58_);
-			_tmp60_ = _tmp59_;
-			_tmp61_ = atoi (_tmp60_);
-			port = (guint16) _tmp61_;
-			_g_free0 (_tmp60_);
+			host = _tmp66_;
+			_tmp67_ = skk_tool_skkserv;
+			_tmp68_ = index;
+			_tmp69_ = skk_tool_skkserv;
+			_tmp70_ = strlen (_tmp69_);
+			_tmp71_ = _tmp70_;
+			_tmp72_ = string_slice (_tmp67_, (glong) (_tmp68_ + 1), (glong) _tmp71_);
+			_tmp73_ = _tmp72_;
+			_tmp74_ = atoi (_tmp73_);
+			port = (guint16) _tmp74_;
+			_g_free0 (_tmp73_);
 		}
-		_tmp62_ = host;
-		_tmp63_ = port;
-		_tmp64_ = skk_skk_serv_new (_tmp62_, _tmp63_, "EUC-JP", &_inner_error_);
-		_tmp65_ = _tmp64_;
+		{
+			const gchar* _tmp75_;
+			guint16 _tmp76_;
+			SkkSkkServ* _tmp77_;
+			SkkSkkServ* _tmp78_;
+			GeeArrayList* _tmp79_;
+			SkkSkkServ* _tmp80_;
+			_tmp75_ = host;
+			_tmp76_ = port;
+			_tmp77_ = skk_skk_serv_new (_tmp75_, _tmp76_, "EUC-JP", &_inner_error_);
+			_tmp78_ = _tmp77_;
+			if (_inner_error_ != NULL) {
+				goto __catch4_g_error;
+			}
+			_tmp79_ = dictionaries;
+			_tmp80_ = _tmp78_;
+			gee_abstract_collection_add ((GeeAbstractCollection*) _tmp79_, (SkkDict*) _tmp80_);
+			_g_object_unref0 (_tmp80_);
+		}
+		goto __finally4;
+		__catch4_g_error:
+		{
+			GError* e = NULL;
+			FILE* _tmp81_;
+			const gchar* _tmp82_;
+			guint16 _tmp83_;
+			GError* _tmp84_;
+			const gchar* _tmp85_;
+			e = _inner_error_;
+			_inner_error_ = NULL;
+			_tmp81_ = stderr;
+			_tmp82_ = host;
+			_tmp83_ = port;
+			_tmp84_ = e;
+			_tmp85_ = _tmp84_->message;
+			fprintf (_tmp81_, "can't connect to skkserv at %s:%d: %s", _tmp82_, (gint) _tmp83_, _tmp85_);
+			result = 1;
+			_g_error_free0 (e);
+			_g_free0 (host);
+			_g_object_unref0 (dictionaries);
+			_g_option_context_free0 (option_context);
+			return result;
+		}
+		__finally4:
 		if (_inner_error_ != NULL) {
 			_g_free0 (host);
 			_g_object_unref0 (dictionaries);
@@ -604,34 +721,30 @@ gint skk_tool_main (gchar** args, int args_length1) {
 			g_clear_error (&_inner_error_);
 			return 0;
 		}
-		_tmp66_ = dictionaries;
-		_tmp67_ = _tmp65_;
-		gee_abstract_collection_add ((GeeAbstractCollection*) _tmp66_, (SkkDict*) _tmp67_);
-		_g_object_unref0 (_tmp67_);
 		_g_free0 (host);
 	}
-	_tmp68_ = dictionaries;
-	_tmp70_ = gee_abstract_collection_to_array ((GeeAbstractCollection*) _tmp68_, &_tmp69_);
-	_tmp71_ = _tmp70_;
-	_tmp71__length1 = _tmp69_;
-	_tmp72_ = skk_context_new (_tmp71_, _tmp69_);
-	_tmp73_ = _tmp72_;
-	_tmp71_ = (_vala_array_free (_tmp71_, _tmp71__length1, (GDestroyNotify) g_object_unref), NULL);
-	context = _tmp73_;
-	_tmp74_ = skk_tool_typing_rule;
-	if (_tmp74_ != NULL) {
+	_tmp86_ = dictionaries;
+	_tmp88_ = gee_abstract_collection_to_array ((GeeAbstractCollection*) _tmp86_, &_tmp87_);
+	_tmp89_ = _tmp88_;
+	_tmp89__length1 = _tmp87_;
+	_tmp90_ = skk_context_new (_tmp89_, _tmp87_);
+	_tmp91_ = _tmp90_;
+	_tmp89_ = (_vala_array_free (_tmp89_, _tmp89__length1, (GDestroyNotify) g_object_unref), NULL);
+	context = _tmp91_;
+	_tmp92_ = skk_tool_typing_rule;
+	if (_tmp92_ != NULL) {
 		{
-			const gchar* _tmp75_;
-			SkkRule* _tmp76_;
-			SkkRule* _tmp77_;
-			SkkContext* _tmp78_;
-			SkkRule* _tmp79_;
-			_tmp75_ = skk_tool_typing_rule;
-			_tmp76_ = skk_rule_new (_tmp75_, &_inner_error_);
-			_tmp77_ = _tmp76_;
+			const gchar* _tmp93_;
+			SkkRule* _tmp94_;
+			SkkRule* _tmp95_;
+			SkkContext* _tmp96_;
+			SkkRule* _tmp97_;
+			_tmp93_ = skk_tool_typing_rule;
+			_tmp94_ = skk_rule_new (_tmp93_, &_inner_error_);
+			_tmp95_ = _tmp94_;
 			if (_inner_error_ != NULL) {
 				if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
-					goto __catch1_skk_rule_parse_error;
+					goto __catch5_skk_rule_parse_error;
 				}
 				_g_object_unref0 (context);
 				_g_object_unref0 (dictionaries);
@@ -640,26 +753,26 @@ gint skk_tool_main (gchar** args, int args_length1) {
 				g_clear_error (&_inner_error_);
 				return 0;
 			}
-			_tmp78_ = context;
-			_tmp79_ = _tmp77_;
-			skk_context_set_typing_rule (_tmp78_, _tmp79_);
-			_g_object_unref0 (_tmp79_);
+			_tmp96_ = context;
+			_tmp97_ = _tmp95_;
+			skk_context_set_typing_rule (_tmp96_, _tmp97_);
+			_g_object_unref0 (_tmp97_);
 		}
-		goto __finally1;
-		__catch1_skk_rule_parse_error:
+		goto __finally5;
+		__catch5_skk_rule_parse_error:
 		{
 			GError* e = NULL;
-			FILE* _tmp80_;
-			const gchar* _tmp81_;
-			GError* _tmp82_;
-			const gchar* _tmp83_;
+			FILE* _tmp98_;
+			const gchar* _tmp99_;
+			GError* _tmp100_;
+			const gchar* _tmp101_;
 			e = _inner_error_;
 			_inner_error_ = NULL;
-			_tmp80_ = stderr;
-			_tmp81_ = skk_tool_typing_rule;
-			_tmp82_ = e;
-			_tmp83_ = _tmp82_->message;
-			fprintf (_tmp80_, "can't load rule \"%s\": %s\n", _tmp81_, _tmp83_);
+			_tmp98_ = stderr;
+			_tmp99_ = skk_tool_typing_rule;
+			_tmp100_ = e;
+			_tmp101_ = _tmp100_->message;
+			fprintf (_tmp98_, "can't load rule \"%s\": %s\n", _tmp99_, _tmp101_);
 			result = 1;
 			_g_error_free0 (e);
 			_g_object_unref0 (context);
@@ -667,7 +780,7 @@ gint skk_tool_main (gchar** args, int args_length1) {
 			_g_option_context_free0 (option_context);
 			return result;
 		}
-		__finally1:
+		__finally5:
 		if (_inner_error_ != NULL) {
 			_g_object_unref0 (context);
 			_g_object_unref0 (dictionaries);
@@ -678,68 +791,68 @@ gint skk_tool_main (gchar** args, int args_length1) {
 		}
 	}
 	while (TRUE) {
-		FILE* _tmp84_;
-		gchar* _tmp85_ = NULL;
-		const gchar* _tmp86_;
-		SkkContext* _tmp87_;
-		const gchar* _tmp88_;
-		SkkContext* _tmp89_;
-		gchar* _tmp90_ = NULL;
-		gchar* output;
-		SkkContext* _tmp91_;
-		const gchar* _tmp92_;
-		const gchar* _tmp93_;
-		gchar* _tmp94_;
-		gchar* preedit;
-		FILE* _tmp95_;
-		const gchar* _tmp96_;
-		gchar* _tmp97_ = NULL;
-		gchar* _tmp98_;
-		const gchar* _tmp99_;
-		gchar* _tmp100_ = NULL;
-		gchar* _tmp101_;
-		const gchar* _tmp102_;
+		FILE* _tmp102_;
 		gchar* _tmp103_ = NULL;
-		gchar* _tmp104_;
+		const gchar* _tmp104_;
 		SkkContext* _tmp105_;
-		SkkContext* _tmp106_;
-		_tmp84_ = stdin;
-		_tmp85_ = g_file_stream_read_line (_tmp84_);
+		const gchar* _tmp106_;
+		SkkContext* _tmp107_;
+		gchar* _tmp108_ = NULL;
+		gchar* output;
+		SkkContext* _tmp109_;
+		const gchar* _tmp110_;
+		const gchar* _tmp111_;
+		gchar* _tmp112_;
+		gchar* preedit;
+		FILE* _tmp113_;
+		const gchar* _tmp114_;
+		gchar* _tmp115_ = NULL;
+		gchar* _tmp116_;
+		const gchar* _tmp117_;
+		gchar* _tmp118_ = NULL;
+		gchar* _tmp119_;
+		const gchar* _tmp120_;
+		gchar* _tmp121_ = NULL;
+		gchar* _tmp122_;
+		SkkContext* _tmp123_;
+		SkkContext* _tmp124_;
+		_tmp102_ = stdin;
+		_tmp103_ = g_file_stream_read_line (_tmp102_);
 		_g_free0 (line);
-		line = _tmp85_;
-		_tmp86_ = line;
-		if (!(_tmp86_ != NULL)) {
+		line = _tmp103_;
+		_tmp104_ = line;
+		if (!(_tmp104_ != NULL)) {
 			break;
 		}
-		_tmp87_ = context;
-		_tmp88_ = line;
-		skk_context_process_key_events (_tmp87_, _tmp88_);
-		_tmp89_ = context;
-		_tmp90_ = skk_context_poll_output (_tmp89_);
-		output = _tmp90_;
-		_tmp91_ = context;
-		_tmp92_ = skk_context_get_preedit (_tmp91_);
-		_tmp93_ = _tmp92_;
-		_tmp94_ = g_strdup (_tmp93_);
-		preedit = _tmp94_;
-		_tmp95_ = stdout;
-		_tmp96_ = line;
-		_tmp97_ = string_replace (_tmp96_, "\"", "\\\"");
-		_tmp98_ = _tmp97_;
-		_tmp99_ = output;
-		_tmp100_ = string_replace (_tmp99_, "\"", "\\\"");
-		_tmp101_ = _tmp100_;
-		_tmp102_ = preedit;
-		_tmp103_ = string_replace (_tmp102_, "\"", "\\\"");
-		_tmp104_ = _tmp103_;
-		fprintf (_tmp95_, "{ \"input\": \"%s\", " "\"output\": \"%s\", " "\"preedit\": \"%s\" }\n", _tmp98_, _tmp101_, _tmp104_);
-		_g_free0 (_tmp104_);
-		_g_free0 (_tmp101_);
-		_g_free0 (_tmp98_);
 		_tmp105_ = context;
-		skk_context_reset (_tmp105_);
-		_tmp106_ = context;
-		skk_context_clear_output (_tmp106_);
+		_tmp106_ = line;
+		skk_context_process_key_events (_tmp105_, _tmp106_);
+		_tmp107_ = context;
+		_tmp108_ = skk_context_poll_output (_tmp107_);
+		output = _tmp108_;
+		_tmp109_ = context;
+		_tmp110_ = skk_context_get_preedit (_tmp109_);
+		_tmp111_ = _tmp110_;
+		_tmp112_ = g_strdup (_tmp111_);
+		preedit = _tmp112_;
+		_tmp113_ = stdout;
+		_tmp114_ = line;
+		_tmp115_ = string_replace (_tmp114_, "\"", "\\\"");
+		_tmp116_ = _tmp115_;
+		_tmp117_ = output;
+		_tmp118_ = string_replace (_tmp117_, "\"", "\\\"");
+		_tmp119_ = _tmp118_;
+		_tmp120_ = preedit;
+		_tmp121_ = string_replace (_tmp120_, "\"", "\\\"");
+		_tmp122_ = _tmp121_;
+		fprintf (_tmp113_, "{ \"input\": \"%s\", " "\"output\": \"%s\", " "\"preedit\": \"%s\" }\n", _tmp116_, _tmp119_, _tmp122_);
+		_g_free0 (_tmp122_);
+		_g_free0 (_tmp119_);
+		_g_free0 (_tmp116_);
+		_tmp123_ = context;
+		skk_context_reset (_tmp123_);
+		_tmp124_ = context;
+		skk_context_clear_output (_tmp124_);
 		_g_free0 (preedit);
 		_g_free0 (output);
 	}

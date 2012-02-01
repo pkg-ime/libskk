@@ -1,5 +1,5 @@
-# Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
-# Copyright (C) 2011 Red Hat, Inc.
+# Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+# Copyright (C) 2011-2012 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,12 +16,19 @@
 
 INCLUDES = -I$(top_srcdir) $(LIBSKK_CFLAGS)
 
-TESTS_ENVIRONMENT = LIBSKK_DATA_PATH=$(top_srcdir)
-TESTS = rom-kana file-dict user-dict context
+TESTS_ENVIRONMENT =					\
+	G_DEBUG=${G_DEBUG:+"${G_DEBUG},"}gc-friendly	\
+	G_SLICE=${G_SLICE},always-malloc		\
+	LIBSKK_DATA_PATH=$(top_srcdir)			\
+	$(LIBTOOL) --mode=execute $(VALGRIND) $(VALGRIND_OPTS)
+TESTS = rom-kana file-dict user-dict cdb-dict skkserv rule context basic
 noinst_PROGRAMS = $(TESTS)
 noinst_HEADERS = common.h
 
-AM_CPPFLAGS = -DLIBSKK_FILE_DICT=\"$(top_srcdir)/tests/file-dict.dat\"
+AM_CPPFLAGS =								\
+	-DLIBSKK_FILE_DICT=\"$(top_srcdir)/tests/file-dict.dat\"	\
+	-DLIBSKK_CDB_DICT=\"$(top_srcdir)/tests/cdb-dict.dat\"		\
+	$(NULL)
 
 rom_kana_SOURCES = rom-kana.c
 rom_kana_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
@@ -32,13 +39,25 @@ rom_kana_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 file_dict_SOURCES = file-dict.c
 file_dict_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 
+cdb_dict_SOURCES = cdb-dict.c
+cdb_dict_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+
+skkserv_SOURCES = skkserv.c
+skkserv_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+
 user_dict_SOURCES = user-dict.c common.c
 user_dict_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+
+rule_SOURCES = rule.c common.c
+rule_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 
 context_SOURCES = context.c common.c
 context_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
 
-EXTRA_DIST = file-dict.dat kana-kan.c
-CLEANFILES = user-dict.dat
+basic_SOURCES = basic.c common.c
+basic_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
+
+EXTRA_DIST = file-dict.dat cdb-dict.dat kana-kan.c
+CLEANFILES = user-dict.dat valgrind.log.*
 
 -include $(top_srcdir)/git.mk

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,18 @@
 using Gee;
 
 namespace Skk {
+    /**
+     * Get the current timer count.
+     */
     public delegate int64 GetTime ();
 
     /**
-     * A key event filter implementing NICOLA (thumb shift) input
+     * Key event filter implementing NICOLA (thumb shift) input
+     *
+     * This class is rarely used in programs but specified as "filter"
+     * property in rule metadata.
+     *
+     * @see Rule
      */
     public class NicolaKeyEventFilter : KeyEventFilter {
         static int64 get_time () {

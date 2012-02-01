@@ -2,8 +2,8 @@
  * generated from nicola.vala, do not modify */
 
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,6 @@ typedef struct _SkkNicolaKeyEventFilterTimedEntryClass SkkNicolaKeyEventFilterTi
 #define SKK_TYPE_MODIFIER_TYPE (skk_modifier_type_get_type ())
 typedef struct _SkkNicolaKeyEventFilterTimedEntryPrivate SkkNicolaKeyEventFilterTimedEntryPrivate;
 #define _skk_nicola_key_event_filter_timed_entry_unref0(var) ((var == NULL) ? NULL : (var = (skk_nicola_key_event_filter_timed_entry_unref (var), NULL)))
-#define _skk_key_event_unref0(var) ((var == NULL) ? NULL : (var = (skk_key_event_unref (var), NULL)))
 #define _t_destroy_func0(var) (((var == NULL) || (t_destroy_func == NULL)) ? NULL : (var = (t_destroy_func (var), NULL)))
 typedef struct _SkkNicolaKeyEventFilterParamSpecTimedEntry SkkNicolaKeyEventFilterParamSpecTimedEntry;
 
@@ -159,12 +158,6 @@ static gpointer skk_nicola_key_event_filter_parent_class = NULL;
 static gpointer skk_nicola_key_event_filter_timed_entry_parent_class = NULL;
 
 GType skk_key_event_filter_get_type (void) G_GNUC_CONST;
-gpointer skk_key_event_ref (gpointer instance);
-void skk_key_event_unref (gpointer instance);
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_key_event (GValue* value, gpointer v_object);
-void skk_value_take_key_event (GValue* value, gpointer v_object);
-gpointer skk_value_get_key_event (const GValue* value);
 GType skk_key_event_get_type (void) G_GNUC_CONST;
 GType skk_nicola_key_event_filter_get_type (void) G_GNUC_CONST;
 static gpointer skk_nicola_key_event_filter_timed_entry_ref (gpointer instance);
@@ -440,8 +433,8 @@ static gchar* skk_nicola_key_event_filter_get_special_double_name (SkkKeyEvent* 
 }
 
 
-static gpointer _skk_key_event_ref0 (gpointer self) {
-	return self ? skk_key_event_ref (self) : NULL;
+static gpointer _g_object_ref0 (gpointer self) {
+	return self ? g_object_ref (self) : NULL;
 }
 
 
@@ -507,7 +500,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_queue (SkkNicolaKeyEventFilter* 
 			gee_abstract_collection_clear ((GeeAbstractCollection*) _tmp19_);
 			_tmp20_ = entry;
 			_tmp21_ = _tmp20_->data;
-			_tmp22_ = _skk_key_event_ref0 ((SkkKeyEvent*) _tmp21_);
+			_tmp22_ = _g_object_ref0 ((SkkKeyEvent*) _tmp21_);
 			result = _tmp22_;
 			_skk_nicola_key_event_filter_timed_entry_unref0 (entry);
 			if (wait) {
@@ -564,7 +557,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_queue (SkkNicolaKeyEventFilter* 
 			_tmp40_ = skk_nicola_key_event_filter_get_next_wait (self, _tmp38_, _tmp39_);
 			_vala_wait = _tmp40_;
 			_tmp41_ = key;
-			_tmp42_ = _skk_key_event_ref0 (_tmp41_);
+			_tmp42_ = _g_object_ref0 (_tmp41_);
 			result = _tmp42_;
 			if (wait) {
 				*wait = _vala_wait;
@@ -632,7 +625,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_queue (SkkNicolaKeyEventFilter* 
 			_tmp59_ = self->priv->pending;
 			_tmp60_ = key;
 			_tmp61_ = time;
-			_tmp62_ = skk_nicola_key_event_filter_timed_entry_new (SKK_TYPE_KEY_EVENT, (GBoxedCopyFunc) skk_key_event_ref, skk_key_event_unref, _tmp60_, _tmp61_);
+			_tmp62_ = skk_nicola_key_event_filter_timed_entry_new (SKK_TYPE_KEY_EVENT, (GBoxedCopyFunc) g_object_ref, g_object_unref, _tmp60_, _tmp61_);
 			_tmp63_ = _tmp62_;
 			gee_abstract_list_insert ((GeeAbstractList*) _tmp59_, 0, _tmp63_);
 			_skk_nicola_key_event_filter_timed_entry_unref0 (_tmp63_);
@@ -767,7 +760,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_dispatch_single (SkkNicolaKeyEve
 		gee_abstract_collection_clear ((GeeAbstractCollection*) _tmp6_);
 		_tmp7_ = entry;
 		_tmp8_ = _tmp7_->data;
-		_tmp9_ = _skk_key_event_ref0 ((SkkKeyEvent*) _tmp8_);
+		_tmp9_ = _g_object_ref0 ((SkkKeyEvent*) _tmp8_);
 		result = _tmp9_;
 		_skk_nicola_key_event_filter_timed_entry_unref0 (entry);
 		return result;
@@ -940,7 +933,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_dispatch (SkkNicolaKeyEventFilte
 			g_signal_emit_by_name ((SkkKeyEventFilter*) self, "forwarded", (SkkKeyEvent*) _tmp36_);
 			_tmp37_ = b;
 			_tmp38_ = _tmp37_->data;
-			_tmp39_ = _skk_key_event_ref0 ((SkkKeyEvent*) _tmp38_);
+			_tmp39_ = _g_object_ref0 ((SkkKeyEvent*) _tmp38_);
 			result = _tmp39_;
 			_skk_nicola_key_event_filter_timed_entry_unref0 (a);
 			_skk_nicola_key_event_filter_timed_entry_unref0 (s);
@@ -1146,7 +1139,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_dispatch (SkkNicolaKeyEventFilte
 							skk_nicola_key_event_filter_apply_shift (self, (SkkKeyEvent*) _tmp103_, (SkkKeyEvent*) _tmp105_);
 							_tmp106_ = a;
 							_tmp107_ = _tmp106_->data;
-							_tmp108_ = _skk_key_event_ref0 ((SkkKeyEvent*) _tmp107_);
+							_tmp108_ = _g_object_ref0 ((SkkKeyEvent*) _tmp107_);
 							result = _tmp108_;
 							_skk_nicola_key_event_filter_timed_entry_unref0 (a);
 							_skk_nicola_key_event_filter_timed_entry_unref0 (b);
@@ -1166,7 +1159,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_dispatch (SkkNicolaKeyEventFilte
 							skk_nicola_key_event_filter_apply_shift (self, (SkkKeyEvent*) _tmp110_, (SkkKeyEvent*) _tmp112_);
 							_tmp113_ = b;
 							_tmp114_ = _tmp113_->data;
-							_tmp115_ = _skk_key_event_ref0 ((SkkKeyEvent*) _tmp114_);
+							_tmp115_ = _g_object_ref0 ((SkkKeyEvent*) _tmp114_);
 							result = _tmp115_;
 							_skk_nicola_key_event_filter_timed_entry_unref0 (a);
 							_skk_nicola_key_event_filter_timed_entry_unref0 (b);
@@ -1224,7 +1217,7 @@ static gboolean skk_nicola_key_event_filter_timeout_func (SkkNicolaKeyEventFilte
 		g_signal_emit_by_name ((SkkKeyEventFilter*) self, "forwarded", _tmp5_);
 	}
 	result = FALSE;
-	_skk_key_event_unref0 (r);
+	_g_object_unref0 (r);
 	return result;
 }
 
@@ -1345,7 +1338,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_real_filter_key_event (SkkKeyEve
 			_tmp33_ = time;
 			_tmp35_ = skk_nicola_key_event_filter_queue (self, _tmp32_, _tmp33_, &_tmp34_);
 			wait = _tmp34_;
-			_skk_key_event_unref0 (output);
+			_g_object_unref0 (output);
 			output = _tmp35_;
 			_tmp36_ = wait;
 			if (_tmp36_ > ((gint64) 0)) {
@@ -1373,13 +1366,13 @@ static SkkKeyEvent* skk_nicola_key_event_filter_real_filter_key_event (SkkKeyEve
 				SkkKeyEvent* _tmp44_;
 				SkkKeyEvent* _tmp45_;
 				_tmp44_ = key;
-				_tmp45_ = _skk_key_event_ref0 (_tmp44_);
+				_tmp45_ = _g_object_ref0 (_tmp44_);
 				result = _tmp45_;
-				_skk_key_event_unref0 (output);
+				_g_object_unref0 (output);
 				return result;
 			}
 			result = NULL;
-			_skk_key_event_unref0 (output);
+			_g_object_unref0 (output);
 			return result;
 		}
 	}
@@ -1389,7 +1382,7 @@ static SkkKeyEvent* skk_nicola_key_event_filter_real_filter_key_event (SkkKeyEve
 		SkkKeyEvent* _tmp48_ = NULL;
 		_tmp47_ = time;
 		_tmp48_ = skk_nicola_key_event_filter_dispatch (self, _tmp47_);
-		_skk_key_event_unref0 (output);
+		_g_object_unref0 (output);
 		output = _tmp48_;
 	}
 	result = output;
@@ -1675,7 +1668,12 @@ static void skk_nicola_key_event_filter_finalize (GObject* obj) {
 
 
 /**
-     * A key event filter implementing NICOLA (thumb shift) input
+     * Key event filter implementing NICOLA (thumb shift) input
+     *
+     * This class is rarely used in programs but specified as "filter"
+     * property in rule metadata.
+     *
+     * @see Rule
      */
 GType skk_nicola_key_event_filter_get_type (void) {
 	static volatile gsize skk_nicola_key_event_filter_type_id__volatile = 0;

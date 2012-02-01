@@ -3,8 +3,8 @@
 
 /* -*- coding: utf-8 -*-*/
 /*
- * Copyright (C) 2011 Daiki Ueno <ueno@unixuser.org>
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Daiki Ueno <ueno@unixuser.org>
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -213,14 +213,9 @@ typedef struct _SkkExprReader SkkExprReader;
 typedef struct _SkkExprReaderClass SkkExprReaderClass;
 
 #define SKK_TYPE_EXPR_NODE (skk_expr_node_get_type ())
-#define SKK_EXPR_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_EXPR_NODE, SkkExprNode))
-#define SKK_EXPR_NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SKK_TYPE_EXPR_NODE, SkkExprNodeClass))
-#define SKK_IS_EXPR_NODE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SKK_TYPE_EXPR_NODE))
-#define SKK_IS_EXPR_NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SKK_TYPE_EXPR_NODE))
-#define SKK_EXPR_NODE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SKK_TYPE_EXPR_NODE, SkkExprNodeClass))
 
+#define SKK_TYPE_EXPR_NODE_TYPE (skk_expr_node_type_get_type ())
 typedef struct _SkkExprNode SkkExprNode;
-typedef struct _SkkExprNodeClass SkkExprNodeClass;
 
 #define SKK_TYPE_EXPR_EVALUATOR (skk_expr_evaluator_get_type ())
 #define SKK_EXPR_EVALUATOR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SKK_TYPE_EXPR_EVALUATOR, SkkExprEvaluator))
@@ -231,7 +226,7 @@ typedef struct _SkkExprNodeClass SkkExprNodeClass;
 
 typedef struct _SkkExprEvaluator SkkExprEvaluator;
 typedef struct _SkkExprEvaluatorClass SkkExprEvaluatorClass;
-#define _skk_expr_node_unref0(var) ((var == NULL) ? NULL : (var = (skk_expr_node_unref (var), NULL)))
+#define _skk_expr_node_free0(var) ((var == NULL) ? NULL : (var = (skk_expr_node_free (var), NULL)))
 
 #define SKK_TYPE_NUMERIC_CONVERSION_TYPE (skk_numeric_conversion_type_get_type ())
 
@@ -285,7 +280,6 @@ typedef struct _SkkKutenStateHandlerPrivate SkkKutenStateHandlerPrivate;
 
 typedef struct _SkkEncodingConverter SkkEncodingConverter;
 typedef struct _SkkEncodingConverterClass SkkEncodingConverterClass;
-#define _skk_encoding_converter_unref0(var) ((var == NULL) ? NULL : (var = (skk_encoding_converter_unref (var), NULL)))
 typedef struct _SkkAbbrevStateHandlerPrivate SkkAbbrevStateHandlerPrivate;
 
 #define SKK_TYPE_SELECT_STATE_HANDLER (skk_select_state_handler_get_type ())
@@ -298,14 +292,13 @@ typedef struct _SkkAbbrevStateHandlerPrivate SkkAbbrevStateHandlerPrivate;
 typedef struct _SkkSelectStateHandler SkkSelectStateHandler;
 typedef struct _SkkSelectStateHandlerClass SkkSelectStateHandlerClass;
 typedef struct _SkkStartStateHandlerPrivate SkkStartStateHandlerPrivate;
-#define _skk_key_event_unref0(var) ((var == NULL) ? NULL : (var = (skk_key_event_unref (var), NULL)))
 typedef struct _SkkSelectStateHandlerPrivate SkkSelectStateHandlerPrivate;
 
 struct _SkkState {
 	GObject parent_instance;
 	SkkStatePrivate * priv;
 	GType handler_type;
-	GeeArrayList* dictionaries;
+	GeeList* dictionaries;
 	SkkCandidateList* candidates;
 	SkkRomKanaConverter* rom_kana_converter;
 	SkkRomKanaConverter* okuri_rom_kana_converter;
@@ -388,6 +381,18 @@ typedef enum  {
 	SKK_RULE_PARSE_ERROR_FAILED
 } SkkRuleParseError;
 #define SKK_RULE_PARSE_ERROR skk_rule_parse_error_quark ()
+typedef enum  {
+	SKK_EXPR_NODE_TYPE_ARRAY,
+	SKK_EXPR_NODE_TYPE_SYMBOL,
+	SKK_EXPR_NODE_TYPE_STRING
+} SkkExprNodeType;
+
+struct _SkkExprNode {
+	SkkExprNodeType type;
+	GeeLinkedList* nodes;
+	gchar* data;
+};
+
 typedef enum  {
 	SKK_NUMERIC_CONVERSION_TYPE_LATIN,
 	SKK_NUMERIC_CONVERSION_TYPE_WIDE_LATIN,
@@ -526,12 +531,6 @@ enum  {
 	SKK_STATE_TYPING_RULE
 };
 void skk_state_reset (SkkState* self);
-gpointer skk_key_event_ref (gpointer instance);
-void skk_key_event_unref (gpointer instance);
-GParamSpec* skk_param_spec_key_event (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_key_event (GValue* value, gpointer v_object);
-void skk_value_take_key_event (GValue* value, gpointer v_object);
-gpointer skk_value_get_key_event (const GValue* value);
 GType skk_key_event_get_type (void) G_GNUC_CONST;
 gchar* skk_state_lookup_key (SkkState* self, SkkKeyEvent* key);
 GType skk_map_file_get_type (void) G_GNUC_CONST;
@@ -542,8 +541,8 @@ GType skk_keymap_get_type (void) G_GNUC_CONST;
 gchar* skk_keymap_lookup_key (SkkKeymap* self, SkkKeyEvent* key);
 SkkKeyEvent* skk_state_where_is (SkkState* self, const gchar* command);
 SkkKeyEvent* skk_keymap_where_is (SkkKeymap* self, const gchar* command);
-SkkState* skk_state_new (GeeArrayList* dictionaries);
-SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries);
+SkkState* skk_state_new (GeeList* dictionaries);
+SkkState* skk_state_construct (GType object_type, GeeList* dictionaries);
 SkkSimpleCandidateList* skk_simple_candidate_list_new (guint page_start, guint page_size);
 SkkSimpleCandidateList* skk_simple_candidate_list_construct (GType object_type, guint page_start, guint page_size);
 GType skk_simple_candidate_list_get_type (void) G_GNUC_CONST;
@@ -574,13 +573,12 @@ static gchar* skk_state_expand_expr (SkkState* self, const gchar* text);
 SkkExprReader* skk_expr_reader_new (void);
 SkkExprReader* skk_expr_reader_construct (GType object_type);
 GType skk_expr_reader_get_type (void) G_GNUC_CONST;
-gpointer skk_expr_node_ref (gpointer instance);
-void skk_expr_node_unref (gpointer instance);
-GParamSpec* skk_param_spec_expr_node (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_expr_node (GValue* value, gpointer v_object);
-void skk_value_take_expr_node (GValue* value, gpointer v_object);
-gpointer skk_value_get_expr_node (const GValue* value);
 GType skk_expr_node_get_type (void) G_GNUC_CONST;
+GType skk_expr_node_type_get_type (void) G_GNUC_CONST;
+SkkExprNode* skk_expr_node_dup (const SkkExprNode* self);
+void skk_expr_node_free (SkkExprNode* self);
+void skk_expr_node_copy (const SkkExprNode* self, SkkExprNode* dest);
+void skk_expr_node_destroy (SkkExprNode* self);
 SkkExprNode* skk_expr_reader_read_expr (SkkExprReader* self, const gchar* expr, gint* index);
 SkkExprEvaluator* skk_expr_evaluator_new (void);
 SkkExprEvaluator* skk_expr_evaluator_construct (GType object_type);
@@ -658,12 +656,6 @@ gunichar skk_util_get_wide_latin_char (gchar c);
 static gchar* skk_none_state_handler_real_get_preedit (SkkStateHandler* base, SkkState* state, guint* underline_offset, guint* underline_nchars);
 SkkNoneStateHandler* skk_none_state_handler_new (void);
 SkkNoneStateHandler* skk_none_state_handler_construct (GType object_type);
-gpointer skk_encoding_converter_ref (gpointer instance);
-void skk_encoding_converter_unref (gpointer instance);
-GParamSpec* skk_param_spec_encoding_converter (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void skk_value_set_encoding_converter (GValue* value, gpointer v_object);
-void skk_value_take_encoding_converter (GValue* value, gpointer v_object);
-gpointer skk_value_get_encoding_converter (const GValue* value);
 GType skk_encoding_converter_get_type (void) G_GNUC_CONST;
 #define SKK_KUTEN_STATE_HANDLER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), SKK_TYPE_KUTEN_STATE_HANDLER, SkkKutenStateHandlerPrivate))
 enum  {
@@ -692,7 +684,7 @@ enum  {
 	SKK_START_STATE_HANDLER_DUMMY_PROPERTY
 };
 static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler* base, SkkState* state, SkkKeyEvent** key);
-void skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
+gboolean skk_rom_kana_converter_output_nn_if_any (SkkRomKanaConverter* self);
 static gboolean skk_start_state_handler_check_auto_conversion (SkkStartStateHandler* self, SkkState* state, SkkKeyEvent* key);
 static gchar* skk_start_state_handler_real_get_preedit (SkkStateHandler* base, SkkState* state, guint* underline_offset, guint* underline_nchars);
 SkkStartStateHandler* skk_start_state_handler_new (void);
@@ -808,10 +800,10 @@ static gchar** _vala_array_dup3 (gchar** self, int length) {
 }
 
 
-SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
+SkkState* skk_state_construct (GType object_type, GeeList* dictionaries) {
 	SkkState * self = NULL;
-	GeeArrayList* _tmp0_;
-	GeeArrayList* _tmp1_;
+	GeeList* _tmp0_;
+	GeeList* _tmp1_;
 	SkkSimpleCandidateList* _tmp2_;
 	SkkCandidateList* _tmp3_;
 	SkkRomKanaConverter* _tmp4_;
@@ -849,7 +841,7 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 		_tmp8_ = _tmp7_;
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == SKK_RULE_PARSE_ERROR) {
-				goto __catch25_skk_rule_parse_error;
+				goto __catch26_skk_rule_parse_error;
 			}
 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 			g_clear_error (&_inner_error_);
@@ -858,39 +850,8 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 		_g_object_unref0 (self->priv->_typing_rule);
 		self->priv->_typing_rule = _tmp8_;
 	}
-	goto __finally25;
-	__catch25_skk_rule_parse_error:
-	{
-		GError* e = NULL;
-		e = _inner_error_;
-		_inner_error_ = NULL;
-		g_assert_not_reached ();
-		_g_error_free0 (e);
-	}
-	__finally25:
-	if (_inner_error_ != NULL) {
-		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
-		g_clear_error (&_inner_error_);
-		return NULL;
-	}
-	{
-		GRegex* _tmp9_;
-		GRegex* _tmp10_;
-		_tmp9_ = g_regex_new ("[0-9]+", 0, 0, &_inner_error_);
-		_tmp10_ = _tmp9_;
-		if (_inner_error_ != NULL) {
-			if (_inner_error_->domain == G_REGEX_ERROR) {
-				goto __catch26_g_regex_error;
-			}
-			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
-			g_clear_error (&_inner_error_);
-			return NULL;
-		}
-		_g_regex_unref0 (self->priv->numeric_regex);
-		self->priv->numeric_regex = _tmp10_;
-	}
 	goto __finally26;
-	__catch26_g_regex_error:
+	__catch26_skk_rule_parse_error:
 	{
 		GError* e = NULL;
 		e = _inner_error_;
@@ -905,10 +866,10 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 		return NULL;
 	}
 	{
-		GRegex* _tmp11_;
-		GRegex* _tmp12_;
-		_tmp11_ = g_regex_new ("#([0-9])", 0, 0, &_inner_error_);
-		_tmp12_ = _tmp11_;
+		GRegex* _tmp9_;
+		GRegex* _tmp10_;
+		_tmp9_ = g_regex_new ("[0-9]+", 0, 0, &_inner_error_);
+		_tmp10_ = _tmp9_;
 		if (_inner_error_ != NULL) {
 			if (_inner_error_->domain == G_REGEX_ERROR) {
 				goto __catch27_g_regex_error;
@@ -917,8 +878,8 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 			g_clear_error (&_inner_error_);
 			return NULL;
 		}
-		_g_regex_unref0 (self->priv->numeric_ref_regex);
-		self->priv->numeric_ref_regex = _tmp12_;
+		_g_regex_unref0 (self->priv->numeric_regex);
+		self->priv->numeric_regex = _tmp10_;
 	}
 	goto __finally27;
 	__catch27_g_regex_error:
@@ -935,12 +896,43 @@ SkkState* skk_state_construct (GType object_type, GeeArrayList* dictionaries) {
 		g_clear_error (&_inner_error_);
 		return NULL;
 	}
+	{
+		GRegex* _tmp11_;
+		GRegex* _tmp12_;
+		_tmp11_ = g_regex_new ("#([0-9])", 0, 0, &_inner_error_);
+		_tmp12_ = _tmp11_;
+		if (_inner_error_ != NULL) {
+			if (_inner_error_->domain == G_REGEX_ERROR) {
+				goto __catch28_g_regex_error;
+			}
+			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+			g_clear_error (&_inner_error_);
+			return NULL;
+		}
+		_g_regex_unref0 (self->priv->numeric_ref_regex);
+		self->priv->numeric_ref_regex = _tmp12_;
+	}
+	goto __finally28;
+	__catch28_g_regex_error:
+	{
+		GError* e = NULL;
+		e = _inner_error_;
+		_inner_error_ = NULL;
+		g_assert_not_reached ();
+		_g_error_free0 (e);
+	}
+	__finally28:
+	if (_inner_error_ != NULL) {
+		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+		g_clear_error (&_inner_error_);
+		return NULL;
+	}
 	skk_state_reset (self);
 	return self;
 }
 
 
-SkkState* skk_state_new (GeeArrayList* dictionaries) {
+SkkState* skk_state_new (GeeList* dictionaries) {
 	return skk_state_construct (SKK_TYPE_STATE, dictionaries);
 }
 
@@ -1223,7 +1215,7 @@ static gchar* skk_state_extract_numerics (SkkState* self, const gchar* midasi, g
 			_tmp7_ = _tmp6_;
 			if (_inner_error_ != NULL) {
 				if (_inner_error_->domain == G_REGEX_ERROR) {
-					goto __catch28_g_regex_error;
+					goto __catch29_g_regex_error;
 				}
 				_g_string_free0 (builder);
 				_g_object_unref0 (numeric_list);
@@ -1236,8 +1228,8 @@ static gchar* skk_state_extract_numerics (SkkState* self, const gchar* midasi, g
 				break;
 			}
 		}
-		goto __finally28;
-		__catch28_g_regex_error:
+		goto __finally29;
+		__catch29_g_regex_error:
 		{
 			GError* e = NULL;
 			const gchar* _tmp8_;
@@ -1247,7 +1239,7 @@ static gchar* skk_state_extract_numerics (SkkState* self, const gchar* midasi, g
 			g_return_val_if_reached (_tmp8_);
 			_g_error_free0 (e);
 		}
-		__finally28:
+		__finally29:
 		if (_inner_error_ != NULL) {
 			_g_string_free0 (builder);
 			_g_object_unref0 (numeric_list);
@@ -1319,8 +1311,8 @@ static gchar* skk_state_expand_expr (SkkState* self, const gchar* text) {
 	gchar* result = NULL;
 	const gchar* _tmp0_;
 	gboolean _tmp1_ = FALSE;
-	const gchar* _tmp11_;
-	gchar* _tmp12_;
+	const gchar* _tmp12_;
+	gchar* _tmp13_;
 	g_return_val_if_fail (self != NULL, NULL);
 	g_return_val_if_fail (text != NULL, NULL);
 	_tmp0_ = text;
@@ -1337,9 +1329,10 @@ static gchar* skk_state_expand_expr (SkkState* self, const gchar* text) {
 		SkkExprEvaluator* evaluator;
 		SkkExprEvaluator* _tmp7_;
 		SkkExprNode* _tmp8_;
-		gchar* _tmp9_ = NULL;
+		SkkExprNode _tmp9_;
+		gchar* _tmp10_ = NULL;
 		gchar* _text;
-		const gchar* _tmp10_;
+		const gchar* _tmp11_;
 		_tmp2_ = skk_expr_reader_new ();
 		reader = _tmp2_;
 		index = 0;
@@ -1351,24 +1344,25 @@ static gchar* skk_state_expand_expr (SkkState* self, const gchar* text) {
 		evaluator = _tmp6_;
 		_tmp7_ = evaluator;
 		_tmp8_ = node;
-		_tmp9_ = skk_expr_evaluator_eval (_tmp7_, _tmp8_);
-		_text = _tmp9_;
-		_tmp10_ = _text;
-		if (_tmp10_ != NULL) {
+		_tmp9_ = *_tmp8_;
+		_tmp10_ = skk_expr_evaluator_eval (_tmp7_, &_tmp9_);
+		_text = _tmp10_;
+		_tmp11_ = _text;
+		if (_tmp11_ != NULL) {
 			result = _text;
 			_g_object_unref0 (evaluator);
-			_skk_expr_node_unref0 (node);
+			_skk_expr_node_free0 (node);
 			_g_object_unref0 (reader);
 			return result;
 		}
 		_g_free0 (_text);
 		_g_object_unref0 (evaluator);
-		_skk_expr_node_unref0 (node);
+		_skk_expr_node_free0 (node);
 		_g_object_unref0 (reader);
 	}
-	_tmp11_ = text;
-	_tmp12_ = g_strdup (_tmp11_);
-	result = _tmp12_;
+	_tmp12_ = text;
+	_tmp13_ = g_strdup (_tmp12_);
+	result = _tmp13_;
 	return result;
 }
 
@@ -1466,7 +1460,7 @@ static gchar* skk_state_expand_numeric_references (SkkState* self, const gchar* 
 					_tmp11_ = _tmp10_;
 					if (_inner_error_ != NULL) {
 						if (_inner_error_->domain == G_REGEX_ERROR) {
-							goto __catch29_g_regex_error;
+							goto __catch30_g_regex_error;
 						}
 						_g_match_info_free0 (info);
 						_g_string_free0 (builder);
@@ -1478,8 +1472,8 @@ static gchar* skk_state_expand_numeric_references (SkkState* self, const gchar* 
 						break;
 					}
 				}
-				goto __finally29;
-				__catch29_g_regex_error:
+				goto __finally30;
+				__catch30_g_regex_error:
 				{
 					GError* e = NULL;
 					e = _inner_error_;
@@ -1487,7 +1481,7 @@ static gchar* skk_state_expand_numeric_references (SkkState* self, const gchar* 
 					g_return_if_reached ();
 					_g_error_free0 (e);
 				}
-				__finally29:
+				__finally30:
 				if (_inner_error_ != NULL) {
 					_g_match_info_free0 (info);
 					_g_string_free0 (builder);
@@ -1634,10 +1628,10 @@ static void skk_state_lookup_internal (SkkState* self, const gchar* midasi, gint
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (midasi != NULL);
 	{
-		GeeArrayList* _tmp0_;
-		GeeArrayList* _tmp1_;
-		GeeArrayList* _dict_list;
-		GeeArrayList* _tmp2_;
+		GeeList* _tmp0_;
+		GeeList* _tmp1_;
+		GeeList* _dict_list;
+		GeeList* _tmp2_;
 		gint _tmp3_;
 		gint _tmp4_;
 		gint _dict_size;
@@ -1654,7 +1648,7 @@ static void skk_state_lookup_internal (SkkState* self, const gchar* midasi, gint
 			gint _tmp5_;
 			gint _tmp6_;
 			gint _tmp7_;
-			GeeArrayList* _tmp8_;
+			GeeList* _tmp8_;
 			gint _tmp9_;
 			gpointer _tmp10_ = NULL;
 			SkkDict* dict;
@@ -1680,7 +1674,7 @@ static void skk_state_lookup_internal (SkkState* self, const gchar* midasi, gint
 			}
 			_tmp8_ = _dict_list;
 			_tmp9_ = _dict_index;
-			_tmp10_ = gee_abstract_list_get ((GeeAbstractList*) _tmp8_, _tmp9_);
+			_tmp10_ = gee_list_get (_tmp8_, _tmp9_);
 			dict = (SkkDict*) _tmp10_;
 			_tmp11_ = dict;
 			_tmp12_ = midasi;
@@ -1778,10 +1772,10 @@ void skk_state_purge_candidate (SkkState* self, SkkCandidate* candidate) {
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (candidate != NULL);
 	{
-		GeeArrayList* _tmp0_;
-		GeeArrayList* _tmp1_;
-		GeeArrayList* _dict_list;
-		GeeArrayList* _tmp2_;
+		GeeList* _tmp0_;
+		GeeList* _tmp1_;
+		GeeList* _dict_list;
+		GeeList* _tmp2_;
 		gint _tmp3_;
 		gint _tmp4_;
 		gint _dict_size;
@@ -1798,7 +1792,7 @@ void skk_state_purge_candidate (SkkState* self, SkkCandidate* candidate) {
 			gint _tmp5_;
 			gint _tmp6_;
 			gint _tmp7_;
-			GeeArrayList* _tmp8_;
+			GeeList* _tmp8_;
 			gint _tmp9_;
 			gpointer _tmp10_ = NULL;
 			SkkDict* dict;
@@ -1814,7 +1808,7 @@ void skk_state_purge_candidate (SkkState* self, SkkCandidate* candidate) {
 			}
 			_tmp8_ = _dict_list;
 			_tmp9_ = _dict_index;
-			_tmp10_ = gee_abstract_list_get ((GeeAbstractList*) _tmp8_, _tmp9_);
+			_tmp10_ = gee_list_get (_tmp8_, _tmp9_);
 			dict = (SkkDict*) _tmp10_;
 			_tmp11_ = dict;
 			_tmp12_ = skk_dict_get_read_only (_tmp11_);
@@ -1841,10 +1835,10 @@ void skk_state_completion_start (SkkState* self, const gchar* midasi) {
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (midasi != NULL);
 	{
-		GeeArrayList* _tmp0_;
-		GeeArrayList* _tmp1_;
-		GeeArrayList* _dict_list;
-		GeeArrayList* _tmp2_;
+		GeeList* _tmp0_;
+		GeeList* _tmp1_;
+		GeeList* _dict_list;
+		GeeList* _tmp2_;
 		gint _tmp3_;
 		gint _tmp4_;
 		gint _dict_size;
@@ -1861,7 +1855,7 @@ void skk_state_completion_start (SkkState* self, const gchar* midasi) {
 			gint _tmp5_;
 			gint _tmp6_;
 			gint _tmp7_;
-			GeeArrayList* _tmp8_;
+			GeeList* _tmp8_;
 			gint _tmp9_;
 			gpointer _tmp10_ = NULL;
 			SkkDict* dict;
@@ -1884,7 +1878,7 @@ void skk_state_completion_start (SkkState* self, const gchar* midasi) {
 			}
 			_tmp8_ = _dict_list;
 			_tmp9_ = _dict_index;
-			_tmp10_ = gee_abstract_list_get ((GeeAbstractList*) _tmp8_, _tmp9_);
+			_tmp10_ = gee_list_get (_tmp8_, _tmp9_);
 			dict = (SkkDict*) _tmp10_;
 			_tmp11_ = dict;
 			_tmp12_ = midasi;
@@ -3285,23 +3279,23 @@ SkkKutenStateHandler* skk_kuten_state_handler_construct (GType object_type) {
 		_tmp0_ = skk_encoding_converter_new ("EUC-JP", &_inner_error_);
 		_tmp1_ = _tmp0_;
 		if (_inner_error_ != NULL) {
-			goto __catch30_g_error;
+			goto __catch31_g_error;
 		}
-		_skk_encoding_converter_unref0 (self->priv->converter);
+		_g_object_unref0 (self->priv->converter);
 		self->priv->converter = _tmp1_;
 	}
-	goto __finally30;
-	__catch30_g_error:
+	goto __finally31;
+	__catch31_g_error:
 	{
 		GError* e = NULL;
 		e = _inner_error_;
 		_inner_error_ = NULL;
-		_skk_encoding_converter_unref0 (self->priv->converter);
+		_g_object_unref0 (self->priv->converter);
 		self->priv->converter = NULL;
 		g_assert_not_reached ();
 		_g_error_free0 (e);
 	}
-	__finally30:
+	__finally31:
 	if (_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
@@ -3520,7 +3514,7 @@ static gboolean skk_kuten_state_handler_real_process_key_event (SkkStateHandler*
 					_tmp23_ = skk_encoding_converter_decode (_tmp21_, _tmp22_, &_inner_error_);
 					_tmp24_ = _tmp23_;
 					if (_inner_error_ != NULL) {
-						goto __catch31_g_error;
+						goto __catch32_g_error;
 					}
 					_tmp25_ = state;
 					_tmp26_ = _tmp25_->output;
@@ -3528,8 +3522,8 @@ static gboolean skk_kuten_state_handler_real_process_key_event (SkkStateHandler*
 					g_string_append (_tmp26_, _tmp27_);
 					_g_free0 (_tmp27_);
 				}
-				goto __finally31;
-				__catch31_g_error:
+				goto __finally32;
+				__catch32_g_error:
 				{
 					GError* e = NULL;
 					const gchar* _tmp28_;
@@ -3543,7 +3537,7 @@ static gboolean skk_kuten_state_handler_real_process_key_event (SkkStateHandler*
 					g_warning ("state.vala:597: can't decode %s in EUC-JP: %s", _tmp28_, _tmp30_);
 					_g_error_free0 (e);
 				}
-				__finally31:
+				__finally32:
 				if (_inner_error_ != NULL) {
 					_g_free0 (euc);
 					_g_free0 (command);
@@ -3767,7 +3761,7 @@ static void skk_kuten_state_handler_instance_init (SkkKutenStateHandler * self) 
 static void skk_kuten_state_handler_finalize (GObject* obj) {
 	SkkKutenStateHandler * self;
 	self = SKK_KUTEN_STATE_HANDLER (obj);
-	_skk_encoding_converter_unref0 (self->priv->converter);
+	_g_object_unref0 (self->priv->converter);
 	G_OBJECT_CLASS (skk_kuten_state_handler_parent_class)->finalize (obj);
 }
 
@@ -4463,7 +4457,7 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 								_tmp154_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
 								_tmp155_ = state;
 								_tmp156_ = skk_state_where_is (_tmp155_, "next-candidate");
-								_skk_key_event_unref0 (*key);
+								_g_object_unref0 (*key);
 								*key = _tmp156_;
 								result = FALSE;
 								_g_free0 (command);
@@ -4548,7 +4542,7 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 									_tmp185_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
 									_tmp186_ = state;
 									_tmp187_ = skk_state_where_is (_tmp186_, "next-candidate");
-									_skk_key_event_unref0 (*key);
+									_g_object_unref0 (*key);
 									*key = _tmp187_;
 									result = FALSE;
 									_g_free0 (kana);
@@ -4875,7 +4869,7 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 				_tmp303_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
 				_tmp304_ = state;
 				_tmp305_ = skk_state_where_is (_tmp304_, "next-candidate");
-				_skk_key_event_unref0 (*key);
+				_g_object_unref0 (*key);
 				*key = _tmp305_;
 				result = FALSE;
 				_g_free0 (command);
@@ -4912,7 +4906,7 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 				_tmp315_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
 				_tmp316_ = state;
 				_tmp317_ = skk_state_where_is (_tmp316_, "next-candidate");
-				_skk_key_event_unref0 (*key);
+				_g_object_unref0 (*key);
 				*key = _tmp317_;
 				result = FALSE;
 				_g_free0 (command);
@@ -4957,7 +4951,7 @@ static gboolean skk_start_state_handler_real_process_key_event (SkkStateHandler*
 				_tmp330_->handler_type = SKK_TYPE_SELECT_STATE_HANDLER;
 				_tmp331_ = state;
 				_tmp332_ = skk_state_where_is (_tmp331_, "next-candidate");
-				_skk_key_event_unref0 (*key);
+				_g_object_unref0 (*key);
 				*key = _tmp332_;
 				result = FALSE;
 				_g_free0 (command);
@@ -5473,83 +5467,88 @@ static gboolean skk_select_state_handler_real_process_key_event (SkkStateHandler
 					_tmp91_ = command;
 					if (g_strcmp0 (_tmp91_, "special-midasi") == 0) {
 						SkkState* _tmp92_;
+						SkkCandidateList* _tmp93_;
+						SkkState* _tmp94_;
 						_tmp92_ = state;
-						_tmp92_->handler_type = SKK_TYPE_START_STATE_HANDLER;
+						_tmp93_ = _tmp92_->candidates;
+						skk_candidate_list_clear (_tmp93_);
+						_tmp94_ = state;
+						_tmp94_->handler_type = SKK_TYPE_START_STATE_HANDLER;
 						result = FALSE;
 						_g_free0 (surrounding_after);
 						_g_free0 (command);
 						return result;
 					} else {
-						SkkState* _tmp93_;
-						gboolean _tmp94_ = FALSE;
-						gboolean _tmp95_ = FALSE;
+						SkkState* _tmp95_;
 						gboolean _tmp96_ = FALSE;
 						gboolean _tmp97_ = FALSE;
-						SkkKeyEvent* _tmp98_;
-						SkkModifierType _tmp99_;
-						SkkModifierType _tmp100_;
-						gboolean _tmp104_;
-						gboolean _tmp108_;
+						gboolean _tmp98_ = FALSE;
+						gboolean _tmp99_ = FALSE;
+						SkkKeyEvent* _tmp100_;
+						SkkModifierType _tmp101_;
+						SkkModifierType _tmp102_;
+						gboolean _tmp106_;
 						gboolean _tmp110_;
-						gboolean _tmp116_;
-						_tmp93_ = state;
-						skk_state_reset (_tmp93_);
-						_tmp98_ = *key;
-						_tmp99_ = skk_key_event_get_modifiers (_tmp98_);
-						_tmp100_ = _tmp99_;
-						if (_tmp100_ == 0) {
-							SkkKeyEvent* _tmp101_;
-							gunichar _tmp102_;
-							gunichar _tmp103_;
-							_tmp101_ = *key;
-							_tmp102_ = skk_key_event_get_code (_tmp101_);
-							_tmp103_ = _tmp102_;
-							_tmp97_ = ((gunichar) 0x20) <= _tmp103_;
+						gboolean _tmp112_;
+						gboolean _tmp118_;
+						_tmp95_ = state;
+						skk_state_reset (_tmp95_);
+						_tmp100_ = *key;
+						_tmp101_ = skk_key_event_get_modifiers (_tmp100_);
+						_tmp102_ = _tmp101_;
+						if (_tmp102_ == 0) {
+							SkkKeyEvent* _tmp103_;
+							gunichar _tmp104_;
+							gunichar _tmp105_;
+							_tmp103_ = *key;
+							_tmp104_ = skk_key_event_get_code (_tmp103_);
+							_tmp105_ = _tmp104_;
+							_tmp99_ = ((gunichar) 0x20) <= _tmp105_;
 						} else {
-							_tmp97_ = FALSE;
+							_tmp99_ = FALSE;
 						}
-						_tmp104_ = _tmp97_;
-						if (_tmp104_) {
-							SkkKeyEvent* _tmp105_;
-							gunichar _tmp106_;
-							gunichar _tmp107_;
-							_tmp105_ = *key;
-							_tmp106_ = skk_key_event_get_code (_tmp105_);
-							_tmp107_ = _tmp106_;
-							_tmp96_ = _tmp107_ <= ((gunichar) 0x7E);
+						_tmp106_ = _tmp99_;
+						if (_tmp106_) {
+							SkkKeyEvent* _tmp107_;
+							gunichar _tmp108_;
+							gunichar _tmp109_;
+							_tmp107_ = *key;
+							_tmp108_ = skk_key_event_get_code (_tmp107_);
+							_tmp109_ = _tmp108_;
+							_tmp98_ = _tmp109_ <= ((gunichar) 0x7E);
 						} else {
-							_tmp96_ = FALSE;
+							_tmp98_ = FALSE;
 						}
-						_tmp108_ = _tmp96_;
-						if (_tmp108_) {
-							_tmp95_ = TRUE;
-						} else {
-							const gchar* _tmp109_;
-							_tmp109_ = command;
-							_tmp95_ = g_strcmp0 (_tmp109_, "delete") == 0;
-						}
-						_tmp110_ = _tmp95_;
+						_tmp110_ = _tmp98_;
 						if (_tmp110_) {
-							_tmp94_ = TRUE;
+							_tmp97_ = TRUE;
 						} else {
-							gboolean _tmp111_ = FALSE;
-							SkkState* _tmp112_;
-							gboolean _tmp113_;
-							gboolean _tmp115_;
-							_tmp112_ = state;
-							_tmp113_ = _tmp112_->egg_like_newline;
-							if (!_tmp113_) {
-								const gchar* _tmp114_;
-								_tmp114_ = command;
-								_tmp111_ = g_strcmp0 (_tmp114_, "commit-unhandled") == 0;
-							} else {
-								_tmp111_ = FALSE;
-							}
-							_tmp115_ = _tmp111_;
-							_tmp94_ = _tmp115_;
+							const gchar* _tmp111_;
+							_tmp111_ = command;
+							_tmp97_ = g_strcmp0 (_tmp111_, "delete") == 0;
 						}
-						_tmp116_ = _tmp94_;
-						if (_tmp116_) {
+						_tmp112_ = _tmp97_;
+						if (_tmp112_) {
+							_tmp96_ = TRUE;
+						} else {
+							gboolean _tmp113_ = FALSE;
+							SkkState* _tmp114_;
+							gboolean _tmp115_;
+							gboolean _tmp117_;
+							_tmp114_ = state;
+							_tmp115_ = _tmp114_->egg_like_newline;
+							if (!_tmp115_) {
+								const gchar* _tmp116_;
+								_tmp116_ = command;
+								_tmp113_ = g_strcmp0 (_tmp116_, "commit-unhandled") == 0;
+							} else {
+								_tmp113_ = FALSE;
+							}
+							_tmp117_ = _tmp113_;
+							_tmp96_ = _tmp117_;
+						}
+						_tmp118_ = _tmp96_;
+						if (_tmp118_) {
 							result = FALSE;
 							_g_free0 (surrounding_after);
 							_g_free0 (command);
