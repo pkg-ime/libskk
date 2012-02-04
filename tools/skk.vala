@@ -18,7 +18,7 @@
 using Gee;
 
 namespace Skk {
-    class Tool : Object {
+    abstract class Tool : Object {
         static string file_dict;
         static string user_dict;
         static string skkserv;
@@ -137,7 +137,19 @@ namespace Skk {
                     return 1;
                 }
             }
+            var tool = new SkkTool (context);
+            if (!tool.run ())
+                return 1;
+            return 0;
+        }
 
+        public abstract bool run ();
+    }
+
+    class SkkTool : Tool {
+        Skk.Context context;
+
+        public override bool run () {
             string? line;
             while ((line = stdin.read_line ()) != null) {
                 context.process_key_events (line);
@@ -153,7 +165,11 @@ namespace Skk {
                 context.reset ();
                 context.clear_output ();
             }
-            return 0;
+            return true;
+        }
+
+        public SkkTool (Skk.Context context) {
+            this.context = context;
         }
     }
 }

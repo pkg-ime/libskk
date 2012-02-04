@@ -27,6 +27,7 @@ namespace Skk {
         // needed to use static methods defined in some classes
         typeof (Util).class_ref ();
         typeof (Rule).class_ref ();
+        typeof (EncodingConverter).class_ref ();
     }
 
     /**
@@ -479,7 +480,15 @@ namespace Skk {
                     key = "\n";
                 else if (key == "DEL")
                     key = "\b";
-                var ev = new KeyEvent.from_string (key);
+
+                KeyEvent ev;
+                try {
+                    ev = new KeyEvent.from_string (key);
+                } catch (KeyEventFormatError e) {
+                    warning ("can't get key event from string %s: %s",
+                             key, e.message);
+                    return false;
+                }
                 if (process_key_event (ev) && !retval)
                     retval = true;
             }
@@ -548,17 +557,14 @@ namespace Skk {
         }
 
         string retrieve_output (bool clear) {
-            var state = state_stack.peek_head ();
+            // get the output from the top level state
+            var state = state_stack.last ();
             var handler = handlers.get (state.handler_type);
-            if (dict_edit_level () > 0) {
-                return "";
-            } else {
-                var output = handler.get_output (state);
-                if (clear) {
-                    state.output.erase ();
-                }
-                return output;
+            var output = handler.get_output (state);
+            if (clear) {
+                state.output.erase ();
             }
+            return output;
         }
 
         /**
@@ -597,28 +603,38 @@ namespace Skk {
         public string preedit { get; private set; default = ""; }
 
         void update_preedit () {
+            var builder = new StringBuilder ();
+            var iter = state_stack.list_iterator ();
+            iter.last ();
+            while (iter.has_previous ()) {
+                var state = iter.get ();
+                var handler = handlers.get (state.handler_type);
+                // if state is not top level, need to prepend output to preedit
+                if (iter.has_next ())
+                    builder.append (handler.get_output (state));
+                iter.previous ();
+                state = iter.get ();
+                builder.append ("▼");
+                builder.append (state.midasi);
+                builder.append ("【");
+            }
+
             var state = state_stack.peek_head ();
             var handler = handlers.get (state.handler_type);
-            var builder = new StringBuilder ();
-            if (dict_edit_level () > 0) {
-                var level = dict_edit_level ();
-                for (var i = 0; i < level; i++) {
-                    builder.append_c ('[');
-                }
-                builder.append (_("DictEdit"));
-                for (var i = 0; i < level; i++) {
-                    builder.append_c (']');
-                }
-                builder.append (" ");
-                builder.append (state.midasi);
-                builder.append (" ");
+            if (dict_edit_level () > 0)
                 builder.append (handler.get_output (state));
-            }
+            uint start = (uint) builder.str.char_count ();
             uint offset, nchars;
             builder.append (handler.get_preedit (state,
                                                  out offset,
                                                  out nchars));
-            offset += (uint) builder.str.char_count ();
+            offset += start;
+
+            var level = dict_edit_level ();
+            for (var i = 0; i < level; i++) {
+                builder.append ("】");
+            }
+
             bool changed = false;
             if (preedit != builder.str) {
                 preedit = builder.str;

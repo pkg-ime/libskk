@@ -96,17 +96,20 @@ libskk.so.0 libskk0 #MINVER#
  skk_key_event_base_equal@Base 0.0.9
  skk_key_event_construct@Base 0.0.9
  skk_key_event_construct_from_string@Base 0.0.9
+ skk_key_event_construct_from_x_keysym@Base 0.0.10
  skk_key_event_copy@Base 0.0.9
  skk_key_event_filter_construct@Base 0.0.9
  skk_key_event_filter_filter_key_event@Base 0.0.9
  skk_key_event_filter_get_type@Base 0.0.9
  skk_key_event_filter_reset@Base 0.0.9
+ skk_key_event_format_error_quark@Base 0.0.10
  skk_key_event_get_code@Base 0.0.9
  skk_key_event_get_modifiers@Base 0.0.9
  skk_key_event_get_name@Base 0.0.9
  skk_key_event_get_type@Base 0.0.9
  skk_key_event_new@Base 0.0.9
  skk_key_event_new_from_string@Base 0.0.9
+ skk_key_event_new_from_x_keysym@Base 0.0.10
  skk_key_event_set_modifiers@Base 0.0.9
  skk_key_event_to_string@Base 0.0.9
  skk_keymap_map_file_get_type@Base 0.0.9

@@ -1,3 +1,203 @@
+commit c0b099c162a8e7c695585cbf5fe0730a2c2509e3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Feb 3 17:10:47 2012 +0900
+
+    Bump version to 0.0.10.
+
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 4f9398cb3d6fc7ec69702f679ea28ec7894e0974
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Feb 3 17:10:28 2012 +0900
+
+    Add news entry for skkfep.
+
+ NEWS |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 3a9f77df08d0e40a2f7a2cd2877499512ebcb2a2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Feb 3 17:10:00 2012 +0900
+
+    Remove "[DictEdit]" translation from po.
+
+ po/ja.po |   22 +++++++++-------------
+ 1 files changed, 9 insertions(+), 13 deletions(-)
+
+commit f4a301f0599e074252d44897a05b88caad6c62a3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Feb 3 17:02:30 2012 +0900
+
+    Fix build with --disable-fep; add an entry about skkfep in NEWS.
+
+ NEWS                    |    2 +
+ po/POTFILES.in          |    4 +-
+ po/POTFILES.skip        |    3 +-
+ tools/Makefile.am       |   35 ++++++---
+ tools/fep.vala          |  132 +++++++++++++++++++++++++++++++++-
+ tools/fep.wrapper.in    |    6 ++
+ tools/skk.vala          |  175
+ ++++++++++++++++++++++++++++++++++++++++++++
+ tools/skkfep.in         |    4 +-
+ tools/skkfep.wrapper.in |    4 -
+ tools/tool.vala         |  186
+ -----------------------------------------------
+ 10 files changed, 345 insertions(+), 206 deletions(-)
+
+commit 62b102033c79d7c50318e640eddcba132ab29fb6
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 30 19:07:12 2012 +0900
+
+    Support libfep.
+
+    To compile with libfep, pass --enable-fep to configure.  It will
+    install a new program called skkfep for testing.
+
+ configure.ac            |   11 +++++
+ tools/Makefile.am       |   28 ++++++++++++-
+ tools/fep.vala          |  105
+ +++++++++++++++++++++++++++++++++++++++++++++++
+ tools/skkfep.1          |   16 +++++++
+ tools/skkfep.in         |    6 +++
+ tools/skkfep.wrapper.in |    4 ++
+ tools/tool.vala         |   31 +++++++++++++-
+ 7 files changed, 197 insertions(+), 4 deletions(-)
+
+commit 7135e430344fd9b43e3056b39bef3d09d4a6a19a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Feb 3 10:53:54 2012 +0900
+
+    Clear rom kana converter when switching from None -> Start (Issue#11).
+
+    Also don't prepend output to preedit when state is top level.
+
+ libskk/context.vala |   19 +++++++++----------
+ libskk/state.vala   |    3 +++
+ tests/basic.c       |    6 +++++-
+ 3 files changed, 17 insertions(+), 11 deletions(-)
+
+commit 5a7515eb46ba0ceb17e9dc75005af93a6c0ad9ba
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Feb 1 16:53:31 2012 +0900
+
+    Add NEWS entries for 0.0.10.
+
+ NEWS |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 6509e3d05190e69561f0eb8729da3ae0e0884c72
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Wed Feb 1 16:51:24 2012 +0900
+
+    Port Skk.KeyEvent.from_x_keysym from ibus-skk.
+
+ libskk/Makefile.am    |    1 +
+ libskk/context.vala   |   10 +-
+ libskk/key-event.vala |   55 ++-
+ libskk/keymap.vala    |   17 +-
+ libskk/keysyms.vala   | 2106
+ +++++++++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 2184 insertions(+), 5 deletions(-)
+
+commit caf894e1c284a80fc9ff006838685d869ff9ecb3
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 31 18:51:12 2012 +0900
+
+    Re-enable /libskk/abort test case which was mistakenly disabled.
+
+ tests/basic.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+commit 27de85be755ec34925337877d16b857b08e00d51
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 31 18:48:19 2012 +0900
+
+    Work around euc-jis-2004 coding cookie.
+
+ libskk/encoding.vala |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 5b30bd73e1031a28861cd204a0c144161d6ed9df
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Tue Jan 31 18:47:41 2012 +0900
+
+    Change preedit format for dict edit mode.
+
+ libskk/context.vala |   38 +++++++++++++++++++++++---------------
+ tests/basic.c       |   32 +++++++++++++++++---------------
+ tests/context.c     |    2 +-
+ 3 files changed, 41 insertions(+), 31 deletions(-)
+
+commit 6a0389b757218376278ab746d48d1f83d3956f7c
+Merge: 988a007 929edad
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 30 16:32:25 2012 +0900
+
+    Merge branch 'master' of github.com:ueno/libskk
+
+commit 988a0079e0c6647148e96a75a9fc89e69a3493ec
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Mon Jan 30 16:31:44 2012 +0900
+
+    Respect coding cookie when reading file dict (ibus-skk Issue#45).
+
+ libskk/context.vala   |    1 +
+ libskk/encoding.vala  |   46
+ ++++++++++++++++++++++++++++++++++++++++++++++
+ libskk/file-dict.vala |   21 +++++++++++++++++++++
+ libskk/user-dict.vala |   48
+ ++++++++++++++----------------------------------
+ 4 files changed, 82 insertions(+), 34 deletions(-)
+
+commit 929edada57b33a4f5efd8934878c786dcd7c6cd9
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Sun Jan 29 17:07:53 2012 +0900
+
+    Fix "Q" binding in default and nicola keymaps (Issue#10).
+
+ rules/default/keymap/default.json          |    1 -
+ rules/default/keymap/hankaku-katakana.json |    1 +
+ rules/default/keymap/hiragana.json         |    1 +
+ rules/default/keymap/katakana.json         |    1 +
+ rules/nicola/keymap/default.json           |    1 -
+ rules/nicola/keymap/kana.json              |    3 ++-
+ tests/basic.c                              |    4 +++-
+ 7 files changed, 8 insertions(+), 4 deletions(-)
+
+commit 65680c3d71d30d18655aba705fd45936e256c679
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 27 10:54:17 2012 +0900
+
+    Update git.mk.
+
+ git.mk |   30 ++++++++++++++++++------------
+ 1 files changed, 18 insertions(+), 12 deletions(-)
+
+commit 781dd29317463f824c3644a0c36836e81c0108f2
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Fri Jan 27 10:17:23 2012 +0900
+
+    Move docs/skk.1 to tools/skk.1 so it is installed without
+    --enable-docs.
+
+ docs/Makefile.am  |    2 -
+ docs/skk.1        |   55
+ -----------------------------------------------------
+ tools/Makefile.am |    2 +
+ tools/skk.1       |   55
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 57 insertions(+), 57 deletions(-)
+
+commit e18039c5466cddd2c88c4d63f98e0d2064ce0f3a
+Author: Daiki Ueno <ueno@unixuser.org>
+Date:   Thu Jan 26 15:57:08 2012 +0900
+
+    Escape hyphen in skk.1.
+
+ docs/skk.1 |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
 commit 7cbf39bc44b19f11944b76985c31acfd0106ffd6
 Author: Daiki Ueno <ueno@unixuser.org>
 Date:   Wed Jan 25 17:10:12 2012 +0900

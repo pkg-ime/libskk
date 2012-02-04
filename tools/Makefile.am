@@ -21,6 +21,7 @@ bin_PROGRAMS = skk
 
 skk_VALAFLAGS =					\
 	--vapidir=$(top_srcdir)/libskk		\
+	--vapidir=$(top_srcdir)/tools		\
 	--pkg config				\
 	--pkg skk-1.0				\
 	$(VALAFLAGS)
@@ -33,7 +34,47 @@ skk_CFLAGS =					\
 	-DLOCALEDIR=\"$(datadir)/locale\"	\
 	$(NULL)
 skk_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
-skk_SOURCES = tool.vala
+skk_SOURCES = skk.vala
+
+dist_man_MANS = skk.1
+
+if ENABLE_FEP
+pkglibexec_PROGRAMS = fep
+fep_VALAFLAGS =					\
+	--vapidir=$(top_srcdir)/libskk		\
+	--vapidir=$(top_srcdir)/tools		\
+	--pkg config				\
+	--pkg skk-1.0				\
+	--pkg libfep-glib			\
+	$(VALAFLAGS)
+fep_CFLAGS =					\
+	-I$(top_srcdir)				\
+	$(LIBSKK_CFLAGS)			\
+	$(LIBFEP_CFLAGS)			\
+	-DDATADIR=\"$(datadir)\"		\
+	-DPKGDATADIR=\"$(pkgdatadir)\"		\
+	-DLOCALEDIR=\"$(datadir)/locale\"	\
+	$(NULL)
+fep_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS) $(LIBFEP_LIBS)
+fep_SOURCES = fep.vala
+dist_man_MANS += skkfep.1
+
+EXTRA_DIST = skkfep.in fep.wrapper.in
+bin_SCRIPTS = skkfep
+libskklibexecdir = $(pkglibexecdir)
+libskklibexec_SCRIPTS = fep.wrapper
+
+skkfep: skkfep.in
+	$(AM_V_GEN) sed -e "s!@FEP\@!"$(FEP)"!" \
+	-e "s!@WRAPPER\@!"$(pkglibexecdir)/fep.wrapper"!" \
+	$< > $@.tmp && \
+	mv $@.tmp $@
+
+fep.wrapper: fep.wrapper.in
+	$(AM_V_GEN) sed -e "s!@FEP\@!"$(pkglibexecdir)/fep"!" \
+	$< > $@.tmp && \
+	mv $@.tmp $@
+endif
 
 GITIGNOREFILES =				\
 	$(skk_SOURCES:.vala=.c)			\

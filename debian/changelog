@@ -1,3 +1,11 @@
+libskk (0.0.10-1) unstable; urgency=low
+
+  * New upstream release
+  * Fix typelib file location
+  * Regenerate symbols file
+
+ -- Daiki Ueno <ueno@unixuser.org>  Sat, 04 Feb 2012 11:28:07 +0900
+
 libskk (0.0.9-1) unstable; urgency=low
 
   * New upstream release

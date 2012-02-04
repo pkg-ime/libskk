@@ -53,6 +53,7 @@ skk_user_dict_construct
 skk_skk_serv_get_type
 skk_skk_serv_new
 skk_skk_serv_construct
+skk_key_event_format_error_quark
 skk_modifier_type_get_type
 skk_key_event_get_type
 skk_key_event_new
@@ -61,6 +62,8 @@ skk_key_event_copy
 skk_key_event_new_from_string
 skk_key_event_construct_from_string
 skk_key_event_to_string
+skk_key_event_new_from_x_keysym
+skk_key_event_construct_from_x_keysym
 skk_key_event_base_equal
 skk_key_event_get_name
 skk_key_event_get_code
