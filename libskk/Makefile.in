@@ -57,7 +57,7 @@ DIST_COMMON = $(libskkinclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/libskk.pc.in \
 	Skk-@SKK_API_VERSION@.gir candidate-list.c candidate.c \
 	cdb-dict.c context.c dict.c encoding.c expr.c file-dict.c \
-	kana-kan.c key-event-filter.c key-event.c keymap.c \
+	kana-kan.c key-event-filter.c key-event.c keymap.c keysyms.c \
 	libskk-internals.h libskk.h libskk_la_vala.stamp map-file.c \
 	nicola.c rom-kana.c rule.c skk-@SKK_API_VERSION@.vapi \
 	skk-internals-@SKK_API_VERSION@.vapi skkserv.c state.c \
@@ -108,7 +108,7 @@ am_libskk_la_OBJECTS = libskk_la-rom-kana.lo libskk_la-kana-kan.lo \
 	libskk_la-rule.lo libskk_la-map-file.lo libskk_la-state.lo \
 	libskk_la-context.lo libskk_la-candidate.lo \
 	libskk_la-candidate-list.lo libskk_la-nicola.lo \
-	libskk_la-expr.lo libskk_la-util.lo
+	libskk_la-expr.lo libskk_la-util.lo libskk_la-keysyms.lo
 libskk_la_OBJECTS = $(am_libskk_la_OBJECTS)
 libskk_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libskk_la_CFLAGS) \
@@ -163,6 +163,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FEP = @FEP@
 FGREP = @FGREP@
 GEE_CFLAGS = @GEE_CFLAGS@
 GEE_LIBS = @GEE_LIBS@
@@ -192,6 +193,8 @@ JSON_GLIB_CFLAGS = @JSON_GLIB_CFLAGS@
 JSON_GLIB_LIBS = @JSON_GLIB_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LIBFEP_CFLAGS = @LIBFEP_CFLAGS@
+LIBFEP_LIBS = @LIBFEP_LIBS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBSKK_CFLAGS = @LIBSKK_CFLAGS@
@@ -359,6 +362,7 @@ libskk_la_SOURCES = \
 	nicola.vala				\
 	expr.vala				\
 	util.vala				\
+	keysyms.vala				\
 	$(NULL)
 
 @HAVE_INTROSPECTION_TRUE@girdir = $(datadir)/gir-1.0
@@ -474,6 +478,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-key-event-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-key-event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-keymap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-keysyms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-map-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-nicola.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libskk_la-rom-kana.Plo@am__quote@
@@ -643,6 +648,13 @@ libskk_la-util.lo: util.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='util.c' object='libskk_la-util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -c -o libskk_la-util.lo `test -f 'util.c' || echo '$(srcdir)/'`util.c
+
+libskk_la-keysyms.lo: keysyms.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -MT libskk_la-keysyms.lo -MD -MP -MF $(DEPDIR)/libskk_la-keysyms.Tpo -c -o libskk_la-keysyms.lo `test -f 'keysyms.c' || echo '$(srcdir)/'`keysyms.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libskk_la-keysyms.Tpo $(DEPDIR)/libskk_la-keysyms.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='keysyms.c' object='libskk_la-keysyms.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libskk_la_CFLAGS) $(CFLAGS) -c -o libskk_la-keysyms.lo `test -f 'keysyms.c' || echo '$(srcdir)/'`keysyms.c
 $(srcdir)/rom-kana.c: $(srcdir)/libskk_la_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/libskk_la_vala.stamp; \
@@ -739,6 +751,11 @@ $(srcdir)/expr.c: $(srcdir)/libskk_la_vala.stamp
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
 	fi
 $(srcdir)/util.c: $(srcdir)/libskk_la_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/libskk_la_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
+	fi
+$(srcdir)/keysyms.c: $(srcdir)/libskk_la_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/libskk_la_vala.stamp; \
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) libskk_la_vala.stamp; \
@@ -1006,6 +1023,7 @@ maintainer-clean-generic:
 	-rm -f key-event-filter.c
 	-rm -f key-event.c
 	-rm -f keymap.c
+	-rm -f keysyms.c
 	-rm -f libskk-internals.h
 	-rm -f libskk.h
 	-rm -f libskk_la_vala.stamp

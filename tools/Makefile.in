@@ -31,6 +31,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -51,9 +52,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = skk$(EXEEXT)
+@ENABLE_FEP_TRUE@pkglibexec_PROGRAMS = fep$(EXEEXT)
+@ENABLE_FEP_TRUE@am__append_1 = skkfep.1
 subdir = tools
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	skk_vala.stamp tool.c
+DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in fep.c fep_vala.stamp skk.c \
+	skk_vala.stamp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/intltool.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -65,16 +69,48 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
-PROGRAMS = $(bin_PROGRAMS)
-am_skk_OBJECTS = skk-tool.$(OBJEXT)
-skk_OBJECTS = $(am_skk_OBJECTS)
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibexecdir)" \
+	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(libskklibexecdir)" \
+	"$(DESTDIR)$(man1dir)"
+PROGRAMS = $(bin_PROGRAMS) $(pkglibexec_PROGRAMS)
+am__fep_SOURCES_DIST = fep.vala
+@ENABLE_FEP_TRUE@am_fep_OBJECTS = fep-fep.$(OBJEXT)
+fep_OBJECTS = $(am_fep_OBJECTS)
 am__DEPENDENCIES_1 =
+@ENABLE_FEP_TRUE@fep_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
+@ENABLE_FEP_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+fep_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(fep_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_skk_OBJECTS = skk-skk.$(OBJEXT)
+skk_OBJECTS = $(am_skk_OBJECTS)
 skk_DEPENDENCIES = $(top_builddir)/libskk/libskk.la \
 	$(am__DEPENDENCIES_1)
 skk_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(skk_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+SCRIPTS = $(bin_SCRIPTS) $(libskklibexec_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -91,8 +127,11 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 VALACOMPILE = $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
 LTVALACOMPILE = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=compile $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
-SOURCES = $(skk_SOURCES)
-DIST_SOURCES = $(skk_SOURCES)
+SOURCES = $(fep_SOURCES) $(skk_SOURCES)
+DIST_SOURCES = $(am__fep_SOURCES_DIST) $(skk_SOURCES)
+man1dir = $(mandir)/man1
+NROFF = nroff
+MANS = $(dist_man_MANS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -123,6 +162,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FEP = @FEP@
 FGREP = @FGREP@
 GEE_CFLAGS = @GEE_CFLAGS@
 GEE_LIBS = @GEE_LIBS@
@@ -152,6 +192,8 @@ JSON_GLIB_CFLAGS = @JSON_GLIB_CFLAGS@
 JSON_GLIB_LIBS = @JSON_GLIB_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LIBFEP_CFLAGS = @LIBFEP_CFLAGS@
+LIBFEP_LIBS = @LIBFEP_LIBS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBSKK_CFLAGS = @LIBSKK_CFLAGS@
@@ -264,6 +306,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -include $(CONFIG_HEADER)
 skk_VALAFLAGS = \
 	--vapidir=$(top_srcdir)/libskk		\
+	--vapidir=$(top_srcdir)/tools		\
 	--pkg config				\
 	--pkg skk-1.0				\
 	$(VALAFLAGS)
@@ -277,7 +320,31 @@ skk_CFLAGS = \
 	$(NULL)
 
 skk_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS)
-skk_SOURCES = tool.vala
+skk_SOURCES = skk.vala
+dist_man_MANS = skk.1 $(am__append_1)
+@ENABLE_FEP_TRUE@fep_VALAFLAGS = \
+@ENABLE_FEP_TRUE@	--vapidir=$(top_srcdir)/libskk		\
+@ENABLE_FEP_TRUE@	--vapidir=$(top_srcdir)/tools		\
+@ENABLE_FEP_TRUE@	--pkg config				\
+@ENABLE_FEP_TRUE@	--pkg skk-1.0				\
+@ENABLE_FEP_TRUE@	--pkg libfep-glib			\
+@ENABLE_FEP_TRUE@	$(VALAFLAGS)
+
+@ENABLE_FEP_TRUE@fep_CFLAGS = \
+@ENABLE_FEP_TRUE@	-I$(top_srcdir)				\
+@ENABLE_FEP_TRUE@	$(LIBSKK_CFLAGS)			\
+@ENABLE_FEP_TRUE@	$(LIBFEP_CFLAGS)			\
+@ENABLE_FEP_TRUE@	-DDATADIR=\"$(datadir)\"		\
+@ENABLE_FEP_TRUE@	-DPKGDATADIR=\"$(pkgdatadir)\"		\
+@ENABLE_FEP_TRUE@	-DLOCALEDIR=\"$(datadir)/locale\"	\
+@ENABLE_FEP_TRUE@	$(NULL)
+
+@ENABLE_FEP_TRUE@fep_LDADD = $(top_builddir)/libskk/libskk.la $(LIBSKK_LIBS) $(LIBFEP_LIBS)
+@ENABLE_FEP_TRUE@fep_SOURCES = fep.vala
+@ENABLE_FEP_TRUE@EXTRA_DIST = skkfep.in fep.wrapper.in
+@ENABLE_FEP_TRUE@bin_SCRIPTS = skkfep
+@ENABLE_FEP_TRUE@libskklibexecdir = $(pkglibexecdir)
+@ENABLE_FEP_TRUE@libskklibexec_SCRIPTS = fep.wrapper
 GITIGNOREFILES = \
 	$(skk_SOURCES:.vala=.c)			\
 	skk_vala.stamp				\
@@ -360,9 +427,123 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+install-pkglibexecPROGRAMS: $(pkglibexec_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	test -z "$(pkglibexecdir)" || $(MKDIR_P) "$(DESTDIR)$(pkglibexecdir)"
+	@list='$(pkglibexec_PROGRAMS)'; test -n "$(pkglibexecdir)" || list=; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p || test -f $$p1; \
+	  then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(pkglibexecdir)$$dir'"; \
+	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(pkglibexecdir)$$dir" || exit $$?; \
+	    } \
+	; done
+
+uninstall-pkglibexecPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkglibexec_PROGRAMS)'; test -n "$(pkglibexecdir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' `; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(pkglibexecdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(pkglibexecdir)" && rm -f $$files
+
+clean-pkglibexecPROGRAMS:
+	@list='$(pkglibexec_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+fep$(EXEEXT): $(fep_OBJECTS) $(fep_DEPENDENCIES) 
+	@rm -f fep$(EXEEXT)
+	$(fep_LINK) $(fep_OBJECTS) $(fep_LDADD) $(LIBS)
 skk$(EXEEXT): $(skk_OBJECTS) $(skk_DEPENDENCIES) 
 	@rm -f skk$(EXEEXT)
 	$(skk_LINK) $(skk_OBJECTS) $(skk_LDADD) $(LIBS)
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+install-libskklibexecSCRIPTS: $(libskklibexec_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(libskklibexecdir)" || $(MKDIR_P) "$(DESTDIR)$(libskklibexecdir)"
+	@list='$(libskklibexec_SCRIPTS)'; test -n "$(libskklibexecdir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(libskklibexecdir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(libskklibexecdir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-libskklibexecSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(libskklibexec_SCRIPTS)'; test -n "$(libskklibexecdir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(libskklibexecdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(libskklibexecdir)" && rm -f $$files
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -370,7 +551,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skk-tool.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fep-fep.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skk-skk.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -393,20 +575,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-skk-tool.o: tool.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -MT skk-tool.o -MD -MP -MF $(DEPDIR)/skk-tool.Tpo -c -o skk-tool.o `test -f 'tool.c' || echo '$(srcdir)/'`tool.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/skk-tool.Tpo $(DEPDIR)/skk-tool.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='tool.c' object='skk-tool.o' libtool=no @AMDEPBACKSLASH@
+fep-fep.o: fep.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fep_CFLAGS) $(CFLAGS) -MT fep-fep.o -MD -MP -MF $(DEPDIR)/fep-fep.Tpo -c -o fep-fep.o `test -f 'fep.c' || echo '$(srcdir)/'`fep.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/fep-fep.Tpo $(DEPDIR)/fep-fep.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fep.c' object='fep-fep.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -c -o skk-tool.o `test -f 'tool.c' || echo '$(srcdir)/'`tool.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fep_CFLAGS) $(CFLAGS) -c -o fep-fep.o `test -f 'fep.c' || echo '$(srcdir)/'`fep.c
 
-skk-tool.obj: tool.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -MT skk-tool.obj -MD -MP -MF $(DEPDIR)/skk-tool.Tpo -c -o skk-tool.obj `if test -f 'tool.c'; then $(CYGPATH_W) 'tool.c'; else $(CYGPATH_W) '$(srcdir)/tool.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/skk-tool.Tpo $(DEPDIR)/skk-tool.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='tool.c' object='skk-tool.obj' libtool=no @AMDEPBACKSLASH@
+fep-fep.obj: fep.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fep_CFLAGS) $(CFLAGS) -MT fep-fep.obj -MD -MP -MF $(DEPDIR)/fep-fep.Tpo -c -o fep-fep.obj `if test -f 'fep.c'; then $(CYGPATH_W) 'fep.c'; else $(CYGPATH_W) '$(srcdir)/fep.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/fep-fep.Tpo $(DEPDIR)/fep-fep.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fep.c' object='fep-fep.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -c -o skk-tool.obj `if test -f 'tool.c'; then $(CYGPATH_W) 'tool.c'; else $(CYGPATH_W) '$(srcdir)/tool.c'; fi`
-$(srcdir)/tool.c: $(srcdir)/skk_vala.stamp
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fep_CFLAGS) $(CFLAGS) -c -o fep-fep.obj `if test -f 'fep.c'; then $(CYGPATH_W) 'fep.c'; else $(CYGPATH_W) '$(srcdir)/fep.c'; fi`
+
+skk-skk.o: skk.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -MT skk-skk.o -MD -MP -MF $(DEPDIR)/skk-skk.Tpo -c -o skk-skk.o `test -f 'skk.c' || echo '$(srcdir)/'`skk.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/skk-skk.Tpo $(DEPDIR)/skk-skk.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='skk.c' object='skk-skk.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -c -o skk-skk.o `test -f 'skk.c' || echo '$(srcdir)/'`skk.c
+
+skk-skk.obj: skk.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -MT skk-skk.obj -MD -MP -MF $(DEPDIR)/skk-skk.Tpo -c -o skk-skk.obj `if test -f 'skk.c'; then $(CYGPATH_W) 'skk.c'; else $(CYGPATH_W) '$(srcdir)/skk.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/skk-skk.Tpo $(DEPDIR)/skk-skk.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='skk.c' object='skk-skk.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(skk_CFLAGS) $(CFLAGS) -c -o skk-skk.obj `if test -f 'skk.c'; then $(CYGPATH_W) 'skk.c'; else $(CYGPATH_W) '$(srcdir)/skk.c'; fi`
+$(srcdir)/skk.c: $(srcdir)/skk_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/skk_vala.stamp; \
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) skk_vala.stamp; \
@@ -414,12 +610,58 @@ $(srcdir)/tool.c: $(srcdir)/skk_vala.stamp
 skk_vala.stamp: $(skk_SOURCES)
 	$(VALAC) $(skk_VALAFLAGS) $(VALAFLAGS) -C $(skk_SOURCES)
 	touch $@
+$(srcdir)/fep.c: $(srcdir)/fep_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/fep_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) fep_vala.stamp; \
+	fi
+fep_vala.stamp: $(fep_SOURCES)
+	$(VALAC) $(fep_VALAFLAGS) $(VALAFLAGS) -C $(fep_SOURCES)
+	touch $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-man1: $(dist_man_MANS)
+	@$(NORMAL_INSTALL)
+	test -z "$(man1dir)" || $(MKDIR_P) "$(DESTDIR)$(man1dir)"
+	@list=''; test -n "$(man1dir)" || exit 0; \
+	{ for i in $$list; do echo "$$i"; done; \
+	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.1[a-z]*$$/p'; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list=''; test -n "$(man1dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.1[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	test -z "$$files" || { \
+	  echo " ( cd '$(DESTDIR)$(man1dir)' && rm -f" $$files ")"; \
+	  cd "$(DESTDIR)$(man1dir)" && rm -f $$files; }
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -474,6 +716,19 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
+	@list='$(MANS)'; if test -n "$$list"; then \
+	  list=`for p in $$list; do \
+	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	    if test -f "$$d$$p"; then echo "$$d$$p"; else :; fi; done`; \
+	  if test -n "$$list" && \
+	    grep 'ab help2man is required to generate this page' $$list >/dev/null; then \
+	    echo "error: found man pages containing the \`missing help2man' replacement text:" >&2; \
+	    grep -l 'ab help2man is required to generate this page' $$list | sed 's/^/         /' >&2; \
+	    echo "       to fix them, install help2man, remove and regenerate the man pages;" >&2; \
+	    echo "       typically \`make maintainer-clean' will remove them" >&2; \
+	    exit 1; \
+	  else :; fi; \
+	else :; fi
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	list='$(DISTFILES)'; \
@@ -505,9 +760,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libskklibexecdir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -535,11 +790,14 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f fep.c
+	-rm -f fep_vala.stamp
+	-rm -f skk.c
 	-rm -f skk_vala.stamp
-	-rm -f tool.c
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool \
+	clean-pkglibexecPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -559,13 +817,14 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-man
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am: install-binPROGRAMS install-binSCRIPTS \
+	install-libskklibexecSCRIPTS install-pkglibexecPROGRAMS
 
 install-html: install-html-am
 
@@ -575,7 +834,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-am
 
@@ -605,24 +864,43 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
+	uninstall-libskklibexecSCRIPTS uninstall-man \
+	uninstall-pkglibexecPROGRAMS
+
+uninstall-man: uninstall-man1
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
+	clean-generic clean-libtool clean-pkglibexecPROGRAMS ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-binSCRIPTS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS
+	install-html-am install-info install-info-am \
+	install-libskklibexecSCRIPTS install-man install-man1 \
+	install-pdf install-pdf-am install-pkglibexecPROGRAMS \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-binSCRIPTS uninstall-libskklibexecSCRIPTS \
+	uninstall-man uninstall-man1 uninstall-pkglibexecPROGRAMS
 
+
+@ENABLE_FEP_TRUE@skkfep: skkfep.in
+@ENABLE_FEP_TRUE@	$(AM_V_GEN) sed -e "s!@FEP\@!"$(FEP)"!" \
+@ENABLE_FEP_TRUE@	-e "s!@WRAPPER\@!"$(pkglibexecdir)/fep.wrapper"!" \
+@ENABLE_FEP_TRUE@	$< > $@.tmp && \
+@ENABLE_FEP_TRUE@	mv $@.tmp $@
+
+@ENABLE_FEP_TRUE@fep.wrapper: fep.wrapper.in
+@ENABLE_FEP_TRUE@	$(AM_V_GEN) sed -e "s!@FEP\@!"$(pkglibexecdir)/fep"!" \
+@ENABLE_FEP_TRUE@	$< > $@.tmp && \
+@ENABLE_FEP_TRUE@	mv $@.tmp $@
 
 -include $(top_srcdir)/git.mk
 
